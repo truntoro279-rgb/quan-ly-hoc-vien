@@ -1183,7 +1183,7 @@ async function loadData(){
     students =
       Array.isArray(data.students)
         ? data.students
-        : [];
+        : (Array.isArray(data.data) ? data.data : []);
 
 
     console.log(
@@ -1219,9 +1219,9 @@ async function loadData(){
 
       body.innerHTML = `
         <div class="student-empty error">
-          Không tải được dữ liệu.
+          Không tải được dữ liệu học viên.
           <br>
-          Vui lòng kiểm tra lại Google Apps Script.
+          ${escapeHtml(error.message || 'Kiểm tra Google Apps Script')}
         </div>
       `;
 
