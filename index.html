@@ -1169,9 +1169,20 @@ async function toggleStudent(element){
 }
 
 function renderAllSourceDetail(detail){
-  const entries = Object.entries(detail || {});
+  // Giữ nguyên bố cục thẻ học viên, chỉ hiển thị các thông tin
+  // CÒN LẠI từ Google Sheet, không lặp lại MSHV / Họ tên / Lớp / GVCN / Trạng thái
+  // đã có sẵn ở phần đầu thẻ.
+  const hiddenKeys = new Set([
+    'Mã học viên', 'Họ tên', 'Lớp', 'GVCN', 'Trạng thái'
+  ].map(normalizeDetailKey));
+
+  const entries = Object.entries(detail || {}).filter(([label]) => {
+    const key = String(label || '').trim();
+    return key && !hiddenKeys.has(normalizeDetailKey(key));
+  });
+
   if(!entries.length){
-    return studentInfoItem('Thông tin', 'Không có dữ liệu');
+    return studentInfoItem('Thông tin còn lại', 'Không có dữ liệu');
   }
 
   return entries.map(([label, value]) => {
@@ -1180,6 +1191,15 @@ function renderAllSourceDetail(detail){
     if(!key) return '';
     return studentInfoItem(key, text);
   }).join('');
+}
+
+function normalizeDetailKey(value){
+  return String(value || '')
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/đ/g, 'd')
+    .replace(/[^a-z0-9]+/g, '');
 }
 
 function studentInfoItem(label, value){
