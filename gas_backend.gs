@@ -6,7 +6,7 @@ const SHEET_ID = '1JI8U96SwwQXn5ZLqWNlLtGaxkRzArpljjdW9QdIOr7A';
 
 const STUDENT_SHEET = 'BẢNG QLTHV 2026';
 const LEAVE_SHEET = 'VE_QUE';
-const ATT_SHEET = 'ĐIỂM DANH';
+const ATT_SHEET = 'DIEM_DANH';
 
 
 // ============================================================
