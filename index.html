@@ -1044,6 +1044,8 @@ function initFilters(){
    HIỂN THỊ DANH SÁCH HỌC VIÊN
    ========================================================= */
 
+const studentSourceCache = {};
+
 function renderStudents(){
 
   const searchInput = document.getElementById('q');
@@ -1080,6 +1082,7 @@ function renderStudents(){
 
   body.innerHTML = filtered.map(student => {
     const maHV = student.maHV || student.code || '';
+    studentSourceCache[String(maHV)] = student;
     const hoTen = student.hoTen || student.name || '';
     const katakana = student.katakana || '';
     const trangThai = student.trangThai || student.status || '';
@@ -1129,11 +1132,21 @@ async function toggleStudent(element){
 
   card.classList.add('expanded');
   const details = card.querySelector('.student-info');
+  const mshv = card.getAttribute('data-mshv') || '';
+
+  // Ưu tiên dữ liệu gốc đã được getAll() trả về.
+  // Như vậy không phụ thuộc vào action getStudentDetail của bản Web App cũ.
+  const cached = studentSourceCache[String(mshv)];
+  const cachedDetail = cached && cached.detail ? cached.detail : null;
+  if(cachedDetail && Object.keys(cachedDetail).length){
+    if(details) details.innerHTML = renderAllSourceDetail(cachedDetail);
+    return;
+  }
+
   if(details){
     details.innerHTML = `<div class="student-info-item"><div class="student-info-label">DỮ LIỆU GỐC</div><div class="student-info-value">Đang lấy toàn bộ thông tin từ Google Sheet...</div></div>`;
   }
 
-  const mshv = card.getAttribute('data-mshv') || '';
   try{
     const response = await fetch(`${API_URL}?action=getStudentDetail&mshv=${encodeURIComponent(mshv)}`, {
       method:'GET',
@@ -1145,11 +1158,12 @@ async function toggleStudent(element){
 
     const student = data.student;
     const fresh = student.detail || student;
+    studentSourceCache[String(mshv)] = student;
     if(details) details.innerHTML = renderAllSourceDetail(fresh);
   }catch(error){
     console.error('Lỗi lấy chi tiết học viên:', error);
     if(details){
-      details.innerHTML = `<div class="student-info-item"><div class="student-info-label">LỖI</div><div class="student-info-value">Không lấy được dữ liệu gốc: ${escapeHtml(error.message || error)}</div></div>`;
+      details.innerHTML = `<div class="student-info-item"><div class="student-info-label">LỖI</div><div class="student-info-value">Không lấy được dữ liệu gốc: ${escapeHtml(error.message || error)}. Hãy cập nhật lại Web App bằng file Code.gs mới rồi Deploy lại.</div></div>`;
     }
   }
 }
