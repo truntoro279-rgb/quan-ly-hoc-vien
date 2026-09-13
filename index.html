@@ -265,6 +265,201 @@ th{
     grid-template-columns:1fr
   }
 }
+
+/* =========================================================
+   THẺ THÔNG TIN CHI TIẾT HỌC VIÊN
+   ========================================================= */
+
+.student-cards{
+  display:grid;
+  grid-template-columns:1fr;
+  gap:16px;
+}
+
+.student-card{
+  background:#fff;
+  border:1px solid #dfe8f1;
+  border-radius:14px;
+  overflow:hidden;
+  box-shadow:0 4px 16px rgba(22,50,75,.08);
+}
+
+.student-card-head{
+  padding:18px 20px;
+  background:linear-gradient(110deg,#143f72,#1769d1);
+  color:#fff;
+}
+
+.student-card-head-top{
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:16px;
+}
+
+.student-code{
+  font-size:22px;
+  font-weight:800;
+  letter-spacing:.2px;
+}
+
+.student-name{
+  margin-top:5px;
+  font-size:18px;
+  font-weight:700;
+}
+
+.student-katakana{
+  margin-top:5px;
+  font-size:14px;
+  opacity:.9;
+}
+
+.student-status{
+  padding:7px 11px;
+  border-radius:999px;
+  background:#fff;
+  color:#1769d1;
+  font-size:12px;
+  font-weight:800;
+  white-space:nowrap;
+}
+
+.student-section-title{
+  padding:11px 18px;
+  background:#f7fafc;
+  color:#486581;
+  font-size:12px;
+  font-weight:800;
+  border-bottom:1px solid #e5edf4;
+}
+
+.student-info{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+}
+
+.student-info-item{
+  padding:13px 18px;
+  border-bottom:1px solid #e8eef3;
+  border-right:1px solid #e8eef3;
+}
+
+.student-info-item:nth-child(3n){
+  border-right:0;
+}
+
+.student-info-label{
+  font-size:11px;
+  color:#627d98;
+  margin-bottom:5px;
+  font-weight:600;
+}
+
+.student-info-value{
+  font-size:14px;
+  line-height:1.4;
+  font-weight:700;
+  color:#102a43;
+  min-height:19px;
+  word-break:break-word;
+}
+
+.student-empty{
+  text-align:center;
+  padding:28px 18px;
+  color:#627d98;
+}
+
+.student-result-count{
+  margin:-2px 0 12px;
+  font-size:12px;
+  color:#627d98;
+}
+
+@media(prefers-color-scheme:dark){
+
+  .student-card{
+    background:#1a2333;
+    border-color:#2a374a;
+    box-shadow:0 4px 16px rgba(0,0,0,.18);
+  }
+
+  .student-section-title{
+    background:#121824;
+    color:#9fb3c8;
+    border-bottom-color:#2a374a;
+  }
+
+  .student-info-item{
+    border-bottom-color:#2a374a;
+    border-right-color:#2a374a;
+  }
+
+  .student-info-label{
+    color:#9fb3c8;
+  }
+
+  .student-info-value{
+    color:#fff;
+  }
+
+  .student-result-count{
+    color:#9fb3c8;
+  }
+
+  .student-empty{
+    color:#9fb3c8;
+  }
+}
+
+@media(max-width:850px){
+
+  .student-info{
+    grid-template-columns:repeat(2,1fr);
+  }
+
+  .student-info-item:nth-child(3n){
+    border-right:1px solid #e8eef3;
+  }
+
+  .student-info-item:nth-child(2n){
+    border-right:0;
+  }
+
+  @media(prefers-color-scheme:dark){
+    .student-info-item:nth-child(3n){
+      border-right-color:#2a374a;
+    }
+  }
+}
+
+@media(max-width:550px){
+
+  .student-card-head-top{
+    flex-direction:column;
+    gap:10px;
+  }
+
+  .student-code{
+    font-size:19px;
+  }
+
+  .student-name{
+    font-size:16px;
+  }
+
+  .student-info{
+    grid-template-columns:1fr;
+  }
+
+  .student-info-item,
+  .student-info-item:nth-child(2n),
+  .student-info-item:nth-child(3n){
+    border-right:0;
+  }
+}
+
 </style>
 </head>
 
@@ -371,35 +566,13 @@ th{
     </div>
 
 
-    <div style="overflow:auto">
+    <div id="studentResultCount" class="student-result-count"></div>
 
-      <table>
+    <div id="studentBody" class="student-cards">
 
-        <thead>
-          <tr>
-            <th>Mã HV</th>
-            <th>Họ tên</th>
-            <th>Lớp</th>
-            <th>GVCN</th>
-            <th>Trạng thái</th>
-          </tr>
-        </thead>
-
-        <tbody id="studentBody">
-
-          <tr>
-            <td
-              colspan="5"
-              class="loading">
-
-              Đang tải dữ liệu...
-
-            </td>
-          </tr>
-
-        </tbody>
-
-      </table>
+      <div class="student-empty">
+        Đang tải dữ liệu...
+      </div>
 
     </div>
 
@@ -493,6 +666,7 @@ th{
    ========================================================= */
 
 const API_URL = 'https://script.google.com/macros/s/AKfycbw0D_9BRD5V3FRZlLyvWy1vmqVIpm5UBoOsolrRGwCxY6eTPkS_B1Ou61UCUCp_fJS3KQ/exec';
+
 
 /* =========================================================
    BIẾN CHUNG
@@ -610,15 +784,9 @@ async function loadData(){
   if(body){
 
     body.innerHTML = `
-      <tr>
-        <td
-          colspan="5"
-          class="loading">
-
-          Đang tải dữ liệu...
-
-        </td>
-      </tr>
+      <div class="student-empty">
+        Đang tải dữ liệu...
+      </div>
     `;
 
   }
@@ -702,18 +870,11 @@ async function loadData(){
     if(body){
 
       body.innerHTML = `
-        <tr>
-          <td
-            colspan="5"
-            class="error">
-
-            Không tải được dữ liệu.
-            <br>
-            Vui lòng kiểm tra lại
-            Google Apps Script.
-
-          </td>
-        </tr>
+        <div class="student-empty error">
+          Không tải được dữ liệu.
+          <br>
+          Vui lòng kiểm tra lại Google Apps Script.
+        </div>
       `;
 
     }
@@ -844,35 +1005,32 @@ function renderStudents(){
   const searchInput =
     document.getElementById('q');
 
-
   const classInput =
     document.getElementById('classFilter');
-
 
   const statusInput =
     document.getElementById('statusFilter');
 
+  const body =
+    document.getElementById('studentBody');
+
+  const countBox =
+    document.getElementById('studentResultCount');
 
   if(!searchInput ||
      !classInput ||
-     !statusInput){
-
+     !statusInput ||
+     !body){
     return;
-
   }
 
-
   const q =
-    String(
-      searchInput.value || ''
-    )
-    .toLowerCase()
-    .trim();
-
+    String(searchInput.value || '')
+      .toLowerCase()
+      .trim();
 
   const classFilter =
     classInput.value;
-
 
   const statusFilter =
     statusInput.value;
@@ -883,33 +1041,37 @@ function renderStudents(){
 
       const maHV =
         String(
-          student.maHV || ''
-        )
-        .toLowerCase();
-
+          student.maHV ||
+          student.code ||
+          ''
+        ).toLowerCase();
 
       const hoTen =
         String(
-          student.hoTen || ''
-        )
-        .toLowerCase();
+          student.hoTen ||
+          student.name ||
+          ''
+        ).toLowerCase();
 
+      const katakana =
+        String(
+          student.katakana ||
+          ''
+        ).toLowerCase();
 
       const matchSearch =
         !q ||
         maHV.includes(q) ||
-        hoTen.includes(q);
-
+        hoTen.includes(q) ||
+        katakana.includes(q);
 
       const matchClass =
         !classFilter ||
         student.lop === classFilter;
 
-
       const matchStatus =
         !statusFilter ||
         student.trangThai === statusFilter;
-
 
       return (
         matchSearch &&
@@ -920,88 +1082,199 @@ function renderStudents(){
     });
 
 
-  const body =
-    document.getElementById(
-      'studentBody'
-    );
+  if(countBox){
 
+    countBox.textContent =
+      filtered.length === students.length
+        ? `Tổng ${students.length} học viên`
+        : `Hiển thị ${filtered.length} / ${students.length} học viên`;
 
-  if(!body){
-    return;
   }
 
 
   if(filtered.length === 0){
 
     body.innerHTML = `
-      <tr>
-        <td
-          colspan="5"
-          style="
-            text-align:center;
-            padding:20px
-          ">
-
-          Không tìm thấy dữ liệu
-
-        </td>
-      </tr>
+      <div class="student-empty">
+        Không tìm thấy học viên phù hợp.
+      </div>
     `;
 
     return;
-
   }
 
 
   body.innerHTML =
     filtered
-      .map(student => `
+      .map(student => {
 
-        <tr>
+        const maHV =
+          student.maHV ||
+          student.code ||
+          '';
 
-          <td>
-            <b>
-              ${escapeHtml(
-                student.maHV
+        const hoTen =
+          student.hoTen ||
+          student.name ||
+          '';
+
+        const katakana =
+          student.katakana ||
+          '';
+
+        const trangThai =
+          student.trangThai ||
+          student.status ||
+          '';
+
+        return `
+
+          <div class="student-card">
+
+            <div class="student-card-head">
+
+              <div class="student-card-head-top">
+
+                <div>
+
+                  <div class="student-code">
+                    ${escapeHtml(maHV)}
+                  </div>
+
+                  <div class="student-name">
+                    ${escapeHtml(hoTen)}
+                  </div>
+
+                  ${
+                    katakana
+                      ? `
+                        <div class="student-katakana">
+                          ${escapeHtml(katakana)}
+                        </div>
+                      `
+                      : ''
+                  }
+
+                </div>
+
+                <div class="student-status">
+                  ${escapeHtml(trangThai || '—')}
+                </div>
+
+              </div>
+
+            </div>
+
+
+            <div class="student-section-title">
+              THÔNG TIN HỌC VIÊN
+            </div>
+
+            <div class="student-info">
+
+              ${studentInfoItem('Lớp', student.lop)}
+              ${studentInfoItem('GVCN', student.gvcn)}
+              ${studentInfoItem('Trung tâm', student.trungTam)}
+              ${studentInfoItem('Đối ngoại', student.doiNgoai)}
+              ${studentInfoItem('Level', student.level)}
+              ${studentInfoItem('Giới tính', student.gioiTinh)}
+              ${studentInfoItem('Ngày sinh', student.ngaySinh)}
+
+            </div>
+
+
+            <div class="student-section-title">
+              NGHIỆP ĐOÀN
+            </div>
+
+            <div class="student-info">
+
+              ${studentInfoItem(
+                'Nghiệp đoàn',
+                student.nghiepDoan
               )}
-            </b>
-          </td>
 
-          <td>
-            ${escapeHtml(
-              student.hoTen
-            )}
-          </td>
-
-          <td>
-
-            <span class="badge">
-
-              ${escapeHtml(
-                student.lop
+              ${studentInfoItem(
+                'Nghiệp đoàn (Kana)',
+                student.nghiepDoanKana
               )}
 
-            </span>
+            </div>
 
-          </td>
 
-          <td>
-            ${escapeHtml(
-              student.gvcn
-            )}
-          </td>
+            <div class="student-section-title">
+              CÔNG TY / ĐƠN VỊ TIẾP NHẬN
+            </div>
 
-          <td>
-            ${escapeHtml(
-              student.trangThai
-            )}
-          </td>
+            <div class="student-info">
 
-        </tr>
+              ${studentInfoItem(
+                'Công ty',
+                student.congTy
+              )}
 
-      `)
+              ${studentInfoItem(
+                'Công ty (Kana)',
+                student.congTyKana
+              )}
+
+              ${studentInfoItem(
+                'Ngành nghề',
+                student.nganhNghe
+              )}
+
+            </div>
+
+
+            <div class="student-section-title">
+              LỊCH TRÌNH
+            </div>
+
+            <div class="student-info">
+
+              ${studentInfoItem(
+                'Ngày thi / Phỏng vấn',
+                student.ngayThi
+              )}
+
+              ${studentInfoItem(
+                'Ngày nhập học dự kiến',
+                student.ngayNhapHoc
+              )}
+
+            </div>
+
+          </div>
+
+        `;
+
+      })
       .join('');
+}
 
+
+function studentInfoItem(label, value){
+
+  const text =
+    String(value || '').trim();
+
+  return `
+    <div class="student-info-item">
+
+      <div class="student-info-label">
+        ${escapeHtml(label)}
+      </div>
+
+      <div class="student-info-value">
+        ${
+          text
+            ? escapeHtml(text)
+            : '—'
+        }
+      </div>
+
+    </div>
+  `;
 }
 
 
