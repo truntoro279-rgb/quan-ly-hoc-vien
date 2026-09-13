@@ -40,7 +40,7 @@ table{width:100%;border-collapse:collapse;min-width:780px}th,td{padding:10px;bor
 <section id="attendance" class="page"><div class="panel"><h2>Điểm danh</h2><div class="toolbar" style="grid-template-columns:1fr 1fr"><input id="attDate" type="date"><select id="attClass" onchange="renderAttendanceList()"><option value="">Chọn lớp</option></select></div><div style="overflow:auto"><table><thead><tr><th>Mã HV</th><th>Họ tên</th><th>Trạng thái</th></tr></thead><tbody id="attBody"></tbody></table></div><div class="actions"><button class="btn" onclick="saveAttendance()">Lưu điểm danh</button></div></div></section>
 </main>
 <script>
-const API_URL = 'https://google.com';
+const API_URL = 'https://script.google.com/macros/s/AKfycbz4Eip_vfQlDOa0SvB_BFUEDTEc85Qq9e2Qxc8uPYumZF_69oZW6OAraHC9pUJhx9I7Tg/exec';
 let students=[];const pages=[['home','Trang chủ'],['students','Học viên'],['attendance','Điểm danh']];
 document.addEventListener('DOMContentLoaded',()=>{initMenu();document.getElementById('attDate').valueAsDate=new Date();loadData()});
 function initMenu(){const n=document.getElementById('nav');n.innerHTML=pages.map(p=>`<button id="btn-${p[0]}" onclick="show('${p[0]}')">${p[1]}</button>`).join('');const b=document.getElementById('btn-home');if(b)b.classList.add('active')}
