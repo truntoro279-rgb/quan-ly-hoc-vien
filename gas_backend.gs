@@ -1,76 +1,626 @@
-// Google Apps Script backend cho app Quản lý học viên.
-// 1) Mở Google Sheet của bạn > Extensions > Apps Script.
-// 2) Dán toàn bộ code này vào Code.gs.
-// 3) Đổi SHEET_ID thành ID của Google Sheet.
-// 4) Deploy > New deployment > Web app > Execute as Me > Anyone.
-// 5) Copy URL /exec và dán vào API_URL trong index.html.
+// ============================================================
+// BACKEND - QUẢN LÝ HỌC VIÊN
+// ============================================================
 
-const SHEET_ID = 'DAN_ID_GOOGLE_SHEET_VAO_DAY';
-const STUDENT_SHEET = 'ALL';
+const SHEET_ID = '1JI8U96SwwQXn5ZLqWNlLtGaxkRzArpljjdW9QdIOr7A';
+
+const STUDENT_SHEET = 'BẢNG QLTHV 2026';
 const LEAVE_SHEET = 'VE_QUE';
-const ATT_SHEET = 'DIEM_DANH';
+const ATT_SHEET = 'ĐIỂM DANH';
 
-function sh(name){ return SpreadsheetApp.openById(SHEET_ID).getSheetByName(name); }
-function json(o){ return ContentService.createTextOutput(JSON.stringify(o)).setMimeType(ContentService.MimeType.JSON); }
 
-function doPost(e){
-  try{
-    const p=JSON.parse(e.postData.contents||'{}');
-    if(p.action==='getAll') return json(getAll());
-    if(p.action==='addLeave') { addLeave(p.row); return json({ok:true}); }
-    if(p.action==='updateLeave') { updateLeave(p.id,p.status); return json({ok:true}); }
-    if(p.action==='saveAttendance') { saveAttendance(p.rows||[]); return json({ok:true}); }
-    return json({ok:false,error:'Unknown action'});
-  }catch(err){ return json({ok:false,error:String(err)}); }
+// ============================================================
+// HÀM CƠ BẢN
+// ============================================================
+
+function sh(name) {
+  return SpreadsheetApp
+    .openById(SHEET_ID)
+    .getSheetByName(name);
 }
 
-function rowsToObjects(sheet){
-  if(!sheet) return [];
-  const v=sheet.getDataRange().getValues(); if(v.length<2) return [];
-  const h=v[0].map(String);
-  return v.slice(1).filter(r=>r.some(x=>x!=='')).map(r=>Object.fromEntries(h.map((k,i)=>[k,String(r[i]??'')])));
+
+function json(o) {
+  return ContentService
+    .createTextOutput(JSON.stringify(o))
+    .setMimeType(ContentService.MimeType.JSON);
 }
 
-function normalizeStudent(o){
-  const get=(...ks)=>{for(const k of ks) if(o[k]!==undefined && o[k]!=='' ) return o[k]; return '';};
+
+function today() {
+  return Utilities.formatDate(
+    new Date(),
+    Session.getScriptTimeZone(),
+    'yyyy-MM-dd'
+  );
+}
+
+
+// ============================================================
+// GET
+// ============================================================
+
+function doGet(e) {
+  try {
+
+    const action = String(
+      e && e.parameter && e.parameter.action
+        ? e.parameter.action
+        : ''
+    );
+
+    if (action === 'getAll') {
+      return json(getAll());
+    }
+
+    return json({
+      ok: true,
+      message: 'API Quản lý học viên đang hoạt động'
+    });
+
+  } catch (err) {
+
+    return json({
+      ok: false,
+      error: String(err)
+    });
+
+  }
+}
+
+
+// ============================================================
+// POST
+// ============================================================
+
+function doPost(e) {
+  try {
+
+    if (!e || !e.postData || !e.postData.contents) {
+      return json({
+        ok: false,
+        error: 'Không có dữ liệu POST'
+      });
+    }
+
+    const p = JSON.parse(e.postData.contents || '{}');
+
+    // Lấy toàn bộ học viên
+    if (p.action === 'getAll') {
+      return json(getAll());
+    }
+
+    // Thêm về quê
+    if (p.action === 'addLeave') {
+      addLeave(p.row || {});
+      return json({
+        ok: true
+      });
+    }
+
+    // Cập nhật về quê
+    if (p.action === 'updateLeave') {
+      updateLeave(p.id, p.status);
+      return json({
+        ok: true
+      });
+    }
+
+    // Lưu điểm danh
+    if (p.action === 'saveAttendance') {
+
+      const rows = Array.isArray(p.rows)
+        ? p.rows
+        : [];
+
+      const result = saveAttendance(rows);
+
+      return json(result);
+    }
+
+    return json({
+      ok: false,
+      error: 'Unknown action: ' + String(p.action || '')
+    });
+
+  } catch (err) {
+
+    return json({
+      ok: false,
+      error: String(err && err.stack ? err.stack : err)
+    });
+
+  }
+}
+
+
+// ============================================================
+// ĐỌC HỌC VIÊN
+// ============================================================
+
+function getAll() {
+
+  const studentSheet = sh(STUDENT_SHEET);
+
+  const students = [];
+
+  if (studentSheet) {
+
+    const lastRow = studentSheet.getLastRow();
+
+    if (lastRow >= 3) {
+
+      // Sheet BẢNG QLTHV 2026:
+      // B = Trạng thái
+      // C = Mã số HV
+      // D = Tên Romaji
+      // H = Lớp
+      // I = GVCN
+
+      const values = studentSheet
+        .getRange(3, 2, lastRow - 2, 8)
+        .getDisplayValues();
+
+      const seen = new Set();
+
+      values.forEach(function(r) {
+
+        const trangThai = String(r[0] || '').trim();
+        const maHV = String(r[1] || '').trim();
+        const hoTen = String(r[2] || '').trim();
+        const lop = String(r[6] || '').trim();
+        const gvcn = String(r[7] || '').trim();
+
+        // Chỉ nhận mã học viên dạng TH202601...
+        if (!/^TH\d{6,}$/.test(maHV)) {
+          return;
+        }
+
+        if (seen.has(maHV)) {
+          return;
+        }
+
+        seen.add(maHV);
+
+        students.push({
+          code: maHV,
+          maHV: maHV,
+
+          name: hoTen,
+          hoTen: hoTen,
+
+          class: lop,
+          lop: lop,
+
+          teacher: gvcn,
+          gvcn: gvcn,
+
+          status: trangThai,
+          trangThai: trangThai
+        });
+
+      });
+    }
+  }
+
+
+  // ==========================================================
+  // ĐỌC ĐIỂM DANH HÔM NAY
+  // ==========================================================
+
+  const attendanceSheet = sh(ATT_SHEET);
+
+  const attendance = [];
+
+  if (attendanceSheet) {
+
+    const lastRow = attendanceSheet.getLastRow();
+
+    if (lastRow >= 2) {
+
+      const values = attendanceSheet
+        .getRange(2, 1, lastRow - 1, 5)
+        .getDisplayValues();
+
+      const currentDate = today();
+
+      values.forEach(function(r) {
+
+        const code = String(r[0] || '').trim();
+        const name = String(r[1] || '').trim();
+        const status = String(r[2] || '').trim();
+        const date = normalizeDate(r[3]);
+
+        if (!code) {
+          return;
+        }
+
+        if (date !== currentDate) {
+          return;
+        }
+
+        attendance.push({
+          code: code,
+          name: name,
+          status: status,
+          date: date,
+          savedAt: String(r[4] || '')
+        });
+
+      });
+    }
+  }
+
+
+  // ==========================================================
+  // ĐỌC ĐƠN VỀ QUÊ
+  // ==========================================================
+
+  const leaves = rowsToObjects(sh(LEAVE_SHEET));
+
+
   return {
-    code:get('Mã học viên','Mã HV','Mã HV ','Ma hoc vien'),
-    name:get('Họ tên Romaji','Họ tên','Ho ten Romaji','Họ và tên'),
-    katakana:get('Họ tên Katakana','Ho ten Katakana'),
-    class:get('Lớp','Lop'),
-    center:get('Trung tâm','Trung tam'),
-    teacher:get('Giáo viên','Giao vien'),
-    status:get('Trạng thái','Status'),
-    birth:get('Ngày sinh','Ngay sinh')
+    ok: true,
+    students: students,
+    leaves: leaves,
+    attendance: attendance,
+    total: students.length
   };
 }
 
-function getAll(){
-  const students=rowsToObjects(sh(STUDENT_SHEET)).map(normalizeStudent).filter(x=>x.code||x.name);
-  const leaves=rowsToObjects(sh(LEAVE_SHEET));
-  const attendance=rowsToObjects(sh(ATT_SHEET)).filter(x=>x.date===Utilities.formatDate(new Date(),Session.getScriptTimeZone(),'yyyy-MM-dd'));
-  return {students,leaves,attendance};
+
+// ============================================================
+// ĐỌC SHEET THÀNH OBJECT
+// ============================================================
+
+function rowsToObjects(sheet) {
+
+  if (!sheet) {
+    return [];
+  }
+
+  const values = sheet.getDataRange().getDisplayValues();
+
+  if (values.length < 2) {
+    return [];
+  }
+
+  const headers = values[0].map(function(x) {
+    return String(x || '').trim();
+  });
+
+  return values
+    .slice(1)
+    .filter(function(row) {
+      return row.some(function(x) {
+        return String(x || '').trim() !== '';
+      });
+    })
+    .map(function(row) {
+
+      const obj = {};
+
+      headers.forEach(function(key, i) {
+
+        if (key) {
+          obj[key] = String(row[i] || '').trim();
+        }
+
+      });
+
+      return obj;
+
+    });
 }
 
-function ensureSheet(name,headers){
-  let s=SpreadsheetApp.openById(SHEET_ID).getSheetByName(name);
-  if(!s){s=SpreadsheetApp.openById(SHEET_ID).insertSheet(name);s.appendRow(headers);}
-  return s;
+
+// ============================================================
+// TẠO SHEET NẾU CHƯA CÓ
+// ============================================================
+
+function ensureSheet(name, headers) {
+
+  const ss = SpreadsheetApp.openById(SHEET_ID);
+
+  let sheet = ss.getSheetByName(name);
+
+  if (!sheet) {
+
+    sheet = ss.insertSheet(name);
+
+    sheet
+      .getRange(1, 1, 1, headers.length)
+      .setValues([headers]);
+  }
+
+  return sheet;
 }
-function addLeave(r){
-  const s=ensureSheet(LEAVE_SHEET,['id','code','name','class','from','to','reason','phone','contact','status','createdAt']);
-  s.appendRow([r.id,r.code,r.name,r.class,r.from,r.to,r.reason,r.phone,r.contact,r.status,new Date()]);
+
+
+// ============================================================
+// VỀ QUÊ
+// ============================================================
+
+function addLeave(r) {
+
+  const s = ensureSheet(
+    LEAVE_SHEET,
+    [
+      'id',
+      'code',
+      'name',
+      'class',
+      'from',
+      'to',
+      'reason',
+      'phone',
+      'contact',
+      'status',
+      'createdAt'
+    ]
+  );
+
+  s.appendRow([
+    r.id || '',
+    r.code || '',
+    r.name || '',
+    r.class || '',
+    r.from || '',
+    r.to || '',
+    r.reason || '',
+    r.phone || '',
+    r.contact || '',
+    r.status || '',
+    new Date()
+  ]);
 }
-function updateLeave(id,status){
-  const s=sh(LEAVE_SHEET); if(!s)return;
-  const v=s.getDataRange().getValues();
-  for(let i=1;i<v.length;i++) if(String(v[i][0])===String(id)){s.getRange(i+1,10).setValue(status);break;}
+
+
+// ============================================================
+// CẬP NHẬT VỀ QUÊ
+// ============================================================
+
+function updateLeave(id, status) {
+
+  const s = sh(LEAVE_SHEET);
+
+  if (!s) {
+    return;
+  }
+
+  const values = s.getDataRange().getValues();
+
+  for (let i = 1; i < values.length; i++) {
+
+    if (
+      String(values[i][0] || '').trim() ===
+      String(id || '').trim()
+    ) {
+
+      // Cột J = status
+      s.getRange(i + 1, 10).setValue(status || '');
+
+      break;
+    }
+  }
 }
-function saveAttendance(rows){
-  const s=ensureSheet(ATT_SHEET,['code','name','status','date','savedAt']);
-  const date=Utilities.formatDate(new Date(),Session.getScriptTimeZone(),'yyyy-MM-dd');
-  const old=s.getDataRange().getValues();
-  const codes=new Set(rows.map(r=>String(r.code)));
-  for(let i=old.length-1;i>=1;i--) if(String(old[i][3])===date && codes.has(String(old[i][0]))) s.deleteRow(i+1);
-  rows.forEach(r=>s.appendRow([r.code,r.name,r.status,r.date,new Date()]));
+
+
+// ============================================================
+// CHUẨN HÓA NGÀY
+// ============================================================
+
+function normalizeDate(value) {
+
+  if (
+    value instanceof Date &&
+    !isNaN(value.getTime())
+  ) {
+
+    return Utilities.formatDate(
+      value,
+      Session.getScriptTimeZone(),
+      'yyyy-MM-dd'
+    );
+  }
+
+
+  const text = String(value || '').trim();
+
+  if (!text) {
+    return '';
+  }
+
+
+  // yyyy-MM-dd
+  if (/^\d{4}-\d{2}-\d{2}$/.test(text)) {
+    return text;
+  }
+
+
+  // dd/MM/yyyy
+  let m = text.match(
+    /^(\d{1,2})\/(\d{1,2})\/(\d{4})$/
+  );
+
+  if (m) {
+
+    return (
+      m[3] + '-' +
+      ('0' + m[2]).slice(-2) + '-' +
+      ('0' + m[1]).slice(-2)
+    );
+  }
+
+
+  // dd-MM-yyyy
+  m = text.match(
+    /^(\d{1,2})-(\d{1,2})-(\d{4})$/
+  );
+
+  if (m) {
+
+    return (
+      m[3] + '-' +
+      ('0' + m[2]).slice(-2) + '-' +
+      ('0' + m[1]).slice(-2)
+    );
+  }
+
+
+  return text;
+}
+
+
+// ============================================================
+// LƯU ĐIỂM DANH
+// ============================================================
+
+function saveAttendance(rows) {
+
+  if (!Array.isArray(rows)) {
+
+    return {
+      ok: false,
+      error: 'Dữ liệu điểm danh không hợp lệ'
+    };
+  }
+
+
+  const s = ensureSheet(
+    ATT_SHEET,
+    [
+      'code',
+      'name',
+      'status',
+      'date',
+      'savedAt'
+    ]
+  );
+
+
+  const currentDate = today();
+
+
+  // ----------------------------------------------------------
+  // Đọc dữ liệu hiện có
+  // ----------------------------------------------------------
+
+  const lastRow = s.getLastRow();
+
+  const oldValues =
+    lastRow >= 2
+      ? s.getRange(2, 1, lastRow - 1, 5).getValues()
+      : [];
+
+
+  // ----------------------------------------------------------
+  // Tạo map bản ghi hiện tại
+  // key = code + date
+  // ----------------------------------------------------------
+
+  const existing = new Map();
+
+  oldValues.forEach(function(r, index) {
+
+    const code = String(r[0] || '').trim();
+
+    const date = normalizeDate(r[3]);
+
+    if (!code || !date) {
+      return;
+    }
+
+    existing.set(
+      code + '|' + date,
+      {
+        row: index + 2
+      }
+    );
+
+  });
+
+
+  // ----------------------------------------------------------
+  // Cập nhật hoặc thêm
+  // ----------------------------------------------------------
+
+  rows.forEach(function(r) {
+
+    const code = String(
+      r.code ||
+      r.maHV ||
+      r.maHv ||
+      ''
+    ).trim();
+
+    const name = String(
+      r.name ||
+      r.hoTen ||
+      ''
+    ).trim();
+
+    const status = String(
+      r.status ||
+      r.trangThai ||
+      ''
+    ).trim();
+
+
+    if (!code) {
+      return;
+    }
+
+
+    const date =
+      normalizeDate(r.date) ||
+      currentDate;
+
+
+    const key = code + '|' + date;
+
+
+    const data = [
+      code,
+      name,
+      status,
+      date,
+      new Date()
+    ];
+
+
+    // Đã có → cập nhật
+    if (existing.has(key)) {
+
+      const rowNumber =
+        existing.get(key).row;
+
+      s.getRange(
+        rowNumber,
+        1,
+        1,
+        5
+      ).setValues([data]);
+
+    }
+
+    // Chưa có → thêm
+    else {
+
+      s.appendRow(data);
+
+      existing.set(key, {
+        row: s.getLastRow()
+      });
+    }
+
+  });
+
+
+  return {
+    ok: true,
+    message: 'Đã lưu điểm danh',
+    count: rows.length,
+    date: currentDate
+  };
 }
