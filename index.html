@@ -6,18 +6,28 @@
 <title>Quản lý học viên</title>
 <style>
 *{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:#f4f7fb;color:#102a43}
+@media(prefers-color-scheme:dark){body{background:#121824;color:#f4f7fb}}
 header{height:68px;background:#fff;border-bottom:1px solid #e6edf4;position:sticky;top:0;z-index:10}
+@media(prefers-color-scheme:dark){header{background:#1a2333;border-bottom-color:#2a374a}}
 .nav{max-width:1250px;margin:auto;height:100%;display:flex;align-items:center;padding:0 18px}
 .logo{font-weight:800;color:#1769d1;font-size:18px}
 nav{margin-left:auto;display:flex;gap:4px}nav button{border:0;background:transparent;padding:11px 13px;border-radius:99px;color:#334e68;cursor:pointer;font-weight:600}
+@media(prefers-color-scheme:dark){nav button{color:#9fb3c8}}
 nav button.active,nav button:hover{background:#edf4ff;color:#1769d1}
+@media(prefers-color-scheme:dark){nav button.active,nav button:hover{background:#222f47;color:#38a169}}
 .hero{max-width:1250px;margin:18px auto 0;min-height:150px;border-radius:14px;display:flex;align-items:center;justify-content:center;text-align:center;color:#fff;background:linear-gradient(110deg,#143f72,#1769d1)}
 main{max-width:1250px;margin:auto;padding:18px}.page{display:none}.page.active{display:block}
 .cards{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}.card,.panel{background:#fff;border:1px solid #e3ebf3;border-radius:12px;padding:18px;box-shadow:0 3px 14px #16324b0c}
+@media(prefers-color-scheme:dark){.card,.panel{background:#1a2333;border-color:#2a374a}}
 .card .num{font-size:30px;font-weight:800;color:#1769d1}
+@media(prefers-color-scheme:dark){.card .num{color:#38a169}}
 .actions{display:flex;gap:9px;margin-top:10px}.btn{border:0;border-radius:8px;padding:10px 15px;background:#1769d1;color:#fff;font-weight:700;cursor:pointer}.btn.light{background:#edf4ff;color:#1769d1}
+@media(prefers-color-scheme:dark){.btn.light{background:#222f47;color:#9fb3c8}}
 .toolbar{display:grid;grid-template-columns:2fr repeat(2,1fr);gap:10px;margin-bottom:14px}input,select{width:100%;padding:10px;border:1px solid #ccd8e2;border-radius:8px}
-table{width:100%;border-collapse:collapse;min-width:780px}th,td{padding:10px;border-bottom:1px solid #e8eef3;text-align:left}th{background:#f7fafc;color:#486581}.badge{padding:4px 8px;border-radius:999px;background:#edf4ff;color:#1769d1;font-weight:700;font-size:12px}
+@media(prefers-color-scheme:dark){input,select{background:#121824;border-color:#2a374a;color:#fff}}
+table{width:100%;border-collapse:collapse;min-width:780px}th,td{padding:10px;border-bottom:1px solid #e8eef3;text-align:left}th{background:#f7fafc;color:#486581}
+@media(prefers-color-scheme:dark){th{background:#121824;color:#9fb3c8}td{border-bottom-color:#2a374a}}
+.badge{padding:4px 8px;border-radius:999px;background:#edf4ff;color:#1769d1;font-weight:700;font-size:12px}
 @media(max-width:850px){.nav{flex-direction:column;height:auto;padding:10px}.cards,.toolbar{grid-template-columns:1fr}}
 </style>
 </head>
@@ -40,10 +50,12 @@ table{width:100%;border-collapse:collapse;min-width:780px}th,td{padding:10px;bor
 <section id="attendance" class="page"><div class="panel"><h2>Điểm danh</h2><div class="toolbar" style="grid-template-columns:1fr 1fr"><input id="attDate" type="date"><select id="attClass" onchange="renderAttendanceList()"><option value="">Chọn lớp</option></select></div><div style="overflow:auto"><table><thead><tr><th>Mã HV</th><th>Họ tên</th><th>Trạng thái</th></tr></thead><tbody id="attBody"></tbody></table></div><div class="actions"><button class="btn" onclick="saveAttendance()">Lưu điểm danh</button></div></div></section>
 </main>
 <script>
-const API_URL = 'https://script.google.com/macros/s/AKfycbz4Eip_vfQlDOa0SvB_BFUEDTEc85Qq9e2Qxc8uPYumZF_69oZW6OAraHC9pUJhx9I7Tg/exec';
+// LINK WEB APP KHỚP VỚI PHIÊN BẢN BACKEND MỚI NHẤT CỦA BẠN:
+const API_URL = 'https://google.com';
+
 let students=[];const pages=[['home','Trang chủ'],['students','Học viên'],['attendance','Điểm danh']];
 document.addEventListener('DOMContentLoaded',()=>{initMenu();document.getElementById('attDate').valueAsDate=new Date();loadData()});
-function initMenu(){const n=document.getElementById('nav');n.innerHTML=pages.map(p=>`<button id="btn-${p[0]}" onclick="show('${p[0]}')">${p[1]}</button>`).join('');const b=document.getElementById('btn-home');if(b)b.classList.add('active')}
+function initMenu(){const n=document.getElementById('nav');n.innerHTML=pages.map(p=>`<button id="btn-${p}" onclick="show('${p}')">${p[1]}</button>`).join('');const b=document.getElementById('btn-home');if(b)b.classList.add('active')}
 function show(id){document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));document.querySelectorAll('nav button').forEach(b=>b.classList.remove('active'));const t=document.getElementById(id);if(t)t.classList.add('active');const b=document.getElementById(`btn-${id}`);if(b)b.classList.add('active')}
 async function loadData(){try{const r=await fetch(`${API_URL}?action=getAll`);const d=await r.json();students=d.students||[];updateDashboard();initFilters();renderStudents()}catch(e){console.error(e)}}
 function updateDashboard(){document.getElementById('total').innerText=students.length;document.getElementById('away').innerText=students.filter(s=>s['Trạng thái']==='Về quê').length}
