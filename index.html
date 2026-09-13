@@ -379,6 +379,8 @@ th{
     grid-template-columns:1fr
   }
 }
+
+.month-cell{cursor:pointer;text-align:center;font-weight:800;user-select:none;min-width:38px}.month-cell:hover{filter:brightness(1.12)}.day-present{color:#2f855a}.day-absent{color:#c53030}.day-empty{color:#829ab1}.monthly-total{text-align:center;font-weight:800}.present-total{color:#2f855a}.absent-total{color:#c53030}
 </style>
 </head>
 
@@ -548,71 +550,51 @@ th{
 
   <div class="panel">
 
-    <h2>Điểm danh</h2>
+    <h2>Điểm danh theo tháng</h2>
 
-    <div
-      class="toolbar"
-      style="grid-template-columns:1fr 1fr">
+    <div class="toolbar" style="grid-template-columns:1fr 1fr auto">
 
-      <input
-        id="attDate"
-        type="date">
+      <input id="attMonth" type="month" onchange="loadMonthlyAttendance()">
 
-      <select
-        id="attClass"
-        onchange="renderAttendanceList()">
-
-        <option value="">
-          Chọn lớp
-        </option>
-
+      <select id="attClass" onchange="loadMonthlyAttendance()">
+        <option value="">Chọn lớp</option>
       </select>
 
+      <button class="btn" onclick="loadMonthlyAttendance()">Tải bảng tháng</button>
+
     </div>
 
+    <div id="monthlySummary" style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px"></div>
 
-    <div style="overflow:auto">
-
-      <table>
-
-        <thead>
+    <div style="overflow:auto;max-height:68vh">
+      <table id="monthlyTable" style="min-width:1100px">
+        <thead id="monthlyHead">
           <tr>
-            <th>Mã HV</th>
+            <th>MSHV</th>
             <th>Họ tên</th>
-            <th>Trạng thái</th>
+            <th>GVCN</th>
+            <th>Ngày 1...</th>
           </tr>
         </thead>
-
-        <tbody id="attBody">
-
+        <tbody id="monthlyBody">
           <tr>
-            <td
-              colspan="3"
-              style="text-align:center;padding:20px">
-
-              Chọn lớp để điểm danh
-
+            <td colspan="4" style="text-align:center;padding:20px">
+              Chọn tháng và lớp để xem bảng điểm danh
             </td>
           </tr>
-
         </tbody>
-
       </table>
-
     </div>
-
 
     <div class="actions">
-
-      <button
-        class="btn"
-        onclick="saveAttendance()">
-
-        Lưu điểm danh
-
-      </button>
-
+      <button class="btn" onclick="saveMonthlyAttendance()">Lưu bảng điểm danh tháng</button>
+      <button class="btn light" onclick="show('students')">Danh sách học viên</button>
     </div>
+
+    <p style="margin:10px 0 0;color:#627d98;font-size:13px">
+      Ô ngày: bấm lần lượt <b>✓ Có mặt</b> → <b>× Vắng</b> → <b>· Chưa điểm danh</b>.
+      Bảng tháng được tải bằng <b>1 lần gọi API</b>, không gọi từng ngày.
+    </p>
 
   </div>
 
@@ -657,8 +639,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
   initMenu();
 
-  document.getElementById('attDate').valueAsDate =
-    new Date();
+  const now = new Date();
+  document.getElementById('attMonth').value =
+    now.getFullYear() + '-' + String(now.getMonth()+1).padStart(2,'0');
 
   loadData();
 
@@ -1151,262 +1134,186 @@ function renderStudents(){
 
 
 /* =========================================================
-   DANH SÁCH ĐIỂM DANH
+   ĐIỂM DANH THEO THÁNG - 1 LẦN API
    ========================================================= */
 
-function renderAttendanceList(){
+let monthlyAttendance = {};
+let monthlyDays = 0;
+let monthlyLoadedKey = '';
 
-  const classValue =
-    document.getElementById(
-      'attClass'
-    ).value;
-
-
-  const body =
-    document.getElementById(
-      'attBody'
-    );
-
-
-  if(!body){
-    return;
-  }
-
-
-  if(!classValue){
-
-    body.innerHTML = `
-      <tr>
-        <td
-          colspan="3"
-          style="
-            text-align:center;
-            padding:20px
-          ">
-
-          Chọn lớp để điểm danh
-
-        </td>
-      </tr>
-    `;
-
-    return;
-
-  }
-
-
-  const list =
-    students.filter(
-      student =>
-        student.lop === classValue
-    );
-
-
-  if(list.length === 0){
-
-    body.innerHTML = `
-      <tr>
-        <td
-          colspan="3"
-          style="
-            text-align:center;
-            padding:20px
-          ">
-
-          Không có học viên
-          trong lớp này
-
-        </td>
-      </tr>
-    `;
-
-    return;
-
-  }
-
-
-  body.innerHTML =
-    list.map(student => `
-
-      <tr>
-
-        <td>
-          ${escapeHtml(
-            student.maHV
-          )}
-        </td>
-
-        <td>
-          ${escapeHtml(
-            student.hoTen
-          )}
-        </td>
-
-        <td>
-
-          <select
-            data-id="${escapeHtml(
-              student.maHV
-            )}"
-            class="att-status">
-
-            <option value="Có mặt">
-              Có mặt
-            </option>
-
-            <option value="Vắng">
-              Vắng
-            </option>
-
-          </select>
-
-        </td>
-
-      </tr>
-
-    `)
-    .join('');
-
+function getMonthDays(month){
+  const [y,m] = month.split('-').map(Number);
+  return new Date(y, m, 0).getDate();
 }
 
+function monthKey(date){
+  return String(date || '').slice(0,7);
+}
 
-/* =========================================================
-   LƯU ĐIỂM DANH
-   ========================================================= */
+function monthlyBadge(label, value){
+  return `<span style="padding:6px 10px;border-radius:999px;background:#edf4ff;color:#1769d1;font-weight:700;font-size:12px">${escapeHtml(label)}: ${escapeHtml(value)}</span>`;
+}
 
-async function saveAttendance(){
+async function loadMonthlyAttendance(){
+  const monthEl = document.getElementById('attMonth');
+  const classEl = document.getElementById('attClass');
+  const head = document.getElementById('monthlyHead');
+  const body = document.getElementById('monthlyBody');
+  const summary = document.getElementById('monthlySummary');
 
-  const date =
-    document.getElementById(
-      'attDate'
-    ).value;
+  if(!monthEl || !classEl || !head || !body) return;
 
+  const month = monthEl.value;
+  const classValue = classEl.value;
 
-  const classValue =
-    document.getElementById(
-      'attClass'
-    ).value;
-
-
-  if(!date){
-
-    alert(
-      'Vui lòng chọn ngày'
-    );
-
+  if(!month || !classValue){
+    body.innerHTML = `<tr><td colspan="40" style="text-align:center;padding:20px">Chọn tháng và lớp để xem bảng điểm danh</td></tr>`;
+    summary.innerHTML = '';
     return;
-
   }
 
+  const key = month + '|' + classValue;
+  if(key === monthlyLoadedKey && body.dataset.ready === '1') return;
 
-  if(!classValue){
-
-    alert(
-      'Vui lòng chọn lớp'
-    );
-
-    return;
-
-  }
-
-
-  const records = [];
-
-
-  document
-    .querySelectorAll(
-      '.att-status'
-    )
-    .forEach(select => {
-
-      records.push({
-
-        id:
-          select.dataset.id,
-
-        status:
-          select.value
-
-      });
-
-    });
-
+  const days = getMonthDays(month);
+  monthlyDays = days;
+  body.dataset.ready = '0';
+  body.innerHTML = `<tr><td colspan="${days+3}" style="text-align:center;padding:24px">Đang tải bảng điểm danh tháng...</td></tr>`;
 
   try{
+    const response = await fetch(
+      `${API_URL}?action=getAttendanceMonth&month=${encodeURIComponent(month)}&class=${encodeURIComponent(classValue)}&v=2`,
+      {method:'GET', cache:'no-store'}
+    );
 
-    const response =
-      await fetch(
-        API_URL,
-        {
-          method:'POST',
+    if(!response.ok) throw new Error('HTTP ' + response.status);
+    const result = await response.json();
+    if(result.ok === false) throw new Error(result.error || result.message || 'Không tải được bảng tháng');
 
-          headers:{
-            'Content-Type':
-              'text/plain;charset=utf-8'
-          },
+    monthlyAttendance = result.records || {};
+    monthlyLoadedKey = key;
 
-          body:
-            JSON.stringify({
+    head.innerHTML = `
+      <tr>
+        <th style="position:sticky;left:0;z-index:2">MSHV</th>
+        <th style="position:sticky;left:100px;z-index:2">Họ tên</th>
+        <th>GVCN</th>
+        ${Array.from({length:days}, (_,i) => `<th style="text-align:center;min-width:38px">${i+1}</th>`).join('')}
+        <th style="text-align:center">Có mặt</th>
+        <th style="text-align:center">Vắng</th>
+      </tr>`;
 
-              action:
-                'attendance',
+    const list = students.filter(s => String(s.lop || '').trim() === classValue);
 
-              date:
-                date,
-
-              class:
-                classValue,
-
-              records:
-                records
-
-            })
-
-        }
-      );
-
-
-    const result =
-      await response.json();
-
-
-    if(result.ok === false){
-
-      throw new Error(
-        result.message ||
-        'Lỗi lưu điểm danh'
-      );
-
+    if(!list.length){
+      body.innerHTML = `<tr><td colspan="${days+5}" style="text-align:center;padding:24px">Không có học viên trong lớp này</td></tr>`;
+      summary.innerHTML = monthlyBadge('Học viên','0');
+      body.dataset.ready = '1';
+      return;
     }
 
+    let totalPresent = 0, totalAbsent = 0;
 
-    alert(
-      'Lưu thành công!'
-    );
+    body.innerHTML = list.map(student => {
+      let present = 0, absent = 0;
+      const cells = [];
 
+      for(let d=1; d<=days; d++){
+        const date = `${month}-${String(d).padStart(2,'0')}`;
+        const status = String((monthlyAttendance[student.maHV] || {})[date] || '').trim();
+        if(status === 'Có mặt') present++;
+        if(status === 'Vắng') absent++;
+        cells.push(monthlyCell(student.maHV, date, status));
+      }
 
-    await loadData();
+      totalPresent += present;
+      totalAbsent += absent;
 
-    show('home');
+      return `<tr>
+        <td style="position:sticky;left:0;background:inherit;z-index:1"><b>${escapeHtml(student.maHV)}</b></td>
+        <td style="position:sticky;left:100px;background:inherit;z-index:1;text-align:left">${escapeHtml(student.hoTen)}</td>
+        <td>${escapeHtml(student.gvcn || '—')}</td>
+        ${cells.join('')}
+        <td class="monthly-total present-total" data-present-for="${escapeHtml(student.maHV)}">${present}</td>
+        <td class="monthly-total absent-total" data-absent-for="${escapeHtml(student.maHV)}">${absent}</td>
+      </tr>`;
+    }).join('');
 
+    summary.innerHTML =
+      monthlyBadge('Lớp', classValue) +
+      monthlyBadge('Tháng', month.split('-').reverse().join('/')) +
+      monthlyBadge('Học viên', String(list.length)) +
+      monthlyBadge('Lượt có mặt', String(totalPresent)) +
+      monthlyBadge('Lượt vắng', String(totalAbsent));
 
+    body.dataset.ready = '1';
   }catch(error){
-
-    console.error(
-      'Lỗi lưu điểm danh:',
-      error
-    );
-
-
-    alert(
-      'Lỗi lưu điểm danh: ' +
-      error.message
-    );
-
+    console.error('Lỗi bảng điểm danh tháng:', error);
+    body.innerHTML = `<tr><td colspan="40" style="text-align:center;padding:24px;color:#e53e3e">${escapeHtml(error.message || 'Không tải được dữ liệu')}</td></tr>`;
+    summary.innerHTML = '';
   }
-
 }
 
+function monthlyCell(maHV, date, status){
+  const safeStatus = status === 'Có mặt' ? 'Có mặt' : status === 'Vắng' ? 'Vắng' : '';
+  const symbol = safeStatus === 'Có mặt' ? '✓' : safeStatus === 'Vắng' ? '×' : '·';
+  const cls = safeStatus === 'Có mặt' ? 'day-present' : safeStatus === 'Vắng' ? 'day-absent' : 'day-empty';
+  return `<td class="month-cell ${cls}" data-id="${escapeHtml(maHV)}" data-date="${escapeHtml(date)}" data-status="${escapeHtml(safeStatus)}" onclick="toggleMonthlyCell(this)" title="${escapeHtml(date)}">${symbol}</td>`;
+}
+
+function toggleMonthlyCell(cell){
+  const current = cell.dataset.status || '';
+  const next = current === '' ? 'Có mặt' : current === 'Có mặt' ? 'Vắng' : '';
+  cell.dataset.status = next;
+  cell.textContent = next === 'Có mặt' ? '✓' : next === 'Vắng' ? '×' : '·';
+  cell.className = 'month-cell ' + (next === 'Có mặt' ? 'day-present' : next === 'Vắng' ? 'day-absent' : 'day-empty');
+  recalcMonthlyRow(cell.closest('tr'));
+}
+
+function recalcMonthlyRow(row){
+  if(!row) return;
+  const cells = [...row.querySelectorAll('.month-cell')];
+  const present = cells.filter(c => c.dataset.status === 'Có mặt').length;
+  const absent = cells.filter(c => c.dataset.status === 'Vắng').length;
+  const p = row.querySelector('.present-total');
+  const a = row.querySelector('.absent-total');
+  if(p) p.textContent = present;
+  if(a) a.textContent = absent;
+}
+
+async function saveMonthlyAttendance(){
+  const month = document.getElementById('attMonth').value;
+  const classValue = document.getElementById('attClass').value;
+  const body = document.getElementById('monthlyBody');
+
+  if(!month){ alert('Vui lòng chọn tháng'); return; }
+  if(!classValue){ alert('Vui lòng chọn lớp'); return; }
+
+  const records = [];
+  body.querySelectorAll('.month-cell').forEach(cell => {
+    const status = cell.dataset.status || '';
+    if(status){
+      records.push({id:cell.dataset.id, date:cell.dataset.date, status});
+    }
+  });
+
+  try{
+    const response = await fetch(API_URL, {
+      method:'POST',
+      headers:{'Content-Type':'text/plain;charset=utf-8'},
+      body:JSON.stringify({action:'saveAttendanceMonth', month, class:classValue, records})
+    });
+    const result = await response.json();
+    if(result.ok === false) throw new Error(result.error || result.message || 'Lỗi lưu bảng tháng');
+
+    alert('Lưu bảng điểm danh tháng thành công!');
+    monthlyLoadedKey = '';
+    await loadMonthlyAttendance();
+  }catch(error){
+    console.error('Lỗi lưu bảng tháng:', error);
+    alert('Lỗi lưu bảng điểm danh tháng: ' + error.message);
+  }
+}
 
 /* =========================================================
    BẢO VỆ HTML
