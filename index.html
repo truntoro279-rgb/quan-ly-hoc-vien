@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Quản lý học viên</title>
+<title>Quản lý học viên - V5</title>
 
 <style>
 *{box-sizing:border-box}
@@ -1847,30 +1847,31 @@ async function loadMonthlyAttendance(){
     }
 
     // Lấy điểm danh của từng ngày từ API hiện tại.
-    const dailyResults = await Promise.all(
-      Array.from({length: days}, async (_, index) => {
-        const day = index + 1;
-        const date = `${month}-${String(day).padStart(2,'0')}`;
-        const response = await fetch(
-          `${API_URL}?action=getAttendance&date=${encodeURIComponent(date)}`,
-          {method:'GET', cache:'no-store'}
-        );
+    const dailyResults = [];
+    // Gọi tuần tự để tránh Apps Script bị giới hạn khi nhận quá nhiều
+    // request đồng thời. API này đã có sẵn trong backend đang chạy.
+    for(let index = 0; index < days; index++){
+      const day = index + 1;
+      const date = `${month}-${String(day).padStart(2,'0')}`;
+      const response = await fetch(
+        `${API_URL}?action=getAttendance&date=${encodeURIComponent(date)}&v=5`,
+        {method:'GET', cache:'no-store'}
+      );
 
-        const raw = await response.text();
-        let result;
-        try{
-          result = JSON.parse(raw);
-        }catch(e){
-          throw new Error(`Dữ liệu ngày ${day} không hợp lệ`);
-        }
+      const raw = await response.text();
+      let result;
+      try{
+        result = JSON.parse(raw);
+      }catch(e){
+        throw new Error(`Dữ liệu ngày ${day} không hợp lệ`);
+      }
 
-        if(result.ok === false){
-          throw new Error(result.error || result.message || `Không tải được ngày ${day}`);
-        }
+      if(result.ok === false){
+        throw new Error(result.error || result.message || `Không tải được ngày ${day}`);
+      }
 
-        return {date, records: result.records || {}};
-      })
-    );
+      dailyResults.push({date, records: result.records || {}});
+    }
 
     const byDate = {};
     let presentAll = 0;
