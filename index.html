@@ -1173,7 +1173,15 @@ function renderAllSourceDetail(detail){
   // CÒN LẠI từ Google Sheet, không lặp lại MSHV / Họ tên / Lớp / GVCN / Trạng thái
   // đã có sẵn ở phần đầu thẻ.
   const hiddenKeys = new Set([
-    'Mã học viên', 'Họ tên', 'Lớp', 'GVCN', 'Trạng thái'
+    // Các thông tin đã hiển thị sẵn ở phần đầu thẻ
+    'Mã học viên', 'Mã Số HV', 'MÃ SỐ HV', 'MSHV', 'Mã HV', 'Mã học viên',
+    'studentCode', '実習生番号', '実習生番号（MSHV）',
+    'Họ tên', 'Họ và tên', 'Tên học viên', 'Tên Romaji',
+    'fullName', 'name', '指名・ローマ字', '氏名・ローマ字',
+    'Lớp', 'class', 'classCode', 'クラス',
+    'GVCN', 'Giáo viên chủ nhiệm', 'Giáo viên CN', 'homeroomTeacher', 'teacher',
+    '担当先生', '担任先生', '担任',
+    'Trạng thái', 'Status', 'status', 'ステータス'
   ].map(normalizeDetailKey));
 
   const entries = Object.entries(detail || {}).filter(([label]) => {
