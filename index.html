@@ -4,65 +4,1300 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Quản lý học viên</title>
+
 <style>
-*{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:#f4f7fb;color:#102a43}
-@media(prefers-color-scheme:dark){body{background:#121824;color:#f4f7fb}}
-header{height:68px;background:#fff;border-bottom:1px solid #e6edf4;position:sticky;top:0;z-index:10}
-@media(prefers-color-scheme:dark){header{background:#1a2333;border-bottom-color:#2a374a}}
-.nav{max-width:1250px;margin:auto;height:100%;display:flex;align-items:center;padding:0 18px}
-.logo{font-weight:800;color:#1769d1;font-size:18px}
-nav{margin-left:auto;display:flex;gap:4px}nav button{border:0;background:transparent;padding:11px 13px;border-radius:99px;color:#334e68;cursor:pointer;font-weight:600}
-@media(prefers-color-scheme:dark){nav button{color:#9fb3c8}}
-nav button.active,nav button:hover{background:#edf4ff;color:#1769d1}
-@media(prefers-color-scheme:dark){nav button.active,nav button:hover{background:#222f47;color:#38a169}}
-.hero{max-width:1250px;margin:18px auto 0;min-height:150px;border-radius:14px;display:flex;align-items:center;justify-content:center;text-align:center;color:#fff;background:linear-gradient(110deg,#143f72,#1769d1)}
-main{max-width:1250px;margin:auto;padding:18px}.page{display:none}.page.active{display:block}
-.cards{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}.card,.panel{background:#fff;border:1px solid #e3ebf3;border-radius:12px;padding:18px;box-shadow:0 3px 14px #16324b0c}
-@media(prefers-color-scheme:dark){.card,.panel{background:#1a2333;border-color:#2a374a}}
-.card .num{font-size:30px;font-weight:800;color:#1769d1}
-@media(prefers-color-scheme:dark){.card .num{color:#38a169}}
-.actions{display:flex;gap:9px;margin-top:10px}.btn{border:0;border-radius:8px;padding:10px 15px;background:#1769d1;color:#fff;font-weight:700;cursor:pointer}.btn.light{background:#edf4ff;color:#1769d1}
-@media(prefers-color-scheme:dark){.btn.light{background:#222f47;color:#9fb3c8}}
-.toolbar{display:grid;grid-template-columns:2fr repeat(2,1fr);gap:10px;margin-bottom:14px}input,select{width:100%;padding:10px;border:1px solid #ccd8e2;border-radius:8px}
-@media(prefers-color-scheme:dark){input,select{background:#121824;border-color:#2a374a;color:#fff}}
-table{width:100%;border-collapse:collapse;min-width:780px}th,td{padding:10px;border-bottom:1px solid #e8eef3;text-align:left}th{background:#f7fafc;color:#486581}
-@media(prefers-color-scheme:dark){th{background:#121824;color:#9fb3c8}td{border-bottom-color:#2a374a}}
-.badge{padding:4px 8px;border-radius:999px;background:#edf4ff;color:#1769d1;font-weight:700;font-size:12px}
-@media(max-width:850px){.nav{flex-direction:column;height:auto;padding:10px}.cards,.toolbar{grid-template-columns:1fr}}
+*{box-sizing:border-box}
+
+body{
+  margin:0;
+  font-family:Arial,sans-serif;
+  background:#f4f7fb;
+  color:#102a43
+}
+
+@media(prefers-color-scheme:dark){
+  body{
+    background:#121824;
+    color:#f4f7fb
+  }
+}
+
+header{
+  height:68px;
+  background:#fff;
+  border-bottom:1px solid #e6edf4;
+  position:sticky;
+  top:0;
+  z-index:10
+}
+
+@media(prefers-color-scheme:dark){
+  header{
+    background:#1a2333;
+    border-bottom-color:#2a374a
+  }
+}
+
+.nav{
+  max-width:1250px;
+  margin:auto;
+  height:100%;
+  display:flex;
+  align-items:center;
+  padding:0 18px
+}
+
+.logo{
+  font-weight:800;
+  color:#1769d1;
+  font-size:18px
+}
+
+nav{
+  margin-left:auto;
+  display:flex;
+  gap:4px
+}
+
+nav button{
+  border:0;
+  background:transparent;
+  padding:11px 13px;
+  border-radius:99px;
+  color:#334e68;
+  cursor:pointer;
+  font-weight:600
+}
+
+@media(prefers-color-scheme:dark){
+  nav button{
+    color:#9fb3c8
+  }
+}
+
+nav button.active,
+nav button:hover{
+  background:#edf4ff;
+  color:#1769d1
+}
+
+@media(prefers-color-scheme:dark){
+  nav button.active,
+  nav button:hover{
+    background:#222f47;
+    color:#38a169
+  }
+}
+
+.hero{
+  max-width:1250px;
+  margin:18px auto 0;
+  min-height:150px;
+  border-radius:14px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+  color:#fff;
+  background:linear-gradient(110deg,#143f72,#1769d1)
+}
+
+main{
+  max-width:1250px;
+  margin:auto;
+  padding:18px
+}
+
+.page{
+  display:none
+}
+
+.page.active{
+  display:block
+}
+
+.cards{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:14px
+}
+
+.card,
+.panel{
+  background:#fff;
+  border:1px solid #e3ebf3;
+  border-radius:12px;
+  padding:18px;
+  box-shadow:0 3px 14px #16324b0c
+}
+
+@media(prefers-color-scheme:dark){
+  .card,
+  .panel{
+    background:#1a2333;
+    border-color:#2a374a
+  }
+}
+
+.card .num{
+  font-size:30px;
+  font-weight:800;
+  color:#1769d1
+}
+
+@media(prefers-color-scheme:dark){
+  .card .num{
+    color:#38a169
+  }
+}
+
+.actions{
+  display:flex;
+  gap:9px;
+  margin-top:10px
+}
+
+.btn{
+  border:0;
+  border-radius:8px;
+  padding:10px 15px;
+  background:#1769d1;
+  color:#fff;
+  font-weight:700;
+  cursor:pointer
+}
+
+.btn.light{
+  background:#edf4ff;
+  color:#1769d1
+}
+
+@media(prefers-color-scheme:dark){
+  .btn.light{
+    background:#222f47;
+    color:#9fb3c8
+  }
+}
+
+.toolbar{
+  display:grid;
+  grid-template-columns:2fr repeat(2,1fr);
+  gap:10px;
+  margin-bottom:14px
+}
+
+input,
+select{
+  width:100%;
+  padding:10px;
+  border:1px solid #ccd8e2;
+  border-radius:8px
+}
+
+@media(prefers-color-scheme:dark){
+  input,
+  select{
+    background:#121824;
+    border-color:#2a374a;
+    color:#fff
+  }
+}
+
+table{
+  width:100%;
+  border-collapse:collapse;
+  min-width:780px
+}
+
+th,
+td{
+  padding:10px;
+  border-bottom:1px solid #e8eef3;
+  text-align:left
+}
+
+th{
+  background:#f7fafc;
+  color:#486581
+}
+
+@media(prefers-color-scheme:dark){
+  th{
+    background:#121824;
+    color:#9fb3c8
+  }
+
+  td{
+    border-bottom-color:#2a374a
+  }
+}
+
+.badge{
+  padding:4px 8px;
+  border-radius:999px;
+  background:#edf4ff;
+  color:#1769d1;
+  font-weight:700;
+  font-size:12px
+}
+
+.loading{
+  text-align:center;
+  padding:20px;
+  color:#627d98
+}
+
+.error{
+  text-align:center;
+  padding:20px;
+  color:#c53030
+}
+
+@media(max-width:850px){
+  .nav{
+    flex-direction:column;
+    height:auto;
+    padding:10px
+  }
+
+  .cards,
+  .toolbar{
+    grid-template-columns:1fr
+  }
+}
 </style>
 </head>
-<body>
-<header><div class="nav"><div class="logo">✈ QUẢN LÝ HỌC VIÊN</div><nav id="nav"></nav></div></header>
-<section class="hero"><div><h1>QUẢN LÝ HỌC VIÊN</h1><p>Hệ thống quản lý học viên tập trung</p></div></section>
-<main>
-<section id="home" class="page active">
-<div class="cards">
-<div class="card"><div class="num" id="total">0</div><h3>Tổng học viên</h3></div>
-<div class="card"><div class="num" id="present">0</div><h3>Có mặt</h3></div>
-<div class="card"><div class="num" id="absent">0</div><h3>Vắng</h3></div>
-<div class="card"><div class="num" id="away">0</div><h3>Đang về quê</h3></div>
-</div>
-<div class="panel"><h2>Thao tác nhanh</h2><div class="actions"><button class="btn light" onclick="show('attendance')">Điểm danh</button><button class="btn light" onclick="show('students')">Danh sách học viên</button></div></div>
-</section>
-<section id="students" class="page"><div class="panel"><h2>Danh sách học viên</h2>
-<div class="toolbar"><input id="q" placeholder="Tìm tên hoặc mã..." oninput="renderStudents()"><select id="classFilter" onchange="renderStudents()"><option value="">Tất cả lớp</option></select><select id="statusFilter" onchange="renderStudents()"><option value="">Tất cả trạng thái</option></select></div>
-<div style="overflow:auto"><table><thead><tr><th>Mã HV</th><th>Họ tên</th><th>Lớp</th><th>GVCN</th><th>Trạng thái</th></tr></thead><tbody id="studentBody"></tbody></table></div></div></section>
-<section id="attendance" class="page"><div class="panel"><h2>Điểm danh</h2><div class="toolbar" style="grid-template-columns:1fr 1fr"><input id="attDate" type="date"><select id="attClass" onchange="renderAttendanceList()"><option value="">Chọn lớp</option></select></div><div style="overflow:auto"><table><thead><tr><th>Mã HV</th><th>Họ tên</th><th>Trạng thái</th></tr></thead><tbody id="attBody"></tbody></table></div><div class="actions"><button class="btn" onclick="saveAttendance()">Lưu điểm danh</button></div></div></section>
-</main>
-<script>
-// LINK API ĐÃ ĐƯỢC CHÈN CHUẨN XÁC ĐỒNG BỘ THEO BACKEND MỚI CỦA BẠN:
-const API_URL = 'https://script.google.com/macros/s/AKfycbz4Eip_vfQlDOa0SvB_BFUEDTEc85Qq9e2Qxc8uPYumZF_69oZW6OAraHC9pUJhx9I7Tg/exec';
 
-let students=[];const pages=[['home','Trang chủ'],['students','Học viên'],['attendance','Điểm danh']];
-document.addEventListener('DOMContentLoaded',()=>{initMenu();document.getElementById('attDate').valueAsDate=new Date();loadData()});
-function initMenu(){const n=document.getElementById('nav');n.innerHTML=pages.map(p=>`<button id="btn-${p[0]}" onclick="show('${p[0]}')">${p[1]}</button>`).join('');const b=document.getElementById('btn-home');if(b)b.classList.add('active')}
-function show(id){document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));document.querySelectorAll('nav button').forEach(b=>b.classList.remove('active'));const t=document.getElementById(id);if(t)t.classList.add('active');const b=document.getElementById(`btn-${id}`);if(b)b.classList.add('active')}
-async function loadData(){try{const r=await fetch(`${API_URL}?action=getAll`);const d=await r.json();students=d.students||[];updateDashboard();initFilters();renderStudents()}catch(e){console.error(e)}}
-function updateDashboard(){document.getElementById('total').innerText=students.length;document.getElementById('away').innerText=students.filter(s=>s['Trạng thái']==='Về quê').length}
-function initFilters(){const c=[...new Set(students.map(s=>s['Lớp']).filter(Boolean))],s=[...new Set(students.map(s=>s['Trạng thái']).filter(Boolean))];document.getElementById('classFilter').innerHTML='<option value="">Tất cả lớp</option>'+c.map(x=>`<option value="${x}">${x}</option>`).join('');document.getElementById('attClass').innerHTML='<option value="">Chọn lớp</option>'+c.map(x=>`<option value="${x}">${x}</option>`).join('');document.getElementById('statusFilter').innerHTML='<option value="">Tất cả trạng thái</option>'+s.map(x=>`<option value="${x}">${x}</option>`).join('')}
-function renderStudents(){const q=document.getElementById('q').value.toLowerCase(),cF=document.getElementById('classFilter').value,sF=document.getElementById('statusFilter').value,f=students.filter(s=>{return ((s['Họ tên']||'').toLowerCase().includes(q)||(s['Mã số HV']||'').toString().toLowerCase().includes(q))&&(!cF||s['Lớp']===cF)&&(!sF||s['Trạng thái']===sF)}),b=document.getElementById('studentBody');if(!b)return;if(f.length===0){b.innerHTML='<tr><td colspan="5" style="text-align:center;padding:20px">Không tìm thấy dữ liệu</td></tr>';return}b.innerHTML=f.map(s=>`<tr><td><b>${s['Mã số HV']||''}</b></td><td>${s['Họ tên']||''}</td><td><span class="badge">${s['Lớp']||''}</span></td><td>${s['GVCN']||''}</td><td>${s['Trạng thái']||''}</td></tr>`).join('')}
-function renderAttendanceList(){const c=document.getElementById('attClass').value,b=document.getElementById('attBody');if(!b)return;if(!c){b.innerHTML='<tr><td colspan="3" style="text-align:center;padding:20px">Chọn lớp để điểm danh</td></tr>';return}b.innerHTML=students.filter(s=>s['Lớp']===c).map(s=>`<tr><td>${s['Mã số HV']}</td><td>${s['Họ tên']}</td><td><select data-id="${s['Mã số HV']}" class="att-status"><option value="Có mặt">Có mặt</option><option value="Vắng">Vắng</option></select></td></tr>`).join('')}
-async function saveAttendance(){const d=document.getElementById('attDate').value,c=document.getElementById('attClass').value;if(!c)return alert('Chọn lớp');const r=[];document.querySelectorAll('.att-status').forEach(s=>{r.push({id:s.dataset.id,status:s.value})});try{await fetch(API_URL,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({action:'attendance',date:d,class:c,records:r})});alert('Lưu thành công!');loadData();show('home')}catch(e){alert('Lỗi lưu')}}
+<body>
+
+<header>
+  <div class="nav">
+    <div class="logo">✈ QUẢN LÝ HỌC VIÊN</div>
+    <nav id="nav"></nav>
+  </div>
+</header>
+
+<section class="hero">
+  <div>
+    <h1>QUẢN LÝ HỌC VIÊN</h1>
+    <p>Hệ thống quản lý học viên tập trung</p>
+  </div>
+</section>
+
+<main>
+
+<!-- TRANG CHỦ -->
+<section id="home" class="page active">
+
+  <div class="cards">
+
+    <div class="card">
+      <div class="num" id="total">0</div>
+      <h3>Tổng học viên</h3>
+    </div>
+
+    <div class="card">
+      <div class="num" id="present">0</div>
+      <h3>Có mặt</h3>
+    </div>
+
+    <div class="card">
+      <div class="num" id="absent">0</div>
+      <h3>Vắng</h3>
+    </div>
+
+    <div class="card">
+      <div class="num" id="away">0</div>
+      <h3>Đang về quê</h3>
+    </div>
+
+  </div>
+
+  <div class="panel">
+    <h2>Thao tác nhanh</h2>
+
+    <div class="actions">
+      <button
+        class="btn light"
+        onclick="show('attendance')">
+        Điểm danh
+      </button>
+
+      <button
+        class="btn light"
+        onclick="show('students')">
+        Danh sách học viên
+      </button>
+    </div>
+  </div>
+
+</section>
+
+
+<!-- DANH SÁCH HỌC VIÊN -->
+<section id="students" class="page">
+
+  <div class="panel">
+
+    <h2>Danh sách học viên</h2>
+
+    <div class="toolbar">
+
+      <input
+        id="q"
+        placeholder="Tìm tên hoặc mã..."
+        oninput="renderStudents()">
+
+      <select
+        id="classFilter"
+        onchange="renderStudents()">
+
+        <option value="">
+          Tất cả lớp
+        </option>
+
+      </select>
+
+      <select
+        id="statusFilter"
+        onchange="renderStudents()">
+
+        <option value="">
+          Tất cả trạng thái
+        </option>
+
+      </select>
+
+    </div>
+
+
+    <div style="overflow:auto">
+
+      <table>
+
+        <thead>
+          <tr>
+            <th>Mã HV</th>
+            <th>Họ tên</th>
+            <th>Lớp</th>
+            <th>GVCN</th>
+            <th>Trạng thái</th>
+          </tr>
+        </thead>
+
+        <tbody id="studentBody">
+
+          <tr>
+            <td
+              colspan="5"
+              class="loading">
+
+              Đang tải dữ liệu...
+
+            </td>
+          </tr>
+
+        </tbody>
+
+      </table>
+
+    </div>
+
+  </div>
+
+</section>
+
+
+<!-- ĐIỂM DANH -->
+<section id="attendance" class="page">
+
+  <div class="panel">
+
+    <h2>Điểm danh</h2>
+
+    <div
+      class="toolbar"
+      style="grid-template-columns:1fr 1fr">
+
+      <input
+        id="attDate"
+        type="date">
+
+      <select
+        id="attClass"
+        onchange="renderAttendanceList()">
+
+        <option value="">
+          Chọn lớp
+        </option>
+
+      </select>
+
+    </div>
+
+
+    <div style="overflow:auto">
+
+      <table>
+
+        <thead>
+          <tr>
+            <th>Mã HV</th>
+            <th>Họ tên</th>
+            <th>Trạng thái</th>
+          </tr>
+        </thead>
+
+        <tbody id="attBody">
+
+          <tr>
+            <td
+              colspan="3"
+              style="text-align:center;padding:20px">
+
+              Chọn lớp để điểm danh
+
+            </td>
+          </tr>
+
+        </tbody>
+
+      </table>
+
+    </div>
+
+
+    <div class="actions">
+
+      <button
+        class="btn"
+        onclick="saveAttendance()">
+
+        Lưu điểm danh
+
+      </button>
+
+    </div>
+
+  </div>
+
+</section>
+
+</main>
+
+
+<script>
+
+/* =========================================================
+   API GOOGLE APPS SCRIPT
+   ========================================================= */
+
+const API_URL =
+'https://script.google.com/macros/s/AKfycbz4Eip_vfQlDOa0SvB_BFUEDTEc85Qq9e2Qxc8uPYumZF_69oZW6OAraHC9pUJhx9I7Tg/exec';
+
+
+/* =========================================================
+   BIẾN CHUNG
+   ========================================================= */
+
+let students = [];
+
+const pages = [
+  ['home','Trang chủ'],
+  ['students','Học viên'],
+  ['attendance','Điểm danh']
+];
+
+
+/* =========================================================
+   KHỞI ĐỘNG
+   ========================================================= */
+
+document.addEventListener('DOMContentLoaded', () => {
+
+  initMenu();
+
+  document.getElementById('attDate').valueAsDate =
+    new Date();
+
+  loadData();
+
+});
+
+
+/* =========================================================
+   MENU
+   ========================================================= */
+
+function initMenu(){
+
+  const nav =
+    document.getElementById('nav');
+
+  nav.innerHTML =
+    pages.map(p => `
+      <button
+        id="btn-${p[0]}"
+        onclick="show('${p[0]}')">
+
+        ${p[1]}
+
+      </button>
+    `).join('');
+
+  document
+    .getElementById('btn-home')
+    .classList
+    .add('active');
+}
+
+
+/* =========================================================
+   CHUYỂN TRANG
+   ========================================================= */
+
+function show(id){
+
+  document
+    .querySelectorAll('.page')
+    .forEach(p =>
+      p.classList.remove('active')
+    );
+
+  document
+    .querySelectorAll('nav button')
+    .forEach(b =>
+      b.classList.remove('active')
+    );
+
+
+  const page =
+    document.getElementById(id);
+
+  if(page){
+    page.classList.add('active');
+  }
+
+
+  const button =
+    document.getElementById(`btn-${id}`);
+
+  if(button){
+    button.classList.add('active');
+  }
+
+
+  if(id === 'students'){
+    renderStudents();
+  }
+
+
+  if(id === 'attendance'){
+    renderAttendanceList();
+  }
+
+}
+
+
+/* =========================================================
+   TẢI DỮ LIỆU TỪ GOOGLE SHEETS
+   ========================================================= */
+
+async function loadData(){
+
+  const body =
+    document.getElementById('studentBody');
+
+
+  if(body){
+
+    body.innerHTML = `
+      <tr>
+        <td
+          colspan="5"
+          class="loading">
+
+          Đang tải dữ liệu...
+
+        </td>
+      </tr>
+    `;
+
+  }
+
+
+  try{
+
+    const response =
+      await fetch(
+        `${API_URL}?action=getAll`,
+        {
+          method:'GET',
+          cache:'no-store'
+        }
+      );
+
+
+    if(!response.ok){
+
+      throw new Error(
+        'HTTP ' + response.status
+      );
+
+    }
+
+
+    const data =
+      await response.json();
+
+
+    console.log(
+      'Dữ liệu API:',
+      data
+    );
+
+
+    if(data.error){
+
+      throw new Error(
+        data.error
+      );
+
+    }
+
+
+    students =
+      Array.isArray(data.students)
+        ? data.students
+        : [];
+
+
+    console.log(
+      'Số học viên:',
+      students.length
+    );
+
+
+    updateDashboard();
+
+    initFilters();
+
+    renderStudents();
+
+
+  }catch(error){
+
+    console.error(
+      'Lỗi tải dữ liệu:',
+      error
+    );
+
+
+    students = [];
+
+
+    updateDashboard();
+
+    initFilters();
+
+
+    if(body){
+
+      body.innerHTML = `
+        <tr>
+          <td
+            colspan="5"
+            class="error">
+
+            Không tải được dữ liệu.
+            <br>
+            Vui lòng kiểm tra lại
+            Google Apps Script.
+
+          </td>
+        </tr>
+      `;
+
+    }
+
+  }
+
+}
+
+
+/* =========================================================
+   THỐNG KÊ
+   ========================================================= */
+
+function updateDashboard(){
+
+  document.getElementById('total')
+    .innerText =
+      students.length;
+
+
+  document.getElementById('present')
+    .innerText =
+      students.filter(
+        s => s.trangThai === 'Có mặt'
+      ).length;
+
+
+  document.getElementById('absent')
+    .innerText =
+      students.filter(
+        s => s.trangThai === 'Vắng'
+      ).length;
+
+
+  document.getElementById('away')
+    .innerText =
+      students.filter(
+        s => s.trangThai === 'Về quê'
+      ).length;
+
+}
+
+
+/* =========================================================
+   BỘ LỌC
+   ========================================================= */
+
+function initFilters(){
+
+  const classes = [
+    ...new Set(
+      students
+        .map(
+          s => String(s.lop || '').trim()
+        )
+        .filter(Boolean)
+    )
+  ];
+
+
+  const statuses = [
+    ...new Set(
+      students
+        .map(
+          s =>
+            String(
+              s.trangThai || ''
+            ).trim()
+        )
+        .filter(Boolean)
+    )
+  ];
+
+
+  document.getElementById(
+    'classFilter'
+  ).innerHTML =
+
+    '<option value="">Tất cả lớp</option>' +
+
+    classes
+      .map(x => `
+        <option value="${escapeHtml(x)}">
+          ${escapeHtml(x)}
+        </option>
+      `)
+      .join('');
+
+
+  document.getElementById(
+    'attClass'
+  ).innerHTML =
+
+    '<option value="">Chọn lớp</option>' +
+
+    classes
+      .map(x => `
+        <option value="${escapeHtml(x)}">
+          ${escapeHtml(x)}
+        </option>
+      `)
+      .join('');
+
+
+  document.getElementById(
+    'statusFilter'
+  ).innerHTML =
+
+    '<option value="">Tất cả trạng thái</option>' +
+
+    statuses
+      .map(x => `
+        <option value="${escapeHtml(x)}">
+          ${escapeHtml(x)}
+        </option>
+      `)
+      .join('');
+
+}
+
+
+/* =========================================================
+   HIỂN THỊ DANH SÁCH HỌC VIÊN
+   ========================================================= */
+
+function renderStudents(){
+
+  const searchInput =
+    document.getElementById('q');
+
+
+  const classInput =
+    document.getElementById('classFilter');
+
+
+  const statusInput =
+    document.getElementById('statusFilter');
+
+
+  if(!searchInput ||
+     !classInput ||
+     !statusInput){
+
+    return;
+
+  }
+
+
+  const q =
+    String(
+      searchInput.value || ''
+    )
+    .toLowerCase()
+    .trim();
+
+
+  const classFilter =
+    classInput.value;
+
+
+  const statusFilter =
+    statusInput.value;
+
+
+  const filtered =
+    students.filter(student => {
+
+      const maHV =
+        String(
+          student.maHV || ''
+        )
+        .toLowerCase();
+
+
+      const hoTen =
+        String(
+          student.hoTen || ''
+        )
+        .toLowerCase();
+
+
+      const matchSearch =
+        !q ||
+        maHV.includes(q) ||
+        hoTen.includes(q);
+
+
+      const matchClass =
+        !classFilter ||
+        student.lop === classFilter;
+
+
+      const matchStatus =
+        !statusFilter ||
+        student.trangThai === statusFilter;
+
+
+      return (
+        matchSearch &&
+        matchClass &&
+        matchStatus
+      );
+
+    });
+
+
+  const body =
+    document.getElementById(
+      'studentBody'
+    );
+
+
+  if(!body){
+    return;
+  }
+
+
+  if(filtered.length === 0){
+
+    body.innerHTML = `
+      <tr>
+        <td
+          colspan="5"
+          style="
+            text-align:center;
+            padding:20px
+          ">
+
+          Không tìm thấy dữ liệu
+
+        </td>
+      </tr>
+    `;
+
+    return;
+
+  }
+
+
+  body.innerHTML =
+    filtered
+      .map(student => `
+
+        <tr>
+
+          <td>
+            <b>
+              ${escapeHtml(
+                student.maHV
+              )}
+            </b>
+          </td>
+
+          <td>
+            ${escapeHtml(
+              student.hoTen
+            )}
+          </td>
+
+          <td>
+
+            <span class="badge">
+
+              ${escapeHtml(
+                student.lop
+              )}
+
+            </span>
+
+          </td>
+
+          <td>
+            ${escapeHtml(
+              student.gvcn
+            )}
+          </td>
+
+          <td>
+            ${escapeHtml(
+              student.trangThai
+            )}
+          </td>
+
+        </tr>
+
+      `)
+      .join('');
+
+}
+
+
+/* =========================================================
+   DANH SÁCH ĐIỂM DANH
+   ========================================================= */
+
+function renderAttendanceList(){
+
+  const classValue =
+    document.getElementById(
+      'attClass'
+    ).value;
+
+
+  const body =
+    document.getElementById(
+      'attBody'
+    );
+
+
+  if(!body){
+    return;
+  }
+
+
+  if(!classValue){
+
+    body.innerHTML = `
+      <tr>
+        <td
+          colspan="3"
+          style="
+            text-align:center;
+            padding:20px
+          ">
+
+          Chọn lớp để điểm danh
+
+        </td>
+      </tr>
+    `;
+
+    return;
+
+  }
+
+
+  const list =
+    students.filter(
+      student =>
+        student.lop === classValue
+    );
+
+
+  if(list.length === 0){
+
+    body.innerHTML = `
+      <tr>
+        <td
+          colspan="3"
+          style="
+            text-align:center;
+            padding:20px
+          ">
+
+          Không có học viên
+          trong lớp này
+
+        </td>
+      </tr>
+    `;
+
+    return;
+
+  }
+
+
+  body.innerHTML =
+    list.map(student => `
+
+      <tr>
+
+        <td>
+          ${escapeHtml(
+            student.maHV
+          )}
+        </td>
+
+        <td>
+          ${escapeHtml(
+            student.hoTen
+          )}
+        </td>
+
+        <td>
+
+          <select
+            data-id="${escapeHtml(
+              student.maHV
+            )}"
+            class="att-status">
+
+            <option value="Có mặt">
+              Có mặt
+            </option>
+
+            <option value="Vắng">
+              Vắng
+            </option>
+
+          </select>
+
+        </td>
+
+      </tr>
+
+    `)
+    .join('');
+
+}
+
+
+/* =========================================================
+   LƯU ĐIỂM DANH
+   ========================================================= */
+
+async function saveAttendance(){
+
+  const date =
+    document.getElementById(
+      'attDate'
+    ).value;
+
+
+  const classValue =
+    document.getElementById(
+      'attClass'
+    ).value;
+
+
+  if(!date){
+
+    alert(
+      'Vui lòng chọn ngày'
+    );
+
+    return;
+
+  }
+
+
+  if(!classValue){
+
+    alert(
+      'Vui lòng chọn lớp'
+    );
+
+    return;
+
+  }
+
+
+  const records = [];
+
+
+  document
+    .querySelectorAll(
+      '.att-status'
+    )
+    .forEach(select => {
+
+      records.push({
+
+        id:
+          select.dataset.id,
+
+        status:
+          select.value
+
+      });
+
+    });
+
+
+  try{
+
+    const response =
+      await fetch(
+        API_URL,
+        {
+          method:'POST',
+
+          headers:{
+            'Content-Type':
+              'text/plain;charset=utf-8'
+          },
+
+          body:
+            JSON.stringify({
+
+              action:
+                'attendance',
+
+              date:
+                date,
+
+              class:
+                classValue,
+
+              records:
+                records
+
+            })
+
+        }
+      );
+
+
+    const result =
+      await response.json();
+
+
+    if(result.ok === false){
+
+      throw new Error(
+        result.message ||
+        'Lỗi lưu điểm danh'
+      );
+
+    }
+
+
+    alert(
+      'Lưu thành công!'
+    );
+
+
+    await loadData();
+
+    show('home');
+
+
+  }catch(error){
+
+    console.error(
+      'Lỗi lưu điểm danh:',
+      error
+    );
+
+
+    alert(
+      'Lỗi lưu điểm danh: ' +
+      error.message
+    );
+
+  }
+
+}
+
+
+/* =========================================================
+   BẢO VỆ HTML
+   ========================================================= */
+
+function escapeHtml(value){
+
+  return String(
+    value ?? ''
+  )
+  .replace(
+    /&/g,
+    '&amp;'
+  )
+  .replace(
+    /</g,
+    '&lt;'
+  )
+  .replace(
+    />/g,
+    '&gt;'
+  )
+  .replace(
+    /"/g,
+    '&quot;'
+  )
+  .replace(
+    /'/g,
+    '&#039;'
+  );
+
+}
+
 </script>
+
 </body>
 </html>
