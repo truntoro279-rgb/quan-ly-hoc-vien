@@ -1,0 +1,9 @@
+{
+  "name": "Quản lý học viên",
+  "short_name": "QL Học viên",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#f4f7fb",
+  "theme_color": "#1769d1",
+  "icons": []
+}

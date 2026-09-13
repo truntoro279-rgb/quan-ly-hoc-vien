@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#1769d1">
+<link rel="manifest" href="manifest.json">
+<title>Quản lý học viên</title>
+<style>
+*{box-sizing:border-box}body{margin:0;font-family:Inter,Arial,sans-serif;background:#f4f7fb;color:#102a43}
+header{height:68px;background:#fff;border-bottom:1px solid #e6edf4;position:sticky;top:0;z-index:10}
+.nav{max-width:1250px;margin:auto;height:100%;display:flex;align-items:center;padding:0 18px;gap:26px}
+.logo{font-weight:800;color:#1769d1;font-size:18px;white-space:nowrap}.logo span{font-size:20px}
+nav{margin-left:auto;display:flex;gap:4px;overflow:auto}nav button{border:0;background:transparent;padding:11px 13px;border-radius:9px;color:#334e68;white-space:nowrap;cursor:pointer;font-weight:600}nav button.active,nav button:hover{background:#edf4ff;color:#1769d1}
+.hero{max-width:1250px;margin:18px auto 0;min-height:190px;border-radius:14px;display:flex;align-items:center;justify-content:center;text-align:center;color:#fff;background:linear-gradient(110deg,#143f72,#1769d1)}
+.hero h1{font-size:38px;margin:0 0 8px}.hero p{margin:0;opacity:.9}
+main{max-width:1250px;margin:auto;padding:18px}.page{display:none}.page.active{display:block}
+.cards{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}.card,.panel{background:#fff;border:1px solid #e3ebf3;border-radius:12px;box-shadow:0 3px 14px #16324b0c}.card{padding:18px}.card .num{font-size:30px;font-weight:800;color:#1769d1}.card h3{margin:6px 0 3px}.muted{font-size:13px;color:#718096}
+.panel{padding:18px;margin-top:16px}.panel h2{margin:0 0 15px;font-size:20px}
+.actions{display:flex;gap:9px;flex-wrap:wrap}.btn{border:0;border-radius:8px;padding:10px 15px;background:#1769d1;color:#fff;font-weight:700;cursor:pointer}.btn.light{background:#edf4ff;color:#1769d1}.btn.danger{background:#fff0f0;color:#c53030}
+.toolbar{display:grid;grid-template-columns:2fr repeat(3,1fr);gap:10px;margin-bottom:14px}input,select{width:100%;padding:10px 11px;border:1px solid #ccd8e2;border-radius:8px;font:inherit;background:#fff}
+.tablewrap{overflow:auto}table{width:100%;border-collapse:collapse;min-width:780px}th,td{padding:10px 9px;border-bottom:1px solid #e8eef3;text-align:left;font-size:13px}th{background:#f7fafc;color:#486581;position:sticky;top:0}.badge{display:inline-block;padding:4px 8px;border-radius:999px;background:#edf4ff;color:#1769d1;font-size:12px;font-weight:700}
+.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}label{font-size:13px;font-weight:700;margin-bottom:5px;display:block}
+footer{margin-top:30px;background:#fff;border-top:1px solid #e5edf4;padding:24px 18px}.footerin{max-width:1250px;margin:auto}
+.empty{text-align:center;padding:28px;color:#718096}.right{text-align:right}
+@media(max-width:850px){.nav{gap:10px;flex-direction:column;height:auto;align-items:flex-start;padding:10px 14px}header{height:auto}.hero{margin:62px 10px 0}.hero h1{font-size:28px}.cards{grid-template-columns:repeat(2,1fr)}.toolbar,.grid{grid-template-columns:1fr}.nav nav{width:100%}main{padding:12px}.cards{gap:9px}}
+</style>
+</head>
+<body>
+<header><div class="nav"><div class="logo"><span>✈</span> QUẢN LÝ HỌC VIÊN</div><nav id="nav"></nav></div></header>
+<section class="hero"><div><h1>QUẢN LÝ HỌC VIÊN</h1><p>Hệ thống quản lý học viên tập trung</p></div></section>
+<main>
+<section id="home" class="page active">
+<div class="cards">
+<div class="card"><div class="num" id="total">0</div><h3>Tổng học viên</h3><div class="muted">Đang quản lý</div></div>
+<div class="card"><div class="num" id="present">0</div><h3>Có mặt</h3><div class="muted">Điểm danh hôm nay</div></div>
+<div class="card"><div class="num" id="absent">0</div><h3>Vắng</h3><div class="muted">Điểm danh hôm nay</div></div>
+<div class="card"><div class="num" id="away">0</div><h3>Đang về quê</h3><div class="muted">Đang trong kỳ nghỉ</div></div>
+</div>
+<div class="panel"><h2>Thao tác nhanh</h2><div class="actions">
+<button class="btn" onclick="show('leaveForm')">+ Đăng ký về quê</button>
+<button class="btn light" onclick="show('attendance')">Điểm danh</button>
+<button class="btn light" onclick="show('students')">Học viên</button>
+<button class="btn light" onclick="show('docs')">Tài liệu</button>
+</div></div>
+</section>
+
+<section id="students" class="page"><div class="panel"><h2>Danh sách học viên</h2>
+<div class="toolbar"><input id="q" placeholder="Tìm tên hoặc mã học viên..." oninput="renderStudents()"><select id="classFilter" onchange="renderStudents()"><option value="">Tất cả lớp</option></select><select id="centerFilter" onchange="renderStudents()"><option value="">Tất cả trung tâm</option></select><select id="statusFilter" onchange="renderStudents()"><option value="">Tất cả trạng thái</option></select></div>
+<div class="tablewrap"><table><thead><tr><th>Mã HV</th><th>Họ tên</th><th>Lớp</th><th>Trung tâm</th><th>Giáo viên</th><th>Trạng thái</th><th>Ngày sinh</th><th></th></tr></thead><tbody id="studentBody"></tbody></table></div></div></section>
+
+<section id="profile" class="page"><div class="panel"><h2>Hồ sơ học viên</h2><div id="profileBody"></div></div></section>
+
+<section id="attendance" class="page"><div class="panel"><h2>Điểm danh</h2><div class="toolbar" style="grid-template-columns:1fr 1fr"><input id="attDate" type="date"><select id="attClass"><option value="">Chọn lớp</option></select></div><div class="tablewrap"><table><thead><tr><th>Mã HV</th><th>Họ tên</th><th>Trạng thái</th></tr></thead><tbody id="attBody"></tbody></table></div><div class="actions" style="margin-top:15px"><button class="btn" onclick="saveAttendance()">Lưu điểm danh</button></div></div></section>
+
+<section id="leaveForm" class="page"><div class="panel"><h2>Đăng ký về quê</h2><form id="leaveF"><div class="grid">
+<div><label>Mã học viên</label><input name="code" required></div><div><label>Họ tên</label><input name="name" required></div>
+<div><label>Lớp</label><input name="class"></div><div><label>Ngày đi</label><input name="from" type="date" required></div>
+<div><label>Ngày về</label><input name="to" type="date" required></div><div><label>Lý do</label><input name="reason" required></div>
+<div><label>Số điện thoại</label><input name="phone"></div><div><label>Người liên hệ</label><input name="contact"></div>
+</div><div class="actions" style="margin-top:15px"><button class="btn">Lưu đăng ký</button></div></form></div></section>
+
+<section id="leaves" class="page"><div class="panel"><h2>Quản lý về quê</h2><div class="toolbar"><input id="leaveQ" placeholder="Tìm học viên..." oninput="renderLeaves()"><select id="leaveStatus" onchange="renderLeaves()"><option value="">Tất cả trạng thái</option><option>Chờ duyệt</option><option>Đã duyệt</option><option>Từ chối</option></select></div><div class="tablewrap"><table><thead><tr><th>Mã HV</th><th>Họ tên</th><th>Lớp</th><th>Ngày đi</th><th>Ngày về</th><th>Lý do</th><th>Trạng thái</th><th></th></tr></thead><tbody id="leaveBody"></tbody></table></div></div></section>
+
+<section id="docs" class="page"><div class="panel"><h2>Tài liệu</h2><div class="cards" style="grid-template-columns:repeat(3,1fr)">
+<div class="card"><h3>Nội quy</h3><p class="muted">Tài liệu nội quy trung tâm</p><button class="btn light" onclick="alert('Gắn link Google Drive tại đây')">Mở</button></div>
+<div class="card"><h3>Giáo trình</h3><p class="muted">Giáo trình và tài liệu học tập</p><button class="btn light" onclick="alert('Gắn link Google Drive tại đây')">Mở</button></div>
+<div class="card"><h3>Biểu mẫu</h3><p class="muted">Các biểu mẫu sử dụng tại trung tâm</p><button class="btn light" onclick="alert('Gắn link Google Drive tại đây')">Mở</button></div>
+</div></div></section>
+</main>
+<footer><div class="footerin"><b>TRUNG TÂM ĐÀO TẠO DU HỌC & XUẤT KHẨU LAO ĐỘNG</b><br><span class="muted">Hệ thống quản lý học viên</span></div></footer>
+<script>
+const API_URL='https://script.google.com/macros/s/AKfycbz_-jQBwWkh97LCPqyQnNk8x4gw4jBVAQ-Z0BNe4fEzC0hX9N_DC2FH9NwBDQy-bvKmrQ/exec'; // Dán URL Web App Google Apps Script vào đây sau khi triển khai.
+let students=[], leaves=[], todayAtt=[];
+const pages=[['home','Trang chủ'],['students','Học viên'],['docs','Tài liệu'],['leaves','Quản lý về quê'],['leaveForm','Đăng ký về quê'],['attendance','Điểm danh']];
+document.getElementById('nav').innerHTML=pages.map(([id,t])=>`<button data-id="${id}" onclick="show('${id}')">${t}</button>`).join('');
+document.querySelector('[data-id="home"]').classList.add('active');
+
+function show(id){document.querySelectorAll('.page').forEach(x=>x.classList.remove('active'));document.getElementById(id).classList.add('active');document.querySelectorAll('nav button').forEach(x=>x.classList.toggle('active',x.dataset.id===id));if(id==='students')renderStudents();if(id==='leaves')renderLeaves();if(id==='attendance')renderAtt();}
+function api(action,data={}){if(!API_URL)return Promise.resolve(null);return fetch(API_URL,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({action,...data})}).then(r=>r.json());}
+function load(){api('getAll').then(r=>{if(!r)return;students=r.students||[];leaves=r.leaves||[];todayAtt=r.attendance||[];renderAll()}).catch(console.error);renderAll()}
+function renderAll(){document.getElementById('total').textContent=students.length;document.getElementById('present').textContent=todayAtt.filter(x=>x.status==='Có mặt').length;document.getElementById('absent').textContent=todayAtt.filter(x=>x.status==='Vắng').length;document.getElementById('away').textContent=leaves.filter(x=>x.status==='Đã duyệt').length;fillFilters();renderStudents();renderLeaves();renderAtt();}
+function uniq(a){return [...new Set(a.filter(Boolean))].sort()}
+function fillFilters(){for(const [id,vals] of [['classFilter',students.map(x=>x.class)],['centerFilter',students.map(x=>x.center)],['statusFilter',students.map(x=>x.status)],['attClass',students.map(x=>x.class)]]){const el=document.getElementById(id);const first=el.options[0].text;el.innerHTML=`<option value="">${first}</option>`+uniq(vals).map(v=>`<option>${esc(v)}</option>`).join('')}}
+function renderStudents(){let q=(document.getElementById('q')?.value||'').toLowerCase(),cl=document.getElementById('classFilter')?.value||'',ce=document.getElementById('centerFilter')?.value||'',st=document.getElementById('statusFilter')?.value||'';let a=students.filter(x=>(!q||`${x.name} ${x.code}`.toLowerCase().includes(q))&&(!cl||x.class===cl)&&(!ce||x.center===ce)&&(!st||x.status===st));document.getElementById('studentBody').innerHTML=a.map(x=>`<tr><td>${esc(x.code)}</td><td><b>${esc(x.name)}</b></td><td>${esc(x.class)}</td><td>${esc(x.center)}</td><td>${esc(x.teacher)}</td><td><span class="badge">${esc(x.status)}</span></td><td>${esc(x.birth)}</td><td><button class="btn light" onclick='profile(${JSON.stringify(x)})'>Xem</button></td></tr>`).join('')||`<tr><td colspan="8" class="empty">Chưa có dữ liệu học viên.</td></tr>`}
+function profile(x){show('profile');document.getElementById('profileBody').innerHTML=`<div class="grid"><div><b>Mã học viên</b><p>${esc(x.code)}</p></div><div><b>Họ tên</b><p>${esc(x.name)}</p></div><div><b>Họ tên Katakana</b><p>${esc(x.katakana)}</p></div><div><b>Lớp</b><p>${esc(x.class)}</p></div><div><b>Trung tâm</b><p>${esc(x.center)}</p></div><div><b>Giáo viên</b><p>${esc(x.teacher)}</p></div><div><b>Ngày sinh</b><p>${esc(x.birth)}</p></div><div><b>Trạng thái</b><p>${esc(x.status)}</p></div></div>`}
+function renderAtt(){let cl=document.getElementById('attClass')?.value||'';let a=students.filter(x=>!cl||x.class===cl);document.getElementById('attBody').innerHTML=a.map(x=>`<tr data-code="${esc(x.code)}"><td>${esc(x.code)}</td><td>${esc(x.name)}</td><td><select class="attStatus"><option>Có mặt</option><option>Vắng</option><option>Có phép</option></select></td></tr>`).join('')||`<tr><td colspan="3" class="empty">Chưa có học viên.</td></tr>`}
+function saveAttendance(){let date=document.getElementById('attDate').value||new Date().toISOString().slice(0,10);let rows=[...document.querySelectorAll('#attBody tr[data-code]')].map(r=>({code:r.dataset.code,name:r.children[1].textContent,status:r.querySelector('select').value,date}));api('saveAttendance',{rows}).then(()=>{todayAtt=rows;renderAll();alert('Đã lưu điểm danh.')}).catch(()=>alert('Không thể kết nối dữ liệu.'))}
+function renderLeaves(){let q=(document.getElementById('leaveQ')?.value||'').toLowerCase(),st=document.getElementById('leaveStatus')?.value||'';let a=leaves.filter(x=>(!q||`${x.name} ${x.code}`.toLowerCase().includes(q))&&(!st||x.status===st));document.getElementById('leaveBody').innerHTML=a.map((x,i)=>`<tr><td>${esc(x.code)}</td><td>${esc(x.name)}</td><td>${esc(x.class)}</td><td>${esc(x.from)}</td><td>${esc(x.to)}</td><td>${esc(x.reason)}</td><td><span class="badge">${esc(x.status)}</span></td><td>${x.status==='Chờ duyệt'?`<button class="btn light" onclick="approve(${i},'Đã duyệt')">Duyệt</button> <button class="btn danger" onclick="approve(${i},'Từ chối')">Từ chối</button>`:''}</td></tr>`).join('')||`<tr><td colspan="8" class="empty">Chưa có đăng ký.</td></tr>`}
+function approve(i,status){let q=(document.getElementById('leaveQ')?.value||'').toLowerCase();let st=document.getElementById('leaveStatus')?.value||'';let a=leaves.filter(x=>(!q||`${x.name} ${x.code}`.toLowerCase().includes(q))&&(!st||x.status===st));let x=a[i];api('updateLeave',{id:x.id,status}).then(()=>{x.status=status;renderAll()})}
+document.getElementById('leaveF').onsubmit=e=>{e.preventDefault();let d=Object.fromEntries(new FormData(e.target));d.status='Chờ duyệt';d.id=Date.now().toString();api('addLeave',{row:d}).then(()=>{leaves.push(d);e.target.reset();renderAll();show('leaves');alert('Đã lưu đăng ký.')}).catch(()=>alert('Không thể kết nối dữ liệu.'))}
+function esc(v){return String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]))}
+document.getElementById('attDate').value=new Date().toISOString().slice(0,10);load();
+</script>
+</body></html>
