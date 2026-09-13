@@ -1884,7 +1884,7 @@ async function loadMonthlyAttendance(){
 
       for(let d=1; d<=days; d++){
         const dateKey = `${month}-${String(d).padStart(2,'0')}`;
-        const status = records[dateKey] && records[dateKey][student.maHV] || '';
+        const status = records[`${student.maHV}|${dateKey}`] || '';
         if(status === 'Có mặt'){
           present++;
           cells.push('<td class="day-present">✓</td>');
