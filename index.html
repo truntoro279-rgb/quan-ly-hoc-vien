@@ -1646,13 +1646,21 @@ async function saveAttendance(){
     )
     .forEach(select => {
 
+      const student = students.find(
+        s => String(s.maHV || '') === String(select.dataset.id || '')
+      );
+
       records.push({
 
-        id:
-          select.dataset.id,
+        id: select.dataset.id,
 
-        status:
-          select.value
+        maHV: select.dataset.id,
+
+        hoTen: student ? student.hoTen : '',
+
+        lop: classValue,
+
+        status: select.checked ? 'Có mặt' : 'Vắng'
 
       });
 
@@ -1693,17 +1701,21 @@ async function saveAttendance(){
       );
 
 
-    const result =
-      await response.json();
+    const raw = await response.text();
+    let result;
 
+    try{
+      result = JSON.parse(raw);
+    }catch(parseError){
+      throw new Error('Google Apps Script trả về dữ liệu không hợp lệ: ' + raw.slice(0,200));
+    }
 
     if(result.ok === false){
-
       throw new Error(
         result.message ||
+        result.error ||
         'Lỗi lưu điểm danh'
       );
-
     }
 
 
