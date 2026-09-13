@@ -1,263 +1,220 @@
-// ============================================================
-// BACKEND - QUẢN LÝ HỌC VIÊN
-// ============================================================
+// GOOGLE APPS SCRIPT BACKEND - QUAN LY HOC VIEN
 
 const SHEET_ID = '1JI8U96SwwQXn5ZLqWNlLtGaxkRzArpljjdW9QdIOr7A';
-
-const STUDENT_SHEET = 'BẢNG QLTHTHV 2026';
+const STUDENT_SHEET = 'BẢNG QLTTHV 2026';
 const LEAVE_SHEET = 'VE_QUE';
 const ATT_SHEET = 'DIEM_DANH';
 
-
-// ============================================================
-// HÀM CƠ BẢN
-// ============================================================
-
 function sh(name) {
-  return SpreadsheetApp
-    .openById(SHEET_ID)
-    .getSheetByName(name);
+  return SpreadsheetApp.openById(SHEET_ID).getSheetByName(name);
 }
 
-
-function json(o) {
-  return ContentService
-    .createTextOutput(JSON.stringify(o))
+function json(data) {
+  return ContentService.createTextOutput(JSON.stringify(data))
     .setMimeType(ContentService.MimeType.JSON);
 }
 
-
-function today() {
-  return Utilities.formatDate(
-    new Date(),
-    Session.getScriptTimeZone(),
-    'yyyy-MM-dd'
-  );
+function clean(v) {
+  return String(v ?? '').trim();
 }
 
+function today() {
+  return Utilities.formatDate(new Date(), Session.getScriptTimeZone(), 'yyyy-MM-dd');
+}
 
-// ============================================================
-// GET
-// ============================================================
+function normalizeDate(v) {
+  if (v instanceof Date && !isNaN(v)) {
+    return Utilities.formatDate(v, Session.getScriptTimeZone(), 'yyyy-MM-dd');
+  }
+  const s = clean(v);
+  if (!s) return '';
+  if (/^\d{4}-\d{2}-\d{2}$/.test(s)) return s;
+  const m = s.match(/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{4})$/);
+  if (m) return m[3] + '-' + String(m[2]).padStart(2,'0') + '-' + String(m[1]).padStart(2,'0');
+  const d = new Date(s);
+  return isNaN(d) ? s : Utilities.formatDate(d, Session.getScriptTimeZone(), 'yyyy-MM-dd');
+}
+
+// ==================== GET ====================
 
 function doGet(e) {
   try {
-
-    const action = String(
-      e && e.parameter && e.parameter.action
-        ? e.parameter.action
-        : ''
-    );
-
-    if (action === 'getAll') {
-      return json(getAll());
-    }
-
-    return json({
-      ok: true,
-      message: 'API Quản lý học viên đang hoạt động'
-    });
-
+    const action = clean(e && e.parameter && e.parameter.action);
+    if (action === 'getAll' || !action) return json(getAll());
+    return json({ok:false, error:'Unknown action: ' + action});
   } catch (err) {
-
-    return json({
-      ok: false,
-      error: String(err)
-    });
-
+    return json({ok:false, error:String(err)});
   }
 }
 
-
-// ============================================================
-// POST
-// ============================================================
+// ==================== POST ====================
 
 function doPost(e) {
   try {
+    const p = JSON.parse(e && e.postData && e.postData.contents ? e.postData.contents : '{}');
+    const action = clean(p.action);
 
-    if (!e || !e.postData || !e.postData.contents) {
-      return json({
-        ok: false,
-        error: 'Không có dữ liệu POST'
-      });
+    if (action === 'getAll') return json(getAll());
+
+    if (action === 'attendance' || action === 'saveAttendance') {
+      return json(saveAttendance(p.date, p.class, p.records || p.rows || []));
     }
 
-    const p = JSON.parse(e.postData.contents || '{}');
-
-    // Lấy toàn bộ học viên
-    if (p.action === 'getAll') {
-      return json(getAll());
-    }
-
-    // Thêm về quê
-    if (p.action === 'addLeave') {
+    if (action === 'addLeave') {
       addLeave(p.row || {});
-      return json({
-        ok: true
-      });
+      return json({ok:true});
     }
 
-    // Cập nhật về quê
-    if (p.action === 'updateLeave') {
+    if (action === 'updateLeave') {
       updateLeave(p.id, p.status);
-      return json({
-        ok: true
-      });
+      return json({ok:true});
     }
 
-    // Lưu điểm danh
-    if (p.action === 'saveAttendance') {
-
-      const rows = Array.isArray(p.rows)
-        ? p.rows
-        : [];
-
-      const result = saveAttendance(rows);
-
-      return json(result);
-    }
-
-    return json({
-      ok: false,
-      error: 'Unknown action: ' + String(p.action || '')
-    });
-
+    return json({ok:false, error:'Unknown action: ' + action});
   } catch (err) {
-
-    return json({
-      ok: false,
-      error: String(err && err.stack ? err.stack : err)
-    });
-
+    return json({ok:false, error:String(err)});
   }
 }
 
+// ==================== SHEET OBJECT ====================
 
-// ============================================================
-// ĐỌC HỌC VIÊN
-// ============================================================
+function rowsToObjects(sheet) {
+  if (!sheet) return [];
+  const values = sheet.getDataRange().getDisplayValues();
+  if (values.length < 2) return [];
 
-function getAll() {
+  const headers = values[0].map(clean);
 
-  const studentSheet = sh(STUDENT_SHEET);
+  return values.slice(1)
+    .filter(r => r.some(x => clean(x) !== ''))
+    .map(r => {
+      const obj = {};
+      headers.forEach((h,i) => {
+        if (h) obj[h] = clean(r[i]);
+      });
+      return obj;
+    });
+}
+
+// ==================== HOC VIEN ====================
+
+function getStudents() {
+  const sheet = sh(STUDENT_SHEET);
+
+  if (!sheet) {
+    throw new Error('Không tìm thấy sheet: ' + STUDENT_SHEET);
+  }
+
+  const lastRow = sheet.getLastRow();
+  const lastCol = sheet.getLastColumn();
+
+  if (lastRow < 3 || lastCol < 3) return [];
+
+  // Hàng 2 là tiêu đề tiếng Việt.
+  const headers = sheet.getRange(2,1,1,lastCol)
+    .getDisplayValues()[0].map(clean);
+
+  // Dữ liệu bắt đầu từ hàng 3.
+  const values = sheet.getRange(3,1,lastRow-2,lastCol)
+    .getDisplayValues();
 
   const students = [];
+  const seen = new Set();
 
-  if (studentSheet) {
+  values.forEach(r => {
+    // C = MÃ SỐ HV
+    const maHV = clean(r[2]);
 
-    const lastRow = studentSheet.getLastRow();
+    // Chỉ lấy mã thật, loại bỏ các dòng tiêu đề/rác.
+    if (!/^TH\d{6,}$/.test(maHV)) return;
+    if (seen.has(maHV)) return;
+    seen.add(maHV);
 
-    if (lastRow >= 3) {
+    // Toàn bộ dữ liệu gốc theo tiêu đề.
+    const detail = {};
+    headers.forEach((h,i) => {
+      if (h) detail[h] = clean(r[i]);
+    });
 
-      // Sheet BẢNG QLTHV 2026:
-      // B = Trạng thái
-      // C = Mã số HV
-      // D = Tên Romaji
-      // H = Lớp
-      // I = GVCN
+    students.push({
+      maHV: maHV,
+      code: maHV,
 
-      const values = studentSheet
-        .getRange(3, 2, lastRow - 2, 8)
-        .getDisplayValues();
+      hoTen: clean(r[3]),
+      name: clean(r[3]),
 
-      const seen = new Set();
+      katakana: clean(r[4]),
+      doiNgoai: clean(r[5]),
 
-      values.forEach(function(r) {
+      trungTam: clean(r[6]),
+      center: clean(r[6]),
 
-        const trangThai = String(r[0] || '').trim();
-        const maHV = String(r[1] || '').trim();
-        const hoTen = String(r[2] || '').trim();
-        const lop = String(r[6] || '').trim();
-        const gvcn = String(r[7] || '').trim();
+      lop: clean(r[7]),
+      class: clean(r[7]),
 
-        // Chỉ nhận mã học viên dạng TH202601...
-        if (!/^TH\d{6,}$/.test(maHV)) {
-          return;
-        }
+      gvcn: clean(r[8]),
+      teacher: clean(r[8]),
 
-        if (seen.has(maHV)) {
-          return;
-        }
+      level: clean(r[9]),
+      gioiTinh: clean(r[10]),
+      ngaySinh: clean(r[11]),
+      birth: clean(r[11]),
 
-        seen.add(maHV);
+      nghiepDoan: clean(r[12]),
+      nghiepDoanKana: clean(r[13]),
 
-        students.push({
-          code: maHV,
-          maHV: maHV,
+      congTy: clean(r[14]),
+      congTyKana: clean(r[15]),
 
-          name: hoTen,
-          hoTen: hoTen,
+      nganhNghe: clean(r[16]),
+      ngayThi: clean(r[17]),
+      ngayNhapHoc: clean(r[18]),
 
-          class: lop,
-          lop: lop,
+      trangThai: clean(r[1]),
+      status: clean(r[1]),
 
-          teacher: gvcn,
-          gvcn: gvcn,
+      // Giữ toàn bộ cột của sheet để dùng cho thẻ chi tiết.
+      detail: detail
+    });
+  });
 
-          status: trangThai,
-          trangThai: trangThai
-        });
+  return students;
+}
 
-      });
-    }
-  }
+// ==================== GET ALL ====================
 
-
-  // ==========================================================
-  // ĐỌC ĐIỂM DANH HÔM NAY
-  // ==========================================================
-
-  const attendanceSheet = sh(ATT_SHEET);
-
+function getAll() {
+  const students = getStudents();
+  const leaves = rowsToObjects(sh(LEAVE_SHEET));
   const attendance = [];
 
-  if (attendanceSheet) {
+  const sheet = sh(ATT_SHEET);
 
-    const lastRow = attendanceSheet.getLastRow();
+  if (sheet && sheet.getLastRow() >= 2) {
+    const rows = sheet.getRange(
+      2, 1,
+      sheet.getLastRow()-1,
+      Math.max(5, sheet.getLastColumn())
+    ).getDisplayValues();
 
-    if (lastRow >= 2) {
+    const currentDate = today();
 
-      const values = attendanceSheet
-        .getRange(2, 1, lastRow - 1, 5)
-        .getDisplayValues();
+    rows.forEach(r => {
+      const code = clean(r[0]);
+      if (!code) return;
 
-      const currentDate = today();
+      const date = normalizeDate(r[3]);
+      if (date !== currentDate) return;
 
-      values.forEach(function(r) {
-
-        const code = String(r[0] || '').trim();
-        const name = String(r[1] || '').trim();
-        const status = String(r[2] || '').trim();
-        const date = normalizeDate(r[3]);
-
-        if (!code) {
-          return;
-        }
-
-        if (date !== currentDate) {
-          return;
-        }
-
-        attendance.push({
-          code: code,
-          name: name,
-          status: status,
-          date: date,
-          savedAt: String(r[4] || '')
-        });
-
+      attendance.push({
+        code: code,
+        name: clean(r[1]),
+        status: clean(r[2]),
+        date: date,
+        savedAt: clean(r[4])
       });
-    }
+    });
   }
-
-
-  // ==========================================================
-  // ĐỌC ĐƠN VỀ QUÊ
-  // ==========================================================
-
-  const leaves = rowsToObjects(sh(LEAVE_SHEET));
-
 
   return {
     ok: true,
@@ -268,359 +225,156 @@ function getAll() {
   };
 }
 
-
-// ============================================================
-// ĐỌC SHEET THÀNH OBJECT
-// ============================================================
-
-function rowsToObjects(sheet) {
-
-  if (!sheet) {
-    return [];
-  }
-
-  const values = sheet.getDataRange().getDisplayValues();
-
-  if (values.length < 2) {
-    return [];
-  }
-
-  const headers = values[0].map(function(x) {
-    return String(x || '').trim();
-  });
-
-  return values
-    .slice(1)
-    .filter(function(row) {
-      return row.some(function(x) {
-        return String(x || '').trim() !== '';
-      });
-    })
-    .map(function(row) {
-
-      const obj = {};
-
-      headers.forEach(function(key, i) {
-
-        if (key) {
-          obj[key] = String(row[i] || '').trim();
-        }
-
-      });
-
-      return obj;
-
-    });
-}
-
-
-// ============================================================
-// TẠO SHEET NẾU CHƯA CÓ
-// ============================================================
+// ==================== TAO SHEET ====================
 
 function ensureSheet(name, headers) {
-
-  const ss = SpreadsheetApp.openById(SHEET_ID);
-
-  let sheet = ss.getSheetByName(name);
+  let sheet = sh(name);
 
   if (!sheet) {
-
-    sheet = ss.insertSheet(name);
-
-    sheet
-      .getRange(1, 1, 1, headers.length)
-      .setValues([headers]);
+    sheet = SpreadsheetApp.openById(SHEET_ID).insertSheet(name);
+    sheet.getRange(1,1,1,headers.length).setValues([headers]);
   }
 
   return sheet;
 }
 
-
-// ============================================================
-// VỀ QUÊ
-// ============================================================
+// ==================== VE QUE ====================
 
 function addLeave(r) {
+  const sheet = ensureSheet(LEAVE_SHEET, [
+    'id','code','name','class','from','to',
+    'reason','phone','contact','status','createdAt'
+  ]);
 
-  const s = ensureSheet(
-    LEAVE_SHEET,
-    [
-      'id',
-      'code',
-      'name',
-      'class',
-      'from',
-      'to',
-      'reason',
-      'phone',
-      'contact',
-      'status',
-      'createdAt'
-    ]
-  );
-
-  s.appendRow([
-    r.id || '',
-    r.code || '',
-    r.name || '',
-    r.class || '',
-    r.from || '',
-    r.to || '',
-    r.reason || '',
-    r.phone || '',
-    r.contact || '',
-    r.status || '',
+  sheet.appendRow([
+    clean(r.id),
+    clean(r.code),
+    clean(r.name),
+    clean(r.class),
+    clean(r.from),
+    clean(r.to),
+    clean(r.reason),
+    clean(r.phone),
+    clean(r.contact),
+    clean(r.status),
     new Date()
   ]);
 }
 
+function updateLeave(id,status) {
+  const sheet = sh(LEAVE_SHEET);
+  if (!sheet) return;
 
-// ============================================================
-// CẬP NHẬT VỀ QUÊ
-// ============================================================
+  const values = sheet.getDataRange().getValues();
 
-function updateLeave(id, status) {
-
-  const s = sh(LEAVE_SHEET);
-
-  if (!s) {
-    return;
-  }
-
-  const values = s.getDataRange().getValues();
-
-  for (let i = 1; i < values.length; i++) {
-
-    if (
-      String(values[i][0] || '').trim() ===
-      String(id || '').trim()
-    ) {
-
-      // Cột J = status
-      s.getRange(i + 1, 10).setValue(status || '');
-
+  for (let i=1; i<values.length; i++) {
+    if (clean(values[i][0]) === clean(id)) {
+      sheet.getRange(i+1,10).setValue(status);
       break;
     }
   }
 }
 
+// ==================== DIEM DANH ====================
 
-// ============================================================
-// CHUẨN HÓA NGÀY
-// ============================================================
+function saveAttendance(selectedDate, classValue, records) {
+  const sheet = ensureSheet(ATT_SHEET, [
+    'code','name','status','date','savedAt'
+  ]);
 
-function normalizeDate(value) {
+  const date = normalizeDate(selectedDate) || today();
+  const students = getStudents();
+  const studentMap = new Map();
 
-  if (
-    value instanceof Date &&
-    !isNaN(value.getTime())
-  ) {
+  students.forEach(s => studentMap.set(clean(s.maHV), s));
 
-    return Utilities.formatDate(
-      value,
-      Session.getScriptTimeZone(),
-      'yyyy-MM-dd'
-    );
-  }
+  const codeSet = new Set();
 
-
-  const text = String(value || '').trim();
-
-  if (!text) {
-    return '';
-  }
-
-
-  // yyyy-MM-dd
-  if (/^\d{4}-\d{2}-\d{2}$/.test(text)) {
-    return text;
-  }
-
-
-  // dd/MM/yyyy
-  let m = text.match(
-    /^(\d{1,2})\/(\d{1,2})\/(\d{4})$/
-  );
-
-  if (m) {
-
-    return (
-      m[3] + '-' +
-      ('0' + m[2]).slice(-2) + '-' +
-      ('0' + m[1]).slice(-2)
-    );
-  }
-
-
-  // dd-MM-yyyy
-  m = text.match(
-    /^(\d{1,2})-(\d{1,2})-(\d{4})$/
-  );
-
-  if (m) {
-
-    return (
-      m[3] + '-' +
-      ('0' + m[2]).slice(-2) + '-' +
-      ('0' + m[1]).slice(-2)
-    );
-  }
-
-
-  return text;
-}
-
-
-// ============================================================
-// LƯU ĐIỂM DANH
-// ============================================================
-
-function saveAttendance(rows) {
-
-  if (!Array.isArray(rows)) {
-
-    return {
-      ok: false,
-      error: 'Dữ liệu điểm danh không hợp lệ'
-    };
-  }
-
-
-  const s = ensureSheet(
-    ATT_SHEET,
-    [
-      'code',
-      'name',
-      'status',
-      'date',
-      'savedAt'
-    ]
-  );
-
-
-  const currentDate = today();
-
-
-  // ----------------------------------------------------------
-  // Đọc dữ liệu hiện có
-  // ----------------------------------------------------------
-
-  const lastRow = s.getLastRow();
-
-  const oldValues =
-    lastRow >= 2
-      ? s.getRange(2, 1, lastRow - 1, 5).getValues()
-      : [];
-
-
-  // ----------------------------------------------------------
-  // Tạo map bản ghi hiện tại
-  // key = code + date
-  // ----------------------------------------------------------
-
-  const existing = new Map();
-
-  oldValues.forEach(function(r, index) {
-
-    const code = String(r[0] || '').trim();
-
-    const date = normalizeDate(r[3]);
-
-    if (!code || !date) {
-      return;
-    }
-
-    existing.set(
-      code + '|' + date,
-      {
-        row: index + 2
-      }
-    );
-
+  records.forEach(r => {
+    const code = clean(r.code || r.id);
+    if (code) codeSet.add(code);
   });
 
+  // Xóa bản ghi cũ cùng ngày và cùng mã.
+  if (sheet.getLastRow() >= 2) {
+    const old = sheet.getRange(
+      2,1,sheet.getLastRow()-1,5
+    ).getDisplayValues();
 
-  // ----------------------------------------------------------
-  // Cập nhật hoặc thêm
-  // ----------------------------------------------------------
+    for (let i=old.length-1; i>=0; i--) {
+      const oldCode = clean(old[i][0]);
+      const oldDate = normalizeDate(old[i][3]);
 
-  rows.forEach(function(r) {
-
-    const code = String(
-      r.code ||
-      r.maHV ||
-      r.maHv ||
-      ''
-    ).trim();
-
-    const name = String(
-      r.name ||
-      r.hoTen ||
-      ''
-    ).trim();
-
-    const status = String(
-      r.status ||
-      r.trangThai ||
-      ''
-    ).trim();
-
-
-    if (!code) {
-      return;
+      if (oldDate === date && codeSet.has(oldCode)) {
+        sheet.deleteRow(i+2);
+      }
     }
+  }
 
+  const output = [];
 
-    const date =
-      normalizeDate(r.date) ||
-      currentDate;
+  records.forEach(r => {
+    const code = clean(r.code || r.id);
+    if (!code) return;
 
+    const student = studentMap.get(code);
 
-    const key = code + '|' + date;
-
-
-    const data = [
+    output.push([
       code,
-      name,
-      status,
+      student ? clean(student.hoTen) : clean(r.name),
+      clean(r.status) || 'Có mặt',
       date,
       new Date()
-    ];
-
-
-    // Đã có → cập nhật
-    if (existing.has(key)) {
-
-      const rowNumber =
-        existing.get(key).row;
-
-      s.getRange(
-        rowNumber,
-        1,
-        1,
-        5
-      ).setValues([data]);
-
-    }
-
-    // Chưa có → thêm
-    else {
-
-      s.appendRow(data);
-
-      existing.set(key, {
-        row: s.getLastRow()
-      });
-    }
-
+    ]);
   });
 
+  if (output.length) {
+    sheet.getRange(
+      sheet.getLastRow()+1,
+      1,
+      output.length,
+      5
+    ).setValues(output);
+  }
 
   return {
-    ok: true,
-    message: 'Đã lưu điểm danh',
-    count: rows.length,
-    date: currentDate
+    ok:true,
+    message:'Lưu điểm danh thành công',
+    date:date,
+    class:clean(classValue),
+    count:output.length
   };
+}
+
+// ==================== KIEM TRA NGUON ====================
+
+function testSource() {
+  const ss = SpreadsheetApp.openById(SHEET_ID);
+  const sheet = ss.getSheetByName(STUDENT_SHEET);
+
+  Logger.log('FILE: ' + ss.getName());
+  Logger.log('FILE ID: ' + ss.getId());
+  Logger.log('SHEET: ' + (sheet ? sheet.getName() : 'KHÔNG CÓ'));
+
+  if (!sheet) return;
+
+  Logger.log('SỐ DÒNG: ' + sheet.getLastRow());
+  Logger.log('SỐ CỘT: ' + sheet.getLastColumn());
+
+  const maxRows = Math.min(sheet.getLastRow(),50);
+
+  const values = sheet.getRange(
+    1,3,maxRows,1
+  ).getDisplayValues();
+
+  Logger.log('MSHV CỘT C:');
+
+  values.forEach((row,index) => {
+    Logger.log((index+1) + ': ' + clean(row[0]));
+  });
+
+  Logger.log(
+    'TỔNG HỌC VIÊN HỢP LỆ: ' +
+    getStudents().length
+  );
 }
