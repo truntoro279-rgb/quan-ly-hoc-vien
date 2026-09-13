@@ -1829,37 +1829,56 @@ async function loadMonthlyAttendance(){
   summary.innerHTML = '';
 
   try{
-    const response = await fetch(
-      `${API_URL}?action=getAttendanceMonth&month=${encodeURIComponent(month)}&class=${encodeURIComponent(classValue)}`,
-      {method:'GET', cache:'no-store'}
-    );
-
-    const raw = await response.text();
-    let result;
-    try{
-      result = JSON.parse(raw);
-    }catch(e){
-      throw new Error('Google Apps Script trả về dữ liệu không hợp lệ: ' + raw.slice(0,200));
-    }
-
-    if(result.ok === false){
-      throw new Error(result.message || result.error || 'Không tải được bảng điểm danh tháng');
-    }
-
-    const days = Number(result.days || 0);
-    const records = result.records || {};
+    /*
+       KHÔNG gọi getAttendanceMonth nữa.
+       Web App đang chạy ổn với action getAttendance, nên bảng tháng
+       sẽ lấy dữ liệu của từng ngày từ chính API đang dùng cho điểm danh.
+       Như vậy không phụ thuộc vào phiên bản Apps Script mới.
+    */
+    const year = Number(month.slice(0,4));
+    const monthNumber = Number(month.slice(5,7));
+    const days = new Date(year, monthNumber, 0).getDate();
     const list = students.filter(s => s.lop === classValue);
 
-    const presentAll = Object.values(records).filter(x => x === 'Có mặt').length;
-    const absentAll = Object.values(records).filter(x => x === 'Vắng').length;
+    if(!list.length){
+      head.innerHTML = `<tr><th>MSHV</th><th>Họ tên</th><th>GVCN</th>${Array.from({length:days},(_,i)=>`<th>${i+1}</th>`).join('')}<th>Tổng có mặt</th><th>Tổng vắng</th></tr>`;
+      body.innerHTML = `<tr><td colspan="${days+5}" style="text-align:center;padding:24px">Không có học viên trong lớp này</td></tr>`;
+      return;
+    }
 
-    summary.innerHTML = `
-      <div class="monthly-badge">Lớp: ${escapeHtml(classValue)}</div>
-      <div class="monthly-badge">Tháng: ${escapeHtml(month.split('-').reverse().join('/'))}</div>
-      <div class="monthly-badge">Học viên: ${list.length}</div>
-      <div class="monthly-badge">Lượt có mặt: ${presentAll}</div>
-      <div class="monthly-badge">Lượt vắng: ${absentAll}</div>
-    `;
+    // Lấy điểm danh của từng ngày từ API hiện tại.
+    const dailyResults = await Promise.all(
+      Array.from({length: days}, async (_, index) => {
+        const day = index + 1;
+        const date = `${month}-${String(day).padStart(2,'0')}`;
+        const response = await fetch(
+          `${API_URL}?action=getAttendance&date=${encodeURIComponent(date)}`,
+          {method:'GET', cache:'no-store'}
+        );
+
+        const raw = await response.text();
+        let result;
+        try{
+          result = JSON.parse(raw);
+        }catch(e){
+          throw new Error(`Dữ liệu ngày ${day} không hợp lệ`);
+        }
+
+        if(result.ok === false){
+          throw new Error(result.error || result.message || `Không tải được ngày ${day}`);
+        }
+
+        return {date, records: result.records || {}};
+      })
+    );
+
+    const byDate = {};
+    let presentAll = 0;
+    let absentAll = 0;
+
+    dailyResults.forEach(item => {
+      byDate[item.date] = item.records;
+    });
 
     head.innerHTML = `
       <tr>
@@ -1872,11 +1891,6 @@ async function loadMonthlyAttendance(){
       </tr>
     `;
 
-    if(!list.length){
-      body.innerHTML = `<tr><td colspan="${days+5}" style="text-align:center;padding:24px">Không có học viên trong lớp này</td></tr>`;
-      return;
-    }
-
     body.innerHTML = list.map(student => {
       let present = 0;
       let absent = 0;
@@ -1884,12 +1898,15 @@ async function loadMonthlyAttendance(){
 
       for(let d=1; d<=days; d++){
         const dateKey = `${month}-${String(d).padStart(2,'0')}`;
-        const status = records[`${student.maHV}|${dateKey}`] || '';
+        const status = String((byDate[dateKey] || {})[student.maHV] || '').trim();
+
         if(status === 'Có mặt'){
           present++;
+          presentAll++;
           cells.push('<td class="day-present">✓</td>');
         }else if(status === 'Vắng'){
           absent++;
+          absentAll++;
           cells.push('<td class="day-absent">×</td>');
         }else{
           cells.push('<td class="day-empty">·</td>');
@@ -1907,6 +1924,14 @@ async function loadMonthlyAttendance(){
         </tr>
       `;
     }).join('');
+
+    summary.innerHTML = `
+      <div class="monthly-badge">Lớp: ${escapeHtml(classValue)}</div>
+      <div class="monthly-badge">Tháng: ${escapeHtml(month.split('-').reverse().join('/'))}</div>
+      <div class="monthly-badge">Học viên: ${list.length}</div>
+      <div class="monthly-badge">Lượt có mặt: ${presentAll}</div>
+      <div class="monthly-badge">Lượt vắng: ${absentAll}</div>
+    `;
 
   }catch(error){
     console.error('Lỗi bảng điểm danh tháng:', error);
