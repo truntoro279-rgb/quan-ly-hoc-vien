@@ -498,6 +498,115 @@ th{
   }
 }
 
+
+
+/* ĐIỂM DANH DẠNG NÚT + TICK */
+.att-class-picker{
+  min-height:42px;
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px;
+  align-items:center;
+  padding:2px 0;
+}
+
+.att-class-btn{
+  border:1px solid #ccd8e2;
+  background:#fff;
+  color:#334e68;
+  padding:9px 16px;
+  border-radius:999px;
+  font-weight:700;
+  cursor:pointer;
+  transition:.15s;
+}
+
+.att-class-btn:hover{
+  border-color:#1769d1;
+  color:#1769d1;
+  background:#edf4ff;
+}
+
+.att-class-btn.active{
+  background:#1769d1;
+  color:#fff;
+  border-color:#1769d1;
+}
+
+.att-class-empty{
+  color:#627d98;
+  font-size:13px;
+}
+
+.att-check{
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  cursor:pointer;
+  user-select:none;
+  font-weight:700;
+}
+
+.att-check input{
+  position:absolute;
+  opacity:0;
+  pointer-events:none;
+}
+
+.att-switch{
+  width:42px;
+  height:23px;
+  border-radius:999px;
+  background:#cbd5e1;
+  position:relative;
+  transition:.2s;
+  flex:none;
+}
+
+.att-switch::after{
+  content:'';
+  position:absolute;
+  width:17px;
+  height:17px;
+  top:3px;
+  left:3px;
+  background:#fff;
+  border-radius:50%;
+  transition:.2s;
+  box-shadow:0 1px 3px rgba(0,0,0,.25);
+}
+
+.att-check input:checked + .att-switch{
+  background:#1769d1;
+}
+
+.att-check input:checked + .att-switch::after{
+  left:22px;
+}
+
+.att-status-text{
+  min-width:52px;
+}
+
+@media(prefers-color-scheme:dark){
+  .att-class-btn{
+    background:#1a2333;
+    color:#d9e2ec;
+    border-color:#2a374a;
+  }
+  .att-class-btn:hover{
+    background:#222f47;
+    color:#fff;
+  }
+  .att-class-btn.active{
+    background:#1769d1;
+    color:#fff;
+  }
+  .att-class-empty{
+    color:#9fb3c8;
+  }
+}
+
 </style>
 </head>
 
@@ -634,15 +743,11 @@ th{
         id="attDate"
         type="date">
 
-      <select
-        id="attClass"
-        onchange="renderAttendanceList()">
+      <input id="attClass" type="hidden" value="">
 
-        <option value="">
-          Chọn lớp
-        </option>
-
-      </select>
+      <div class="att-class-picker" id="attClassPicker">
+        <div class="att-class-empty">Chọn lớp</div>
+      </div>
 
     </div>
 
@@ -1002,19 +1107,30 @@ function initFilters(){
       .join('');
 
 
-  document.getElementById(
-    'attClass'
-  ).innerHTML =
+  const attPicker =
+    document.getElementById('attClassPicker');
 
-    '<option value="">Chọn lớp</option>' +
+  if(attPicker){
+    attPicker.innerHTML =
+      classes.length
+        ? classes.map(x => `
+            <button
+              type="button"
+              class="att-class-btn"
+              data-class="${escapeHtml(x)}"
+              onclick="selectAttendanceClass(this.dataset.class)">
+              ${escapeHtml(x)}
+            </button>
+          `).join('')
+        : '<div class="att-class-empty">Chưa có lớp</div>';
+  }
 
-    classes
-      .map(x => `
-        <option value="${escapeHtml(x)}">
-          ${escapeHtml(x)}
-        </option>
-      `)
-      .join('');
+  const attClass =
+    document.getElementById('attClass');
+
+  if(attClass){
+    attClass.value = '';
+  }
 
 
   document.getElementById(
@@ -1344,118 +1460,139 @@ function studentInfoItem(label, value){
    DANH SÁCH ĐIỂM DANH
    ========================================================= */
 
+function selectAttendanceClass(classValue){
+
+  const input =
+    document.getElementById('attClass');
+
+  if(input){
+    input.value = classValue;
+  }
+
+  document
+    .querySelectorAll('.att-class-btn')
+    .forEach(btn => {
+      btn.classList.toggle(
+        'active',
+        btn.dataset.class === classValue
+      );
+    });
+
+  renderAttendanceList();
+
+}
+
+
 function renderAttendanceList(){
 
   const classValue =
-    document.getElementById(
-      'attClass'
-    ).value;
-
+    document.getElementById('attClass').value;
 
   const body =
-    document.getElementById(
-      'attBody'
-    );
-
+    document.getElementById('attBody');
 
   if(!body){
     return;
   }
 
-
   if(!classValue){
 
     body.innerHTML = `
       <tr>
-        <td
-          colspan="3"
-          style="
-            text-align:center;
-            padding:20px
-          ">
-
+        <td colspan="3"
+            style="text-align:center;padding:20px">
           Chọn lớp để điểm danh
-
         </td>
       </tr>
     `;
 
     return;
-
   }
-
 
   const list =
     students.filter(
-      student =>
-        student.lop === classValue
+      student => student.lop === classValue
     );
-
 
   if(list.length === 0){
 
     body.innerHTML = `
       <tr>
-        <td
-          colspan="3"
-          style="
-            text-align:center;
-            padding:20px
-          ">
-
-          Không có học viên
-          trong lớp này
-
+        <td colspan="3"
+            style="text-align:center;padding:20px">
+          Không có học viên trong lớp này
         </td>
       </tr>
     `;
 
     return;
-
   }
 
-
   body.innerHTML =
-    list.map(student => `
+    list.map(student => {
 
-      <tr>
+      const currentStatus =
+        student.trangThai === 'Vắng'
+          ? 'Vắng'
+          : 'Có mặt';
 
-        <td>
-          ${escapeHtml(
-            student.maHV
-          )}
-        </td>
+      const checked =
+        currentStatus === 'Có mặt'
+          ? 'checked'
+          : '';
 
-        <td>
-          ${escapeHtml(
-            student.hoTen
-          )}
-        </td>
+      return `
+        <tr>
 
-        <td>
+          <td>
+            ${escapeHtml(student.maHV)}
+          </td>
 
-          <select
-            data-id="${escapeHtml(
-              student.maHV
-            )}"
-            class="att-status">
+          <td>
+            ${escapeHtml(student.hoTen)}
+          </td>
 
-            <option value="Có mặt">
-              Có mặt
-            </option>
+          <td>
+            <label class="att-check">
 
-            <option value="Vắng">
-              Vắng
-            </option>
+              <input
+                type="checkbox"
+                class="att-status"
+                data-id="${escapeHtml(student.maHV)}"
+                value="Có mặt"
+                ${checked}
+                onchange="updateAttendanceText(this)">
 
-          </select>
+              <span class="att-switch"></span>
 
-        </td>
+              <span class="att-status-text">
+                ${currentStatus}
+              </span>
 
-      </tr>
+            </label>
+          </td>
 
-    `)
-    .join('');
+        </tr>
+      `;
+
+    }).join('');
+
+}
+
+
+function updateAttendanceText(input){
+
+  const text =
+    input.parentElement.querySelector(
+      '.att-status-text'
+    );
+
+  if(text){
+    text.textContent =
+      input.checked
+        ? 'Có mặt'
+        : 'Vắng';
+  }
 
 }
 
