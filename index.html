@@ -11,14 +11,14 @@
 header{height:68px;background:#fff;border-bottom:1px solid #e6edf4;position:sticky;top:0;z-index:10}
 .nav{max-width:1250px;margin:auto;height:100%;display:flex;align-items:center;padding:0 18px;gap:26px}
 .logo{font-weight:800;color:#1769d1;font-size:18px;white-space:nowrap}.logo span{font-size:20px}
-nav{margin-left:auto;display:flex;gap:4px;overflow:auto}nav button{border:0;background:transparent;padding:11px 13px;border-radius:9px;color:#334e68;white-space:nowrap;cursor:pointer;font-weight:600}nav button.active,nav button:hover{background:#edf4ff;color:#1769d1}
+nav{margin-left:auto;display:flex;gap:4px;overflow:auto}nav button{border:0;background:transparent;padding:11px 13px;border-radius:99px;color:#334e68;white-space:nowrap;cursor:pointer;font-weight:600}nav button.active,nav button:hover{background:#edf4ff;color:#1769d1}
 .hero{max-width:1250px;margin:18px auto 0;min-height:190px;border-radius:14px;display:flex;align-items:center;justify-content:center;text-align:center;color:#fff;background:linear-gradient(110deg,#143f72,#1769d1)}
 .hero h1{font-size:38px;margin:0 0 8px}.hero p{margin:0;opacity:.9}
 main{max-width:1250px;margin:auto;padding:18px}.page{display:none}.page.active{display:block}
 .cards{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}.card,.panel{background:#fff;border:1px solid #e3ebf3;border-radius:12px;box-shadow:0 3px 14px #16324b0c}.card{padding:18px}.card .num{font-size:30px;font-weight:800;color:#1769d1}.card h3{margin:6px 0 3px}.muted{font-size:13px;color:#718096}
 .panel{padding:18px;margin-top:16px}.panel h2{margin:0 0 15px;font-size:20px}
 .actions{display:flex;gap:9px;flex-wrap:wrap}.btn{border:0;border-radius:8px;padding:10px 15px;background:#1769d1;color:#fff;font-weight:700;cursor:pointer}.btn.light{background:#edf4ff;color:#1769d1}.btn.danger{background:#fff0f0;color:#c53030}
-.toolbar{display:grid;grid-template-columns:2fr repeat(3,1fr);gap:10px;margin-bottom:14px}input,select{width:100%;padding:10px 11px;border:1px solid #ccd8e2;border-radius:8px;font:inherit;background:#fff}
+.toolbar{display:grid;grid-template-columns:2fr repeat(2,1fr);gap:10px;margin-bottom:14px}input,select{width:100%;padding:10px 11px;border:1px solid #ccd8e2;border-radius:8px;font:inherit;background:#fff}
 .tablewrap{overflow:auto}table{width:100%;border-collapse:collapse;min-width:780px}th,td{padding:10px 9px;border-bottom:1px solid #e8eef3;text-align:left;font-size:13px}th{background:#f7fafc;color:#486581;position:sticky;top:0}.badge{display:inline-block;padding:4px 8px;border-radius:999px;background:#edf4ff;color:#1769d1;font-size:12px;font-weight:700}
 .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}label{font-size:13px;font-weight:700;margin-bottom:5px;display:block}
 footer{margin-top:30px;background:#fff;border-top:1px solid #e5edf4;padding:24px 18px}.footerin{max-width:1250px;margin:auto}
@@ -33,48 +33,33 @@ footer{margin-top:30px;background:#fff;border-top:1px solid #e5edf4;padding:24px
 <main>
 <section id="home" class="page active">
 <div class="cards">
-<div class="card"><div class="num" id="total">0</div><h3>Tổng học viên</h3><div class="muted">Đang quản lý</div></div>
-<div class="card"><div class="num" id="present">0</div><h3>Có mặt</h3><div class="muted">Điểm danh hôm nay</div></div>
-<div class="card"><div class="num" id="absent">0</div><h3>Vắng</h3><div class="muted">Điểm danh hôm nay</div></div>
-<div class="card"><div class="num" id="away">0</div><h3>Đang về quê</h3><div class="muted">Đang trong kỳ nghỉ</div></div>
+<div class="card"><div class="num" id="total">0</div><h2>Tổng học viên</h2><div class="muted">Đang quản lý</div></div>
+<div class="card"><div class="num" id="present">0</div><h2>Có mặt</h2><div class="muted">Điểm danh hôm nay</div></div>
+<div class="card"><div class="num" id="absent">0</div><h2>Vắng</h2><div class="muted">Điểm danh hôm nay</div></div>
+<div class="card"><div class="num" id="away">0</div><h2>Đang về quê</h2><div class="muted">Đang trong kỳ nghỉ</div></div>
 </div>
 <div class="panel"><h2>Thao tác nhanh</h2><div class="actions">
-<button class="btn" onclick="show('leaveForm')">+ Đăng ký về quê</button>
 <button class="btn light" onclick="show('attendance')">Điểm danh</button>
 <button class="btn light" onclick="show('students')">Học viên</button>
-<button class="btn light" onclick="show('docs')">Tài liệu</button>
 </div></div>
 </section>
 
 <section id="students" class="page"><div class="panel"><h2>Danh sách học viên</h2>
-<div class="toolbar"><input id="q" placeholder="Tìm tên hoặc mã học viên..." oninput="renderStudents()"><select id="classFilter" onchange="renderStudents()"><option value="">Tất cả lớp</option></select><select id="centerFilter" onchange="renderStudents()"><option value="">Tất cả trung tâm</option></select><select id="statusFilter" onchange="renderStudents()"><option value="">Tất cả trạng thái</option></select></div>
-<div class="tablewrap"><table><thead><tr><th>Mã HV</th><th>Họ tên</th><th>Lớp</th><th>Trung tâm</th><th>Giáo viên</th><th>Trạng thái</th><th>Ngày sinh</th><th>Thao tác</th></tr></thead><tbody id="studentBody"></tbody></table></div></div></section>
+<div class="toolbar"><input id="q" placeholder="Tìm tên hoặc mã học viên..." oninput="renderStudents()"><select id="classFilter" onchange="renderStudents()"><option value="">Tất cả lớp</option></select><select id="statusFilter" onchange="renderStudents()"><option value="">Tất cả trạng thái</option></select></div>
+<div class="tablewrap"><table><thead><tr><th>Mã HV</th><th>Họ tên</th><th>Lớp</th><th>Giáo viên (GVCN)</th><th>Trạng thái</th><th>Ngày sinh</th><th>Thao tác</th></tr></thead><tbody id="studentBody"></tbody></table></div></div></section>
 
 <section id="profile" class="page"><div class="panel"><h2>Hồ sơ học viên</h2><div id="profileBody"></div><div class="actions" style="margin-top:15px"><button class="btn light" onclick="show('students')">Quay lại danh sách</button></div></div></section>
 
 <section id="attendance" class="page"><div class="panel"><h2>Điểm danh</h2><div class="toolbar" style="grid-template-columns:1fr 1fr"><input id="attDate" type="date"><select id="attClass" onchange="renderAttendanceList()"><option value="">Chọn lớp</option></select></div><div class="tablewrap"><table><thead><tr><th>Mã HV</th><th>Họ tên</th><th>Trạng thái</th></tr></thead><tbody id="attBody"></tbody></table></div><div class="actions" style="margin-top:15px"><button class="btn" onclick="saveAttendance()">Lưu điểm danh</button></div></div></section>
-
-<section id="leaveForm" class="page"><div class="panel"><h2>Đăng ký về quê</h2><form id="leaveF" onsubmit="event.preventDefault(); submitLeave();"><div class="grid">
-<div><label>Mã học viên</label><input name="code" required></div><div><label>Họ tên</label><input name="name" required></div>
-<div><label>Lớp</label><input name="class"></div><div><label>Ngày đi</label><input name="from" type="date" required></div>
-<div><label>Ngày về</label><input name="to" type="date" required></div><div><label>Lý do</label><input name="reason" required></div>
-<div><label>Số điện thoại</label><input name="phone"></div><div><label>Người liên hệ</label><input name="contact"></div>
-</div><div class="actions" style="margin-top:15px"><button class="btn" type="submit">Lưu đăng ký</button></div></form></div></section>
-
-<section id="leaves" class="page"><div class="panel"><h2>Quản lý về quê</h2><div class="toolbar"><input id="leaveQ" placeholder="Tìm học viên..." oninput="renderLeaves()"><select id="leaveStatus" onchange="renderLeaves()"><option value="">Tất cả trạng thái</option><option>Chờ duyệt</option><option>Đã duyệt</option><option>Từ chối</option></select></div><div class="tablewrap"><table><thead><tr><th>Mã HV</th><th>Họ tên</th><th>Lớp</th><th>Ngày đi</th><th>Ngày về</th><th>Lý do</th><th>Trạng thái</th><th></th></tr></thead><tbody id="leaveBody"></tbody></table></div></div></section>
-
-<section id="docs" class="page"><div class="panel"><h2>Tài liệu</h2><div class="cards" style="grid-template-columns:repeat(3,1fr)">
-<div class="card"><h3>Nội quy</h3><p class="muted">Tài liệu nội quy trung tâm</p><button class="btn light" onclick="alert('Gắn link Google Drive tại đây')">Mở</button></div>
-<div class="card"><h3>Giáo trình</h3><p class="muted">Giáo trình và tài liệu học tập</p><button class="btn light" onclick="alert('Gắn link Google Drive tại đây')">Mở</button></div>
-<div class="card"><h3>Biểu mẫu</h3><p class="muted">Các biểu mẫu sử dụng tại trung tâm</p><button class="btn light" onclick="alert('Gắn link Google Drive tại đây')">Mở</button></div>
-</div></div></section>
 </main>
 <footer><div class="footerin"><b>TRUNG TÂM ĐÀO TẠO DU HỌC & XUẤT KHẨU LAO ĐỘNG</b><br><span class="muted">Hệ thống quản lý học viên</span></div></footer>
 
 <script>
-const API_URL='https://script.google.com/macros/s/AKfycbxGyUB6pxG9P7fxSmcGyXsIkYJvf09DNJGRqVkem7GGhHEuCIcNHoTzb-n0KgcgM80jFw/exec';
-let students=[], leaves=[], todayAtt=[];
-const pages=[['home','Trang chủ'],['students','Học viên'],['docs','Tài liệu'],['leaves','Quản lý về quê']];
+// DÁN ĐƯỜNG LINK WEB APP MỚI CỦA BẠN VÀO ĐÂY
+const API_URL = 'https://google.com';
+
+let students=[];
+const pages=[['home','Trang chủ'],['students','Học viên'],['attendance','Điểm danh']];
 
 document.addEventListener('DOMContentLoaded', () => {
   initMenu();
@@ -103,12 +88,9 @@ async function loadData() {
     const res = await fetch(`${API_URL}?action=getAll`);
     const data = await res.json();
     students = data.students || [];
-    leaves = data.leaves || [];
-    
     updateDashboard();
     initFilters();
     renderStudents();
-    renderLeaves();
   } catch (err) {
     console.error("Lỗi lấy dữ liệu:", err);
   }
@@ -116,8 +98,55 @@ async function loadData() {
 
 function updateDashboard() {
   document.getElementById('total').innerText = students.length;
-  const awayCount = students.filter(s => s['ステータス'] === 'Về quê' || s['Trạng thái'] === 'Về quê').length;
+  const awayCount = students.filter(s => s['Trạng thái'] === 'Về quê').length;
   document.getElementById('away').innerText = awayCount;
 }
 
 function initFilters() {
+  const classes = [...new Set(students.map(s => s['Lớp']).filter(Boolean))];
+  const statuses = [...new Set(students.map(s => s['Trạng thái']).filter(Boolean))];
+
+  document.getElementById('classFilter').innerHTML = '<option value="">Tất cả lớp</option>' + classes.map(c => `<option value="${c}">${c}</option>`).join('');
+  document.getElementById('attClass').innerHTML = '<option value="">Chọn lớp</option>' + classes.map(c => `<option value="${c}">${c}</option>`).join('');
+  document.getElementById('statusFilter').innerHTML = '<option value="">Tất cả trạng thái</option>' + statuses.map(s => `<option value="${s}">${s}</option>`).join('');
+}
+
+function renderStudents() {
+  const q = document.getElementById('q').value.toLowerCase();
+  const classF = document.getElementById('classFilter').value;
+  const statusF = document.getElementById('statusFilter').value;
+
+  const filtered = students.filter(s => {
+    const matchQ = (s['Họ tên'] || '').toLowerCase().includes(q) || (s['Mã số HV'] || '').toString().toLowerCase().includes(q);
+    const matchClass = !classF || s['Lớp'] === classF;
+    const matchStatus = !statusF || s['Trạng thái'] === statusF;
+    return matchQ && matchClass && matchStatus;
+  });
+
+  const body = document.getElementById('studentBody');
+  if(filtered.length === 0) {
+    body.innerHTML = '<tr><td colspan="7" class="empty">Không tìm thấy học viên</td></tr>';
+    return;
+  }
+
+  body.innerHTML = filtered.map(s => {
+    return `<tr>
+      <td><b>${s['Mã số HV'] || ''}</b></td>
+      <td>${s['Họ tên'] || ''}</td>
+      <td><span class="badge">${s['Lớp'] || ''}</span></td>
+      <td>${s['GVCN'] || ''}</td>
+      <td>${s['Trạng thái'] || ''}</td>
+      <td>${s['Sinh nhật'] || s['生年月日'] || ''}</td>
+      <td><button class="btn light" style="padding:5px 10px; font-size:12px" onclick='viewProfile(${JSON.stringify(s)})'>Xem</button></td>
+    </tr>`;
+  }).join('');
+}
+
+function viewProfile(student) {
+  document.getElementById('profileBody').innerHTML = `
+    <div class="profile-card">
+      <p><strong>Mã học viên:</strong> ${student['Mã số HV'] || ''}</p>
+      <p><strong>Họ tên:</strong> ${student['Họ tên'] || ''}</p>
+      <p><strong>Lớp:</strong> ${student['Lớp'] || 'Chưa xếp lớp'}</p>
+      <p><strong>Giáo viên chủ nhiệm:</strong> ${student['GVCN'] || 'Chưa cập nhật'}</p>
+      <p><strong>Ngày sinh:</strong> ${student['Sinh nhật'] || student['生年月日'] || ''}</p>
