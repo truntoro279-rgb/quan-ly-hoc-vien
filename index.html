@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Quản lý học viên - V5</title>
+<title>Quản lý học viên</title>
 
 <style>
 *{box-sizing:border-box}
@@ -265,512 +265,6 @@ th{
     grid-template-columns:1fr
   }
 }
-
-/* =========================================================
-   THẺ THÔNG TIN CHI TIẾT HỌC VIÊN
-   ========================================================= */
-
-.student-cards{
-  display:grid;
-  grid-template-columns:1fr;
-  gap:16px;
-}
-
-.student-card{
-  background:#fff;
-  border:1px solid #dfe8f1;
-  border-radius:14px;
-  overflow:hidden;
-  box-shadow:0 4px 16px rgba(22,50,75,.08);
-}
-
-.student-card-head{
-  padding:18px 20px;
-  background:linear-gradient(110deg,#143f72,#1769d1);
-  color:#fff;
-}
-
-.student-details{
-  display:none;
-}
-
-.student-card.expanded .student-details{
-  display:block;
-}
-
-.student-name{
-  cursor:pointer;
-  user-select:none;
-}
-
-.student-name::after{
-  content:'  ▾';
-  font-size:12px;
-  opacity:.75;
-}
-
-.student-card.expanded .student-name::after{
-  content:'  ▴';
-}
-
-.student-summary{
-  display:flex;
-  flex-wrap:wrap;
-  gap:18px;
-  margin-top:9px;
-  font-size:13px;
-  color:rgba(255,255,255,.9);
-  cursor:pointer;
-  user-select:none;
-}
-
-.student-summary b{
-  color:#fff;
-}
-
-.student-card-head-top{
-  display:flex;
-  align-items:flex-start;
-  justify-content:space-between;
-  gap:16px;
-}
-
-.student-code{
-  font-size:22px;
-  font-weight:800;
-  letter-spacing:.2px;
-}
-
-.student-name{
-  margin-top:5px;
-  font-size:18px;
-  font-weight:700;
-}
-
-.student-katakana{
-  margin-top:5px;
-  font-size:14px;
-  opacity:.9;
-}
-
-.student-status{
-  padding:7px 11px;
-  border-radius:999px;
-  background:#fff;
-  color:#1769d1;
-  font-size:12px;
-  font-weight:800;
-  white-space:nowrap;
-}
-
-.student-section-title{
-  padding:11px 18px;
-  background:#f7fafc;
-  color:#486581;
-  font-size:12px;
-  font-weight:800;
-  border-bottom:1px solid #e5edf4;
-}
-
-.student-info{
-  display:grid;
-  grid-template-columns:repeat(3,1fr);
-}
-
-.student-info-item{
-  padding:13px 18px;
-  border-bottom:1px solid #e8eef3;
-  border-right:1px solid #e8eef3;
-}
-
-.student-info-item:nth-child(3n){
-  border-right:0;
-}
-
-.student-info-label{
-  font-size:11px;
-  color:#627d98;
-  margin-bottom:5px;
-  font-weight:600;
-}
-
-.student-info-value{
-  font-size:14px;
-  line-height:1.4;
-  font-weight:700;
-  color:#102a43;
-  min-height:19px;
-  word-break:break-word;
-}
-
-.student-empty{
-  text-align:center;
-  padding:28px 18px;
-  color:#627d98;
-}
-
-.student-result-count{
-  margin:-2px 0 12px;
-  font-size:12px;
-  color:#627d98;
-}
-
-@media(prefers-color-scheme:dark){
-
-  .student-card{
-    background:#1a2333;
-    border-color:#2a374a;
-    box-shadow:0 4px 16px rgba(0,0,0,.18);
-  }
-
-  .student-section-title{
-    background:#121824;
-    color:#9fb3c8;
-    border-bottom-color:#2a374a;
-  }
-
-  .student-info-item{
-    border-bottom-color:#2a374a;
-    border-right-color:#2a374a;
-  }
-
-  .student-info-label{
-    color:#9fb3c8;
-  }
-
-  .student-info-value{
-    color:#fff;
-  }
-
-  .student-result-count{
-    color:#9fb3c8;
-  }
-
-  .student-empty{
-    color:#9fb3c8;
-  }
-}
-
-@media(max-width:850px){
-
-  .student-info{
-    grid-template-columns:repeat(2,1fr);
-  }
-
-  .student-info-item:nth-child(3n){
-    border-right:1px solid #e8eef3;
-  }
-
-  .student-info-item:nth-child(2n){
-    border-right:0;
-  }
-
-  @media(prefers-color-scheme:dark){
-    .student-info-item:nth-child(3n){
-      border-right-color:#2a374a;
-    }
-  }
-}
-
-@media(max-width:550px){
-
-  .student-card-head-top{
-    flex-direction:column;
-    gap:10px;
-  }
-
-  .student-code{
-    font-size:19px;
-  }
-
-  .student-name{
-    font-size:16px;
-  }
-
-  .student-info{
-    grid-template-columns:1fr;
-  }
-
-  .student-info-item,
-  .student-info-item:nth-child(2n),
-  .student-info-item:nth-child(3n){
-    border-right:0;
-  }
-}
-
-
-
-/* ĐIỂM DANH DẠNG NÚT + TICK */
-.att-class-picker{
-  min-height:42px;
-  display:flex;
-  flex-wrap:wrap;
-  gap:8px;
-  align-items:center;
-  padding:2px 0;
-}
-
-.att-class-btn{
-  border:1px solid #ccd8e2;
-  background:#fff;
-  color:#334e68;
-  padding:9px 16px;
-  border-radius:999px;
-  font-weight:700;
-  cursor:pointer;
-  transition:.15s;
-}
-
-.att-class-btn:hover{
-  border-color:#1769d1;
-  color:#1769d1;
-  background:#edf4ff;
-}
-
-.att-class-btn.active{
-  background:#1769d1;
-  color:#fff;
-  border-color:#1769d1;
-}
-
-.att-class-empty{
-  color:#627d98;
-  font-size:13px;
-}
-
-.att-check{
-  display:inline-flex;
-  align-items:center;
-  gap:8px;
-  cursor:pointer;
-  user-select:none;
-  font-weight:700;
-}
-
-.att-check input{
-  position:absolute;
-  opacity:0;
-  pointer-events:none;
-}
-
-.att-switch{
-  width:42px;
-  height:23px;
-  border-radius:999px;
-  background:#cbd5e1;
-  position:relative;
-  transition:.2s;
-  flex:none;
-}
-
-.att-switch::after{
-  content:'';
-  position:absolute;
-  width:17px;
-  height:17px;
-  top:3px;
-  left:3px;
-  background:#fff;
-  border-radius:50%;
-  transition:.2s;
-  box-shadow:0 1px 3px rgba(0,0,0,.25);
-}
-
-.att-check input:checked + .att-switch{
-  background:#1769d1;
-}
-
-.att-check input:checked + .att-switch::after{
-  left:22px;
-}
-
-.att-status-text{
-  min-width:52px;
-}
-
-@media(prefers-color-scheme:dark){
-  .att-class-btn{
-    background:#1a2333;
-    color:#d9e2ec;
-    border-color:#2a374a;
-  }
-  .att-class-btn:hover{
-    background:#222f47;
-    color:#fff;
-  }
-  .att-class-btn.active{
-    background:#1769d1;
-    color:#fff;
-  }
-  .att-class-empty{
-    color:#9fb3c8;
-  }
-}
-
-
-
-.attendance-actions{
-  display:flex;
-  gap:10px;
-  flex-wrap:wrap;
-}
-
-.btn-secondary{
-  background:#334e68 !important;
-}
-
-.monthly-panel{
-  margin-top:18px;
-}
-
-.monthly-head{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  gap:16px;
-  margin-bottom:14px;
-}
-
-.monthly-head h2{
-  margin:0 0 5px;
-}
-
-.monthly-note{
-  font-size:13px;
-  color:#627d98;
-}
-
-.monthly-tools{
-  display:flex;
-  gap:8px;
-  align-items:center;
-}
-
-.monthly-tools input{
-  height:40px;
-  border:1px solid #ccd8e2;
-  border-radius:8px;
-  padding:0 10px;
-  background:#fff;
-}
-
-.monthly-summary{
-  display:flex;
-  flex-wrap:wrap;
-  gap:8px;
-  margin-bottom:12px;
-}
-
-.monthly-badge{
-  padding:7px 11px;
-  border-radius:8px;
-  background:#edf4ff;
-  color:#1769d1;
-  font-size:13px;
-  font-weight:700;
-}
-
-.monthly-table-wrap{
-  overflow:auto;
-  border:1px solid #2a374a;
-  border-radius:10px;
-}
-
-.monthly-table{
-  min-width:1050px;
-  border-collapse:separate;
-  border-spacing:0;
-}
-
-.monthly-table th,
-.monthly-table td{
-  text-align:center;
-  white-space:nowrap;
-  padding:8px 7px;
-  border-right:1px solid #2a374a;
-  border-bottom:1px solid #2a374a;
-}
-
-.monthly-table th{
-  background:#111b2a;
-  color:#fff;
-  position:sticky;
-  top:0;
-  z-index:2;
-}
-
-.monthly-table th:first-child,
-.monthly-table td:first-child{
-  position:sticky;
-  left:0;
-  z-index:3;
-  background:#1a2333;
-}
-
-.monthly-table th:nth-child(2),
-.monthly-table td:nth-child(2){
-  position:sticky;
-  left:70px;
-  z-index:3;
-  background:#1a2333;
-  min-width:170px;
-}
-
-.monthly-table th:nth-child(3),
-.monthly-table td:nth-child(3){
-  position:sticky;
-  left:240px;
-  z-index:3;
-  background:#1a2333;
-  min-width:90px;
-}
-
-.monthly-table .day-present{
-  color:#38a169;
-  font-weight:900;
-  font-size:17px;
-}
-
-.monthly-table .day-absent{
-  color:#e53e3e;
-  font-weight:900;
-  font-size:17px;
-}
-
-.monthly-table .day-empty{
-  color:#718096;
-}
-
-.monthly-table .total-col{
-  font-weight:800;
-  background:#172235;
-}
-
-@media(max-width:700px){
-  .monthly-head{
-    flex-direction:column;
-    align-items:stretch;
-  }
-  .monthly-tools{
-    width:100%;
-  }
-  .monthly-tools input{
-    flex:1;
-  }
-}
-
-@media(prefers-color-scheme:dark){
-  .monthly-note{color:#9fb3c8}
-  .monthly-tools input{
-    background:#1a2333;
-    color:#f4f7fb;
-    border-color:#2a374a;
-  }
-  .monthly-badge{
-    background:#222f47;
-    color:#63b3ed;
-  }
-}
 </style>
 </head>
 
@@ -877,16 +371,49 @@ th{
     </div>
 
 
-    <div id="studentResultCount" class="student-result-count"></div>
+    <div style="overflow:auto">
 
-    <div id="studentBody" class="student-cards">
+      <table>
 
-      <div class="student-empty">
-        Đang tải dữ liệu...
-      </div>
+        <thead>
+          <tr>
+            <th>Mã HV</th>
+            <th>Họ tên</th>
+            <th>Lớp</th>
+            <th>GVCN</th>
+            <th>Trạng thái</th>
+          </tr>
+        </thead>
+
+        <tbody id="studentBody">
+
+          <tr>
+            <td
+              colspan="5"
+              class="loading">
+
+              Đang tải dữ liệu...
+
+            </td>
+          </tr>
+
+        </tbody>
+
+      </table>
 
     </div>
 
+  </div>
+
+</section>
+
+
+<!-- TÀI LIỆU -->
+<section id="documents" class="page">
+
+  <div class="panel">
+    <h2>📚 Tài liệu</h2>
+    <p style="color:#627d98">Khu vực quản lý tài liệu của hệ thống.</p>
   </div>
 
 </section>
@@ -907,11 +434,15 @@ th{
         id="attDate"
         type="date">
 
-      <input id="attClass" type="hidden" value="">
+      <select
+        id="attClass"
+        onchange="renderAttendanceList()">
 
-      <div class="att-class-picker" id="attClassPicker">
-        <div class="att-class-empty">Chọn lớp</div>
-      </div>
+        <option value="">
+          Chọn lớp
+        </option>
+
+      </select>
 
     </div>
 
@@ -947,7 +478,7 @@ th{
     </div>
 
 
-    <div class="actions attendance-actions">
+    <div class="actions">
 
       <button
         class="btn"
@@ -957,41 +488,6 @@ th{
 
       </button>
 
-      <button
-        class="btn btn-secondary"
-        onclick="loadMonthlyAttendance()">
-
-        Xem bảng điểm danh tháng
-
-      </button>
-
-    </div>
-
-  </div>
-
-  <div class="panel monthly-panel">
-
-    <div class="monthly-head">
-      <div>
-        <h2>Bảng điểm danh theo tháng</h2>
-        <div class="monthly-note">✓ Có mặt &nbsp;&nbsp; × Vắng &nbsp;&nbsp; · Chưa điểm danh</div>
-      </div>
-
-      <div class="monthly-tools">
-        <input id="attMonth" type="month">
-        <button class="btn" type="button" onclick="loadMonthlyAttendance()">Xem tháng</button>
-      </div>
-    </div>
-
-    <div id="monthlySummary" class="monthly-summary"></div>
-
-    <div class="monthly-table-wrap">
-      <table class="monthly-table">
-        <thead id="monthlyHead"></thead>
-        <tbody id="monthlyBody">
-          <tr><td style="text-align:center;padding:24px">Chọn lớp và bấm “Xem tháng”</td></tr>
-        </tbody>
-      </table>
     </div>
 
   </div>
@@ -1007,7 +503,8 @@ th{
    API GOOGLE APPS SCRIPT
    ========================================================= */
 
-const API_URL = 'https://script.google.com/macros/s/AKfycbw0D_9BRD5V3FRZlLyvWy1vmqVIpm5UBoOsolrRGwCxY6eTPkS_B1Ou61UCUCp_fJS3KQ/exec';
+const API_URL =
+'https://script.google.com/macros/s/AKfycbz4Eip_vfQlDOa0SvB_BFUEDTEc85Qq9e2Qxc8uPYumZF_69oZW6OAraHC9pUJhx9I7Tg/exec';
 
 
 /* =========================================================
@@ -1019,7 +516,8 @@ let students = [];
 const pages = [
   ['home','Trang chủ'],
   ['students','Học viên'],
-  ['attendance','Điểm danh']
+  ['attendance','Điểm danh'],
+  ['documents','Tài liệu']
 ];
 
 
@@ -1031,14 +529,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
   initMenu();
 
-  const now = new Date();
-
-  document.getElementById('attDate').valueAsDate = now;
-
-  const monthInput = document.getElementById('attMonth');
-  if(monthInput){
-    monthInput.value = now.getFullYear() + '-' + String(now.getMonth()+1).padStart(2,'0');
-  }
+  document.getElementById('attDate').valueAsDate =
+    new Date();
 
   loadData();
 
@@ -1132,9 +624,15 @@ async function loadData(){
   if(body){
 
     body.innerHTML = `
-      <div class="student-empty">
-        Đang tải dữ liệu...
-      </div>
+      <tr>
+        <td
+          colspan="5"
+          class="loading">
+
+          Đang tải dữ liệu...
+
+        </td>
+      </tr>
     `;
 
   }
@@ -1183,7 +681,7 @@ async function loadData(){
     students =
       Array.isArray(data.students)
         ? data.students
-        : (Array.isArray(data.data) ? data.data : []);
+        : [];
 
 
     console.log(
@@ -1218,11 +716,18 @@ async function loadData(){
     if(body){
 
       body.innerHTML = `
-        <div class="student-empty error">
-          Không tải được dữ liệu học viên.
-          <br>
-          ${escapeHtml(error.message || 'Kiểm tra Google Apps Script')}
-        </div>
+        <tr>
+          <td
+            colspan="5"
+            class="error">
+
+            Không tải được dữ liệu.
+            <br>
+            Vui lòng kiểm tra lại
+            Google Apps Script.
+
+          </td>
+        </tr>
       `;
 
     }
@@ -1312,30 +817,19 @@ function initFilters(){
       .join('');
 
 
-  const attPicker =
-    document.getElementById('attClassPicker');
+  document.getElementById(
+    'attClass'
+  ).innerHTML =
 
-  if(attPicker){
-    attPicker.innerHTML =
-      classes.length
-        ? classes.map(x => `
-            <button
-              type="button"
-              class="att-class-btn"
-              data-class="${escapeHtml(x)}"
-              onclick="selectAttendanceClass(this.dataset.class)">
-              ${escapeHtml(x)}
-            </button>
-          `).join('')
-        : '<div class="att-class-empty">Chưa có lớp</div>';
-  }
+    '<option value="">Chọn lớp</option>' +
 
-  const attClass =
-    document.getElementById('attClass');
-
-  if(attClass){
-    attClass.value = '';
-  }
+    classes
+      .map(x => `
+        <option value="${escapeHtml(x)}">
+          ${escapeHtml(x)}
+        </option>
+      `)
+      .join('');
 
 
   document.getElementById(
@@ -1364,32 +858,35 @@ function renderStudents(){
   const searchInput =
     document.getElementById('q');
 
+
   const classInput =
     document.getElementById('classFilter');
+
 
   const statusInput =
     document.getElementById('statusFilter');
 
-  const body =
-    document.getElementById('studentBody');
-
-  const countBox =
-    document.getElementById('studentResultCount');
 
   if(!searchInput ||
      !classInput ||
-     !statusInput ||
-     !body){
+     !statusInput){
+
     return;
+
   }
 
+
   const q =
-    String(searchInput.value || '')
-      .toLowerCase()
-      .trim();
+    String(
+      searchInput.value || ''
+    )
+    .toLowerCase()
+    .trim();
+
 
   const classFilter =
     classInput.value;
+
 
   const statusFilter =
     statusInput.value;
@@ -1400,37 +897,33 @@ function renderStudents(){
 
       const maHV =
         String(
-          student.maHV ||
-          student.code ||
-          ''
-        ).toLowerCase();
+          student.maHV || ''
+        )
+        .toLowerCase();
+
 
       const hoTen =
         String(
-          student.hoTen ||
-          student.name ||
-          ''
-        ).toLowerCase();
+          student.hoTen || ''
+        )
+        .toLowerCase();
 
-      const katakana =
-        String(
-          student.katakana ||
-          ''
-        ).toLowerCase();
 
       const matchSearch =
         !q ||
         maHV.includes(q) ||
-        hoTen.includes(q) ||
-        katakana.includes(q);
+        hoTen.includes(q);
+
 
       const matchClass =
         !classFilter ||
         student.lop === classFilter;
 
+
       const matchStatus =
         !statusFilter ||
         student.trangThai === statusFilter;
+
 
       return (
         matchSearch &&
@@ -1441,223 +934,88 @@ function renderStudents(){
     });
 
 
-  if(countBox){
+  const body =
+    document.getElementById(
+      'studentBody'
+    );
 
-    countBox.textContent =
-      filtered.length === students.length
-        ? `Tổng ${students.length} học viên`
-        : `Hiển thị ${filtered.length} / ${students.length} học viên`;
 
+  if(!body){
+    return;
   }
 
 
   if(filtered.length === 0){
 
     body.innerHTML = `
-      <div class="student-empty">
-        Không tìm thấy học viên phù hợp.
-      </div>
+      <tr>
+        <td
+          colspan="5"
+          style="
+            text-align:center;
+            padding:20px
+          ">
+
+          Không tìm thấy dữ liệu
+
+        </td>
+      </tr>
     `;
 
     return;
+
   }
 
 
   body.innerHTML =
     filtered
-      .map(student => {
+      .map(student => `
 
-        const maHV =
-          student.maHV ||
-          student.code ||
-          '';
+        <tr>
 
-        const hoTen =
-          student.hoTen ||
-          student.name ||
-          '';
+          <td>
+            <b>
+              ${escapeHtml(
+                student.maHV
+              )}
+            </b>
+          </td>
 
-        const katakana =
-          student.katakana ||
-          '';
+          <td>
+            ${escapeHtml(
+              student.hoTen
+            )}
+          </td>
 
-        const trangThai =
-          student.trangThai ||
-          student.status ||
-          '';
+          <td>
 
-        return `
+            <span class="badge">
 
-          <div class="student-card">
-
-            <div class="student-card-head">
-
-              <div class="student-card-head-top">
-
-                <div>
-
-                  <div class="student-code">
-                    ${escapeHtml(maHV)}
-                  </div>
-
-                  <div class="student-name"
-                       onclick="toggleStudent(this)"
-                       title="Bấm vào tên để xem/ẩn thông tin">
-                    ${escapeHtml(hoTen)}
-                  </div>
-
-                  <div class="student-summary"
-                       onclick="toggleStudent(this)">
-                    <span><b>Lớp:</b> ${escapeHtml(student.lop || '—')}</span>
-                    <span><b>GVCN:</b> ${escapeHtml(student.gvcn || '—')}</span>
-                  </div>
-
-                  ${
-                    katakana
-                      ? `
-                        <div class="student-katakana">
-                          ${escapeHtml(katakana)}
-                        </div>
-                      `
-                      : ''
-                  }
-
-                </div>
-
-                <div class="student-status">
-                  ${escapeHtml(trangThai || '—')}
-                </div>
-
-              </div>
-
-            </div>
-
-
-            <div class="student-details">
-
-            <div class="student-section-title">
-              THÔNG TIN HỌC VIÊN
-            </div>
-
-            <div class="student-info">
-
-              ${studentInfoItem('Lớp', student.lop)}
-              ${studentInfoItem('GVCN', student.gvcn)}
-              ${studentInfoItem('Trung tâm', student.trungTam)}
-              ${studentInfoItem('Đối ngoại', student.doiNgoai)}
-              ${studentInfoItem('Level', student.level)}
-              ${studentInfoItem('Giới tính', student.gioiTinh)}
-              ${studentInfoItem('Ngày sinh', student.ngaySinh)}
-
-            </div>
-
-
-            <div class="student-section-title">
-              NGHIỆP ĐOÀN
-            </div>
-
-            <div class="student-info">
-
-              ${studentInfoItem(
-                'Nghiệp đoàn',
-                student.nghiepDoan
+              ${escapeHtml(
+                student.lop
               )}
 
-              ${studentInfoItem(
-                'Nghiệp đoàn (Kana)',
-                student.nghiepDoanKana
-              )}
+            </span>
 
-            </div>
+          </td>
 
+          <td>
+            ${escapeHtml(
+              student.gvcn
+            )}
+          </td>
 
-            <div class="student-section-title">
-              CÔNG TY / ĐƠN VỊ TIẾP NHẬN
-            </div>
+          <td>
+            ${escapeHtml(
+              student.trangThai
+            )}
+          </td>
 
-            <div class="student-info">
+        </tr>
 
-              ${studentInfoItem(
-                'Công ty',
-                student.congTy
-              )}
-
-              ${studentInfoItem(
-                'Công ty (Kana)',
-                student.congTyKana
-              )}
-
-              ${studentInfoItem(
-                'Ngành nghề',
-                student.nganhNghe
-              )}
-
-            </div>
-
-
-            <div class="student-section-title">
-              LỊCH TRÌNH
-            </div>
-
-            <div class="student-info">
-
-              ${studentInfoItem(
-                'Ngày thi / Phỏng vấn',
-                student.ngayThi
-              )}
-
-              ${studentInfoItem(
-                'Ngày nhập học dự kiến',
-                student.ngayNhapHoc
-              )}
-
-            </div>
-            </div>
-
-          </div>
-
-        `;
-
-      })
+      `)
       .join('');
-}
 
-
-function toggleStudent(nameElement){
-
-  const card = nameElement.closest('.student-card');
-
-  if(!card){
-    return;
-  }
-
-  card.classList.toggle('expanded');
-
-}
-
-
-function studentInfoItem(label, value){
-
-  const text =
-    String(value || '').trim();
-
-  return `
-    <div class="student-info-item">
-
-      <div class="student-info-label">
-        ${escapeHtml(label)}
-      </div>
-
-      <div class="student-info-value">
-        ${
-          text
-            ? escapeHtml(text)
-            : '—'
-        }
-      </div>
-
-    </div>
-  `;
 }
 
 
@@ -1665,279 +1023,119 @@ function studentInfoItem(label, value){
    DANH SÁCH ĐIỂM DANH
    ========================================================= */
 
-function selectAttendanceClass(classValue){
-
-  const input =
-    document.getElementById('attClass');
-
-  if(input){
-    input.value = classValue;
-  }
-
-  document
-    .querySelectorAll('.att-class-btn')
-    .forEach(btn => {
-      btn.classList.toggle(
-        'active',
-        btn.dataset.class === classValue
-      );
-    });
-
-  renderAttendanceList();
-
-}
-
-
 function renderAttendanceList(){
 
   const classValue =
-    document.getElementById('attClass').value;
+    document.getElementById(
+      'attClass'
+    ).value;
+
 
   const body =
-    document.getElementById('attBody');
+    document.getElementById(
+      'attBody'
+    );
+
 
   if(!body){
     return;
   }
 
+
   if(!classValue){
 
     body.innerHTML = `
       <tr>
-        <td colspan="3"
-            style="text-align:center;padding:20px">
+        <td
+          colspan="3"
+          style="
+            text-align:center;
+            padding:20px
+          ">
+
           Chọn lớp để điểm danh
+
         </td>
       </tr>
     `;
 
     return;
+
   }
+
 
   const list =
     students.filter(
-      student => student.lop === classValue
+      student =>
+        student.lop === classValue
     );
+
 
   if(list.length === 0){
 
     body.innerHTML = `
       <tr>
-        <td colspan="3"
-            style="text-align:center;padding:20px">
-          Không có học viên trong lớp này
+        <td
+          colspan="3"
+          style="
+            text-align:center;
+            padding:20px
+          ">
+
+          Không có học viên
+          trong lớp này
+
         </td>
       </tr>
     `;
 
     return;
+
   }
+
 
   body.innerHTML =
-    list.map(student => {
+    list.map(student => `
 
-      const currentStatus =
-        student.trangThai === 'Vắng'
-          ? 'Vắng'
-          : 'Có mặt';
-
-      const checked =
-        currentStatus === 'Có mặt'
-          ? 'checked'
-          : '';
-
-      return `
-        <tr>
-
-          <td>
-            ${escapeHtml(student.maHV)}
-          </td>
-
-          <td>
-            ${escapeHtml(student.hoTen)}
-          </td>
-
-          <td>
-            <label class="att-check">
-
-              <input
-                type="checkbox"
-                class="att-status"
-                data-id="${escapeHtml(student.maHV)}"
-                value="Có mặt"
-                ${checked}
-                onchange="updateAttendanceText(this)">
-
-              <span class="att-switch"></span>
-
-              <span class="att-status-text">
-                ${currentStatus}
-              </span>
-
-            </label>
-          </td>
-
-        </tr>
-      `;
-
-    }).join('');
-
-}
-
-
-function updateAttendanceText(input){
-
-  const text =
-    input.parentElement.querySelector(
-      '.att-status-text'
-    );
-
-  if(text){
-    text.textContent =
-      input.checked
-        ? 'Có mặt'
-        : 'Vắng';
-  }
-
-}
-
-
-/* =========================================================
-   BẢNG ĐIỂM DANH THEO THÁNG
-   ========================================================= */
-
-async function loadMonthlyAttendance(){
-
-  const month = document.getElementById('attMonth').value;
-  const classValue = document.getElementById('attClass').value;
-  const head = document.getElementById('monthlyHead');
-  const body = document.getElementById('monthlyBody');
-  const summary = document.getElementById('monthlySummary');
-
-  if(!month){
-    alert('Vui lòng chọn tháng');
-    return;
-  }
-
-  if(!classValue){
-    alert('Vui lòng chọn lớp');
-    return;
-  }
-
-  body.innerHTML = '<tr><td colspan="40" style="text-align:center;padding:24px">Đang tải bảng điểm danh...</td></tr>';
-  head.innerHTML = '';
-  summary.innerHTML = '';
-
-  try{
-    /*
-       KHÔNG gọi getAttendanceMonth nữa.
-       Web App đang chạy ổn với action getAttendance, nên bảng tháng
-       sẽ lấy dữ liệu của từng ngày từ chính API đang dùng cho điểm danh.
-       Như vậy không phụ thuộc vào phiên bản Apps Script mới.
-    */
-    const year = Number(month.slice(0,4));
-    const monthNumber = Number(month.slice(5,7));
-    const days = new Date(year, monthNumber, 0).getDate();
-    const list = students.filter(s => s.lop === classValue);
-
-    if(!list.length){
-      head.innerHTML = `<tr><th>MSHV</th><th>Họ tên</th><th>GVCN</th>${Array.from({length:days},(_,i)=>`<th>${i+1}</th>`).join('')}<th>Tổng có mặt</th><th>Tổng vắng</th></tr>`;
-      body.innerHTML = `<tr><td colspan="${days+5}" style="text-align:center;padding:24px">Không có học viên trong lớp này</td></tr>`;
-      return;
-    }
-
-    // Lấy điểm danh của từng ngày từ API hiện tại.
-    const dailyResults = [];
-    // Gọi tuần tự để tránh Apps Script bị giới hạn khi nhận quá nhiều
-    // request đồng thời. API này đã có sẵn trong backend đang chạy.
-    for(let index = 0; index < days; index++){
-      const day = index + 1;
-      const date = `${month}-${String(day).padStart(2,'0')}`;
-      const response = await fetch(
-        `${API_URL}?action=getAttendance&date=${encodeURIComponent(date)}&v=5`,
-        {method:'GET', cache:'no-store'}
-      );
-
-      const raw = await response.text();
-      let result;
-      try{
-        result = JSON.parse(raw);
-      }catch(e){
-        throw new Error(`Dữ liệu ngày ${day} không hợp lệ`);
-      }
-
-      if(result.ok === false){
-        throw new Error(result.error || result.message || `Không tải được ngày ${day}`);
-      }
-
-      dailyResults.push({date, records: result.records || {}});
-    }
-
-    const byDate = {};
-    let presentAll = 0;
-    let absentAll = 0;
-
-    dailyResults.forEach(item => {
-      byDate[item.date] = item.records;
-    });
-
-    head.innerHTML = `
       <tr>
-        <th>MSHV</th>
-        <th>Họ tên</th>
-        <th>GVCN</th>
-        ${Array.from({length:days}, (_,i) => `<th>${i+1}</th>`).join('')}
-        <th>Tổng có mặt</th>
-        <th>Tổng vắng</th>
+
+        <td>
+          ${escapeHtml(
+            student.maHV
+          )}
+        </td>
+
+        <td>
+          ${escapeHtml(
+            student.hoTen
+          )}
+        </td>
+
+        <td>
+
+          <select
+            data-id="${escapeHtml(
+              student.maHV
+            )}"
+            class="att-status">
+
+            <option value="Có mặt">
+              Có mặt
+            </option>
+
+            <option value="Vắng">
+              Vắng
+            </option>
+
+          </select>
+
+        </td>
+
       </tr>
-    `;
 
-    body.innerHTML = list.map(student => {
-      let present = 0;
-      let absent = 0;
-      const cells = [];
+    `)
+    .join('');
 
-      for(let d=1; d<=days; d++){
-        const dateKey = `${month}-${String(d).padStart(2,'0')}`;
-        const status = String((byDate[dateKey] || {})[student.maHV] || '').trim();
-
-        if(status === 'Có mặt'){
-          present++;
-          presentAll++;
-          cells.push('<td class="day-present">✓</td>');
-        }else if(status === 'Vắng'){
-          absent++;
-          absentAll++;
-          cells.push('<td class="day-absent">×</td>');
-        }else{
-          cells.push('<td class="day-empty">·</td>');
-        }
-      }
-
-      return `
-        <tr>
-          <td>${escapeHtml(student.maHV)}</td>
-          <td style="text-align:left">${escapeHtml(student.hoTen)}</td>
-          <td>${escapeHtml(student.gvcn || '—')}</td>
-          ${cells.join('')}
-          <td class="total-col">${present}</td>
-          <td class="total-col">${absent}</td>
-        </tr>
-      `;
-    }).join('');
-
-    summary.innerHTML = `
-      <div class="monthly-badge">Lớp: ${escapeHtml(classValue)}</div>
-      <div class="monthly-badge">Tháng: ${escapeHtml(month.split('-').reverse().join('/'))}</div>
-      <div class="monthly-badge">Học viên: ${list.length}</div>
-      <div class="monthly-badge">Lượt có mặt: ${presentAll}</div>
-      <div class="monthly-badge">Lượt vắng: ${absentAll}</div>
-    `;
-
-  }catch(error){
-    console.error('Lỗi bảng điểm danh tháng:', error);
-    body.innerHTML = `<tr><td colspan="40" style="text-align:center;padding:24px;color:#e53e3e">${escapeHtml(error.message || 'Không tải được dữ liệu')}</td></tr>`;
-  }
 }
 
 
@@ -1990,21 +1188,13 @@ async function saveAttendance(){
     )
     .forEach(select => {
 
-      const student = students.find(
-        s => String(s.maHV || '') === String(select.dataset.id || '')
-      );
-
       records.push({
 
-        id: select.dataset.id,
+        id:
+          select.dataset.id,
 
-        maHV: select.dataset.id,
-
-        hoTen: student ? student.hoTen : '',
-
-        lop: classValue,
-
-        status: select.checked ? 'Có mặt' : 'Vắng'
+        status:
+          select.value
 
       });
 
@@ -2045,21 +1235,17 @@ async function saveAttendance(){
       );
 
 
-    const raw = await response.text();
-    let result;
+    const result =
+      await response.json();
 
-    try{
-      result = JSON.parse(raw);
-    }catch(parseError){
-      throw new Error('Google Apps Script trả về dữ liệu không hợp lệ: ' + raw.slice(0,200));
-    }
 
     if(result.ok === false){
+
       throw new Error(
         result.message ||
-        result.error ||
         'Lỗi lưu điểm danh'
       );
+
     }
 
 
