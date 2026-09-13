@@ -50,7 +50,17 @@ header{
 .logo{
   font-weight:800;
   color:#1769d1;
-  font-size:18px
+  font-size:18px;
+  display:flex;
+  align-items:center;
+  gap:9px
+}
+
+.logo img{
+  width:34px;
+  height:34px;
+  object-fit:contain;
+  border-radius:6px
 }
 
 nav{
@@ -253,6 +263,86 @@ th{
   color:#c53030
 }
 
+.modal-backdrop{
+  display:none;
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,.62);
+  z-index:100;
+  align-items:center;
+  justify-content:center;
+  padding:20px
+}
+
+.modal-backdrop.show{display:flex}
+
+.student-modal{
+  width:min(900px,100%);
+  max-height:90vh;
+  overflow:auto;
+  background:#1a2333;
+  border:1px solid #2a374a;
+  border-radius:14px;
+  box-shadow:0 20px 60px rgba(0,0,0,.45);
+  padding:22px
+}
+
+.student-modal-head{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:15px;
+  margin-bottom:18px
+}
+
+.student-modal-head h2{margin:0;color:#fff}
+
+.modal-close{
+  border:0;
+  background:#222f47;
+  color:#fff;
+  width:38px;
+  height:38px;
+  border-radius:50%;
+  cursor:pointer;
+  font-size:22px
+}
+
+.student-info-grid{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:10px
+}
+
+.info-item{
+  background:#121824;
+  border:1px solid #2a374a;
+  border-radius:9px;
+  padding:12px
+}
+
+.info-label{
+  color:#9fb3c8;
+  font-size:12px;
+  font-weight:700;
+  margin-bottom:6px
+}
+
+.info-value{
+  color:#fff;
+  font-size:14px;
+  white-space:pre-wrap;
+  word-break:break-word
+}
+
+.student-name-link{
+  color:#fff;
+  cursor:pointer;
+  font-weight:700
+}
+
+.student-name-link:hover{color:#38a169;text-decoration:underline}
+
 @media(max-width:850px){
   .nav{
     flex-direction:column;
@@ -272,7 +362,7 @@ th{
 
 <header>
   <div class="nav">
-    <div class="logo">✈ TTĐT THÀNH ĐÔ - THANH HOÁ</div>
+    <div class="logo"><img src="logo.png" alt="THANH DO"> <span>TTĐT THÀNH ĐÔ - THANH HOÁ</span></div>
     <nav id="nav"></nav>
   </div>
 </header>
@@ -283,6 +373,16 @@ th{
     <p>Hệ thống quản lý học viên tập trung</p>
   </div>
 </section>
+
+<div id="studentModal" class="modal-backdrop" onclick="closeStudentModal(event)">
+  <div class="student-modal" onclick="event.stopPropagation()">
+    <div class="student-modal-head">
+      <h2 id="studentModalTitle">Thông tin học viên</h2>
+      <button class="modal-close" onclick="closeStudentModal()">×</button>
+    </div>
+    <div id="studentInfoGrid" class="student-info-grid"></div>
+  </div>
+</div>
 
 <main>
 
@@ -524,6 +624,10 @@ const pages = [
 /* =========================================================
    KHỞI ĐỘNG
    ========================================================= */
+
+document.addEventListener('keydown', e => {
+  if(e.key === 'Escape') closeStudentModal();
+});
 
 document.addEventListener('DOMContentLoaded', () => {
 
@@ -982,9 +1086,12 @@ function renderStudents(){
           </td>
 
           <td>
-            ${escapeHtml(
-              student.hoTen
-            )}
+            <span
+              class="student-name-link"
+              onclick="showStudentDetail(${students.indexOf(student)})"
+              title="Bấm để xem toàn bộ thông tin">
+              ${escapeHtml(student.hoTen)}
+            </span>
           </td>
 
           <td>
@@ -1280,6 +1387,60 @@ async function saveAttendance(){
 /* =========================================================
    BẢO VỆ HTML
    ========================================================= */
+
+function showStudentDetail(index){
+
+  const student = students[index];
+  const modal = document.getElementById('studentModal');
+  const grid = document.getElementById('studentInfoGrid');
+  const title = document.getElementById('studentModalTitle');
+
+  if(!student || !modal || !grid) return;
+
+  title.innerText = 'Thông tin học viên: ' + String(student.hoTen || student.maHV || '');
+
+  grid.innerHTML = Object.entries(student).map(([key,value]) => {
+    let display = value;
+    if(value !== null && typeof value === 'object'){
+      try{ display = JSON.stringify(value, null, 2); }catch(e){ display = String(value); }
+    }
+    if(display === null || display === undefined || display === '') display = '-';
+    return `
+      <div class="info-item">
+        <div class="info-label">${escapeHtml(formatFieldName(key))}</div>
+        <div class="info-value">${escapeHtml(display)}</div>
+      </div>
+    `;
+  }).join('');
+
+  modal.classList.add('show');
+  document.body.style.overflow='hidden';
+}
+
+function closeStudentModal(event){
+  if(event && event.target !== event.currentTarget) return;
+  const modal = document.getElementById('studentModal');
+  if(modal) modal.classList.remove('show');
+  document.body.style.overflow='';
+}
+
+function formatFieldName(key){
+  const labels = {
+    maHV:'Mã học viên',
+    hoTen:'Họ tên',
+    lop:'Lớp',
+    gvcn:'Giáo viên chủ nhiệm',
+    trangThai:'Trạng thái',
+    sdt:'Số điện thoại',
+    ngaySinh:'Ngày sinh',
+    gioiTinh:'Giới tính',
+    diaChi:'Địa chỉ',
+    queQuan:'Quê quán',
+    cccd:'CCCD',
+    ngayNhapHoc:'Ngày nhập học'
+  };
+  return labels[key] || String(key);
+}
 
 function escapeHtml(value){
 
