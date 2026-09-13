@@ -335,6 +335,30 @@ th{
   word-break:break-word
 }
 
+.detail-section{
+  margin-bottom:16px
+}
+
+.detail-section:last-child{margin-bottom:0}
+
+.detail-section-title{
+  font-size:13px;
+  font-weight:800;
+  color:#38a169;
+  padding:8px 2px;
+  letter-spacing:.3px
+}
+
+.student-info-grid-inner{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:10px
+}
+
+@media(max-width:650px){
+  .student-info-grid-inner{grid-template-columns:1fr}
+}
+
 .student-name-link{
   color:#fff;
   cursor:pointer;
@@ -1399,20 +1423,73 @@ function showStudentDetail(index){
 
   title.innerText = 'Thông tin học viên: ' + String(student.hoTen || student.maHV || '');
 
-  grid.innerHTML = Object.entries(student).map(([key,value]) => {
-    let display = value;
-    if(value !== null && typeof value === 'object'){
-      try{ display = JSON.stringify(value, null, 2); }catch(e){ display = String(value); }
-    }
-    if(display === null || display === undefined || display === '') display = '-';
+  const field = (label, value, key) => {
+    const v = value ?? (student.detail ? student.detail[key] : '');
+    const display = String(v ?? '').trim() || '-';
     return `
       <div class="info-item">
-        <div class="info-label">${escapeHtml(formatFieldName(key))}</div>
+        <div class="info-label">${escapeHtml(label)}</div>
         <div class="info-value">${escapeHtml(display)}</div>
       </div>
     `;
-  }).join('');
+  };
 
+  const detail = student.detail || {};
+
+  const html = `
+    <div class="detail-section">
+      <div class="detail-section-title">THÔNG TIN HỌC VIÊN</div>
+      <div class="student-info-grid-inner">
+        ${field('Mã học viên', student.maHV, 'Mã Số HV')}
+        ${field('Họ tên', student.hoTen, 'Tên Romaji')}
+        ${field('Tên Katakana', student.katakana, 'Tên Katakana')}
+        ${field('Lớp', student.lop, 'Lớp')}
+        ${field('Giáo viên chủ nhiệm', student.gvcn, 'GVCN')}
+        ${field('Trung tâm', student.trungTam, 'Trung tâm')}
+        ${field('Đối ngoại', student.doiNgoai, 'Đối ngoại')}
+        ${field('Level', student.level, 'Level')}
+        ${field('Giới tính', student.gioiTinh, 'Giới tính')}
+        ${field('Ngày tháng năm sinh', student.ngaySinh, 'Ngày sinh')}
+        ${field('Trạng thái', student.trangThai, 'Trạng thái')}
+      </div>
+    </div>
+
+    <div class="detail-section">
+      <div class="detail-section-title">NGHIỆP ĐOÀN</div>
+      <div class="student-info-grid-inner">
+        ${field('Nghiệp đoàn', student.nghiepDoan, 'Nghiệp đoàn')}
+        ${field('Nghiệp đoàn (Kana)', student.nghiepDoanKana, 'Nghiệp đoàn (Kana)')}
+      </div>
+    </div>
+
+    <div class="detail-section">
+      <div class="detail-section-title">CÔNG TY / ĐƠN VỊ TIẾP NHẬN</div>
+      <div class="student-info-grid-inner">
+        ${field('Công ty', student.congTy, 'Công ty')}
+        ${field('Công ty (Kana)', student.congTyKana, 'Công ty (Kana)')}
+        ${field('Ngành nghề', student.nganhNghe, 'Ngành nghề')}
+      </div>
+    </div>
+
+    <div class="detail-section">
+      <div class="detail-section-title">LỊCH TRÌNH</div>
+      <div class="student-info-grid-inner">
+        ${field('Ngày thi / Phỏng vấn', student.ngayThi, 'Ngày thi')}
+        ${field('Ngày nhập học dự kiến', student.ngayNhapHoc, 'Ngày nhập học')}
+      </div>
+    </div>
+
+    <div class="detail-section">
+      <div class="detail-section-title">THÔNG TIN KHÁC</div>
+      <div class="student-info-grid-inner">
+        ${Object.entries(detail)
+          .filter(([key]) => !['STT','Trạng thái','MÃ SỐ HV','Mã Số HV','Tên Romaji','Tên Katakana','Trung tâm','Đối ngoại','Lớp','GVCN','Level','Giới tính','Ngày sinh','Nghiệp đoàn','Nghiệp đoàn (Kana)','Công ty','Công ty (Kana)','Ngành nghề','Ngày thi','Ngày nhập học'].includes(key))
+          .map(([key,value]) => field(formatFieldName(key), value, key)).join('')}
+      </div>
+    </div>
+  `;
+
+  grid.innerHTML = html;
   modal.classList.add('show');
   document.body.style.overflow='hidden';
 }
@@ -1437,7 +1514,17 @@ function formatFieldName(key){
     diaChi:'Địa chỉ',
     queQuan:'Quê quán',
     cccd:'CCCD',
-    ngayNhapHoc:'Ngày nhập học'
+    ngayNhapHoc:'Ngày nhập học',
+    katakana:'Tên Katakana',
+    trungTam:'Trung tâm',
+    doiNgoai:'Đối ngoại',
+    level:'Level',
+    nghiepDoan:'Nghiệp đoàn',
+    nghiepDoanKana:'Nghiệp đoàn (Kana)',
+    congTy:'Công ty',
+    congTyKana:'Công ty (Kana)',
+    nganhNghe:'Ngành nghề',
+    ngayThi:'Ngày thi / Phỏng vấn'
   };
   return labels[key] || String(key);
 }
