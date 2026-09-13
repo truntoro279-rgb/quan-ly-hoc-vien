@@ -70,7 +70,7 @@ footer{margin-top:30px;background:#fff;border-top:1px solid #e5edf4;padding:24px
 </main>
 <footer><div class="footerin"><b>TRUNG TÂM ĐÀO TẠO DU HỌC & XUẤT KHẨU LAO ĐỘNG</b><br><span class="muted">Hệ thống quản lý học viên</span></div></footer>
 <script>
-const API_URL='https://script.google.com/macros/s/AKfycbz_-jQBwWkh97LCPqyQnNk8x4gw4jBVAQ-Z0BNe4fEzC0hX9N_DC2FH9NwBDQy-bvKmrQ/exec'; // Dán URL Web App Google Apps Script vào đây sau khi triển khai.
+const API_URL='const API_URL='https://script.google.com/macros/s/AKfycbz_-jQBwWkh97LCPqyQnNk8x4gw4jBVAQ-Z0BNe4fEzC0hX9N_DC2FH9NwBDQy-bvKmrQ/exec';
 let students=[], leaves=[], todayAtt=[];
 const pages=[['home','Trang chủ'],['students','Học viên'],['docs','Tài liệu'],['leaves','Quản lý về quê'],['leaveForm','Đăng ký về quê'],['attendance','Điểm danh']];
 document.getElementById('nav').innerHTML=pages.map(([id,t])=>`<button data-id="${id}" onclick="show('${id}')">${t}</button>`).join('');
