@@ -607,6 +607,170 @@ th{
   }
 }
 
+
+
+.attendance-actions{
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap;
+}
+
+.btn-secondary{
+  background:#334e68 !important;
+}
+
+.monthly-panel{
+  margin-top:18px;
+}
+
+.monthly-head{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:16px;
+  margin-bottom:14px;
+}
+
+.monthly-head h2{
+  margin:0 0 5px;
+}
+
+.monthly-note{
+  font-size:13px;
+  color:#627d98;
+}
+
+.monthly-tools{
+  display:flex;
+  gap:8px;
+  align-items:center;
+}
+
+.monthly-tools input{
+  height:40px;
+  border:1px solid #ccd8e2;
+  border-radius:8px;
+  padding:0 10px;
+  background:#fff;
+}
+
+.monthly-summary{
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px;
+  margin-bottom:12px;
+}
+
+.monthly-badge{
+  padding:7px 11px;
+  border-radius:8px;
+  background:#edf4ff;
+  color:#1769d1;
+  font-size:13px;
+  font-weight:700;
+}
+
+.monthly-table-wrap{
+  overflow:auto;
+  border:1px solid #2a374a;
+  border-radius:10px;
+}
+
+.monthly-table{
+  min-width:1050px;
+  border-collapse:separate;
+  border-spacing:0;
+}
+
+.monthly-table th,
+.monthly-table td{
+  text-align:center;
+  white-space:nowrap;
+  padding:8px 7px;
+  border-right:1px solid #2a374a;
+  border-bottom:1px solid #2a374a;
+}
+
+.monthly-table th{
+  background:#111b2a;
+  color:#fff;
+  position:sticky;
+  top:0;
+  z-index:2;
+}
+
+.monthly-table th:first-child,
+.monthly-table td:first-child{
+  position:sticky;
+  left:0;
+  z-index:3;
+  background:#1a2333;
+}
+
+.monthly-table th:nth-child(2),
+.monthly-table td:nth-child(2){
+  position:sticky;
+  left:70px;
+  z-index:3;
+  background:#1a2333;
+  min-width:170px;
+}
+
+.monthly-table th:nth-child(3),
+.monthly-table td:nth-child(3){
+  position:sticky;
+  left:240px;
+  z-index:3;
+  background:#1a2333;
+  min-width:90px;
+}
+
+.monthly-table .day-present{
+  color:#38a169;
+  font-weight:900;
+  font-size:17px;
+}
+
+.monthly-table .day-absent{
+  color:#e53e3e;
+  font-weight:900;
+  font-size:17px;
+}
+
+.monthly-table .day-empty{
+  color:#718096;
+}
+
+.monthly-table .total-col{
+  font-weight:800;
+  background:#172235;
+}
+
+@media(max-width:700px){
+  .monthly-head{
+    flex-direction:column;
+    align-items:stretch;
+  }
+  .monthly-tools{
+    width:100%;
+  }
+  .monthly-tools input{
+    flex:1;
+  }
+}
+
+@media(prefers-color-scheme:dark){
+  .monthly-note{color:#9fb3c8}
+  .monthly-tools input{
+    background:#1a2333;
+    color:#f4f7fb;
+    border-color:#2a374a;
+  }
+  .monthly-badge{
+    background:#222f47;
+    color:#63b3ed;
+  }
+}
 </style>
 </head>
 
@@ -783,7 +947,7 @@ th{
     </div>
 
 
-    <div class="actions">
+    <div class="actions attendance-actions">
 
       <button
         class="btn"
@@ -793,6 +957,41 @@ th{
 
       </button>
 
+      <button
+        class="btn btn-secondary"
+        onclick="loadMonthlyAttendance()">
+
+        Xem bảng điểm danh tháng
+
+      </button>
+
+    </div>
+
+  </div>
+
+  <div class="panel monthly-panel">
+
+    <div class="monthly-head">
+      <div>
+        <h2>Bảng điểm danh theo tháng</h2>
+        <div class="monthly-note">✓ Có mặt &nbsp;&nbsp; × Vắng &nbsp;&nbsp; · Chưa điểm danh</div>
+      </div>
+
+      <div class="monthly-tools">
+        <input id="attMonth" type="month">
+        <button class="btn" type="button" onclick="loadMonthlyAttendance()">Xem tháng</button>
+      </div>
+    </div>
+
+    <div id="monthlySummary" class="monthly-summary"></div>
+
+    <div class="monthly-table-wrap">
+      <table class="monthly-table">
+        <thead id="monthlyHead"></thead>
+        <tbody id="monthlyBody">
+          <tr><td style="text-align:center;padding:24px">Chọn lớp và bấm “Xem tháng”</td></tr>
+        </tbody>
+      </table>
     </div>
 
   </div>
@@ -832,8 +1031,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
   initMenu();
 
-  document.getElementById('attDate').valueAsDate =
-    new Date();
+  const now = new Date();
+
+  document.getElementById('attDate').valueAsDate = now;
+
+  const monthInput = document.getElementById('attMonth');
+  if(monthInput){
+    monthInput.value = now.getFullYear() + '-' + String(now.getMonth()+1).padStart(2,'0');
+  }
 
   loadData();
 
@@ -1594,6 +1799,119 @@ function updateAttendanceText(input){
         : 'Vắng';
   }
 
+}
+
+
+/* =========================================================
+   BẢNG ĐIỂM DANH THEO THÁNG
+   ========================================================= */
+
+async function loadMonthlyAttendance(){
+
+  const month = document.getElementById('attMonth').value;
+  const classValue = document.getElementById('attClass').value;
+  const head = document.getElementById('monthlyHead');
+  const body = document.getElementById('monthlyBody');
+  const summary = document.getElementById('monthlySummary');
+
+  if(!month){
+    alert('Vui lòng chọn tháng');
+    return;
+  }
+
+  if(!classValue){
+    alert('Vui lòng chọn lớp');
+    return;
+  }
+
+  body.innerHTML = '<tr><td colspan="40" style="text-align:center;padding:24px">Đang tải bảng điểm danh...</td></tr>';
+  head.innerHTML = '';
+  summary.innerHTML = '';
+
+  try{
+    const response = await fetch(
+      `${API_URL}?action=getAttendanceMonth&month=${encodeURIComponent(month)}&class=${encodeURIComponent(classValue)}`,
+      {method:'GET', cache:'no-store'}
+    );
+
+    const raw = await response.text();
+    let result;
+    try{
+      result = JSON.parse(raw);
+    }catch(e){
+      throw new Error('Google Apps Script trả về dữ liệu không hợp lệ: ' + raw.slice(0,200));
+    }
+
+    if(result.ok === false){
+      throw new Error(result.message || result.error || 'Không tải được bảng điểm danh tháng');
+    }
+
+    const days = Number(result.days || 0);
+    const records = result.records || {};
+    const list = students.filter(s => s.lop === classValue);
+
+    const presentAll = Object.values(records).filter(x => x === 'Có mặt').length;
+    const absentAll = Object.values(records).filter(x => x === 'Vắng').length;
+
+    summary.innerHTML = `
+      <div class="monthly-badge">Lớp: ${escapeHtml(classValue)}</div>
+      <div class="monthly-badge">Tháng: ${escapeHtml(month.split('-').reverse().join('/'))}</div>
+      <div class="monthly-badge">Học viên: ${list.length}</div>
+      <div class="monthly-badge">Lượt có mặt: ${presentAll}</div>
+      <div class="monthly-badge">Lượt vắng: ${absentAll}</div>
+    `;
+
+    head.innerHTML = `
+      <tr>
+        <th>MSHV</th>
+        <th>Họ tên</th>
+        <th>GVCN</th>
+        ${Array.from({length:days}, (_,i) => `<th>${i+1}</th>`).join('')}
+        <th>Tổng có mặt</th>
+        <th>Tổng vắng</th>
+      </tr>
+    `;
+
+    if(!list.length){
+      body.innerHTML = `<tr><td colspan="${days+5}" style="text-align:center;padding:24px">Không có học viên trong lớp này</td></tr>`;
+      return;
+    }
+
+    body.innerHTML = list.map(student => {
+      let present = 0;
+      let absent = 0;
+      const cells = [];
+
+      for(let d=1; d<=days; d++){
+        const dateKey = `${month}-${String(d).padStart(2,'0')}`;
+        const status = records[dateKey] && records[dateKey][student.maHV] || '';
+        if(status === 'Có mặt'){
+          present++;
+          cells.push('<td class="day-present">✓</td>');
+        }else if(status === 'Vắng'){
+          absent++;
+          cells.push('<td class="day-absent">×</td>');
+        }else{
+          cells.push('<td class="day-empty">·</td>');
+        }
+      }
+
+      return `
+        <tr>
+          <td>${escapeHtml(student.maHV)}</td>
+          <td style="text-align:left">${escapeHtml(student.hoTen)}</td>
+          <td>${escapeHtml(student.gvcn || '—')}</td>
+          ${cells.join('')}
+          <td class="total-col">${present}</td>
+          <td class="total-col">${absent}</td>
+        </tr>
+      `;
+    }).join('');
+
+  }catch(error){
+    console.error('Lỗi bảng điểm danh tháng:', error);
+    body.innerHTML = `<tr><td colspan="40" style="text-align:center;padding:24px;color:#e53e3e">${escapeHtml(error.message || 'Không tải được dữ liệu')}</td></tr>`;
+  }
 }
 
 
