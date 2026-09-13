@@ -72,7 +72,7 @@ footer{margin-top:30px;background:#fff;border-top:1px solid #e5edf4;padding:24px
 <footer><div class="footerin"><b>TRUNG TÂM ĐÀO TẠO DU HỌC & XUẤT KHẨU LAO ĐỘNG</b><br><span class="muted">Hệ thống quản lý học viên</span></div></footer>
 
 <script>
-const API_URL='https://script.google.com/macros/s/AKfycbxGyUB6pxG9P7fxSmcGyXsIkYJvf09DNJGRqVkem7GGhHEuCIcNHoTzb-n0KgcgM80jFw/exec';
+const API_URL='https://google.com';
 let students=[], leaves=[], todayAtt=[];
 const pages=[['home','Trang chủ'],['students','Học viên'],['docs','Tài liệu'],['leaves','Quản lý về quê']];
 
@@ -85,6 +85,8 @@ document.addEventListener('DOMContentLoaded', () => {
 function initMenu() {
   const nav = document.getElementById('nav');
   nav.innerHTML = pages.map(p => `<button id="btn-${p[0]}" onclick="show('${p[0]}')">${p[1]}</button>`).join('');
+  const btnHome = document.getElementById('btn-home');
+  if(btnHome) btnHome.classList.add('active');
 }
 
 function show(id) {
@@ -119,4 +121,3 @@ function updateDashboard() {
 }
 
 function initFilters() {
-  const classes = [...new Set(students.map(s => s['クラス']).filter(Boolean))];
