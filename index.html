@@ -23,6 +23,7 @@ main{max-width:1250px;margin:auto;padding:18px}.page{display:none}.page.active{d
 .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}label{font-size:13px;font-weight:700;margin-bottom:5px;display:block}
 footer{margin-top:30px;background:#fff;border-top:1px solid #e5edf4;padding:24px 18px}.footerin{max-width:1250px;margin:auto}
 .empty{text-align:center;padding:28px;color:#718096}.right{text-align:right}
+.profile-card p { margin: 10px 0; font-size: 15px; border-bottom: 1px dashed #e3ebf3; padding-bottom: 8px; }
 @media(max-width:850px){.nav{gap:10px;flex-direction:column;height:auto;align-items:flex-start;padding:10px 14px}header{height:auto}.hero{margin:62px 10px 0}.hero h1{font-size:28px}.cards{grid-template-columns:repeat(2,1fr)}.toolbar,.grid{grid-template-columns:1fr}.nav nav{width:100%}main{padding:12px}.cards{gap:9px}}
 </style>
 </head>
@@ -47,18 +48,18 @@ footer{margin-top:30px;background:#fff;border-top:1px solid #e5edf4;padding:24px
 
 <section id="students" class="page"><div class="panel"><h2>Danh sách học viên</h2>
 <div class="toolbar"><input id="q" placeholder="Tìm tên hoặc mã học viên..." oninput="renderStudents()"><select id="classFilter" onchange="renderStudents()"><option value="">Tất cả lớp</option></select><select id="centerFilter" onchange="renderStudents()"><option value="">Tất cả trung tâm</option></select><select id="statusFilter" onchange="renderStudents()"><option value="">Tất cả trạng thái</option></select></div>
-<div class="tablewrap"><table><thead><tr><th>Mã HV</th><th>Họ tên</th><th>Lớp</th><th>Trung tâm</th><th>Giáo viên</th><th>Trạng thái</th><th>Ngày sinh</th><th></th></tr></thead><tbody id="studentBody"></tbody></table></div></div></section>
+<div class="tablewrap"><table><thead><tr><th>Mã HV</th><th>Họ tên</th><th>Lớp</th><th>Trung tâm</th><th>Giáo viên</th><th>Trạng thái</th><th>Ngày sinh</th><th>Thao tác</th></tr></thead><tbody id="studentBody"></tbody></table></div></div></section>
 
-<section id="profile" class="page"><div class="panel"><h2>Hồ sơ học viên</h2><div id="profileBody"></div></div></section>
+<section id="profile" class="page"><div class="panel"><h2>Hồ sơ học viên</h2><div id="profileBody"></div><div class="actions" style="margin-top:15px"><button class="btn light" onclick="show('students')">Quay lại danh sách</button></div></div></section>
 
-<section id="attendance" class="page"><div class="panel"><h2>Điểm danh</h2><div class="toolbar" style="grid-template-columns:1fr 1fr"><input id="attDate" type="date"><select id="attClass"><option value="">Chọn lớp</option></select></div><div class="tablewrap"><table><thead><tr><th>Mã HV</th><th>Họ tên</th><th>Trạng thái</th></tr></thead><tbody id="attBody"></tbody></table></div><div class="actions" style="margin-top:15px"><button class="btn" onclick="saveAttendance()">Lưu điểm danh</button></div></div></section>
+<section id="attendance" class="page"><div class="panel"><h2>Điểm danh</h2><div class="toolbar" style="grid-template-columns:1fr 1fr"><input id="attDate" type="date"><select id="attClass" onchange="renderAttendanceList()"><option value="">Chọn lớp</option></select></div><div class="tablewrap"><table><thead><tr><th>Mã HV</th><th>Họ tên</th><th>Trạng thái</th></tr></thead><tbody id="attBody"></tbody></table></div><div class="actions" style="margin-top:15px"><button class="btn" onclick="saveAttendance()">Lưu điểm danh</button></div></div></section>
 
-<section id="leaveForm" class="page"><div class="panel"><h2>Đăng ký về quê</h2><form id="leaveF"><div class="grid">
+<section id="leaveForm" class="page"><div class="panel"><h2>Đăng ký về quê</h2><form id="leaveF" onsubmit="event.preventDefault(); submitLeave();"><div class="grid">
 <div><label>Mã học viên</label><input name="code" required></div><div><label>Họ tên</label><input name="name" required></div>
 <div><label>Lớp</label><input name="class"></div><div><label>Ngày đi</label><input name="from" type="date" required></div>
 <div><label>Ngày về</label><input name="to" type="date" required></div><div><label>Lý do</label><input name="reason" required></div>
 <div><label>Số điện thoại</label><input name="phone"></div><div><label>Người liên hệ</label><input name="contact"></div>
-</div><div class="actions" style="margin-top:15px"><button class="btn">Lưu đăng ký</button></div></form></div></section>
+</div><div class="actions" style="margin-top:15px"><button class="btn" type="submit">Lưu đăng ký</button></div></form></div></section>
 
 <section id="leaves" class="page"><div class="panel"><h2>Quản lý về quê</h2><div class="toolbar"><input id="leaveQ" placeholder="Tìm học viên..." oninput="renderLeaves()"><select id="leaveStatus" onchange="renderLeaves()"><option value="">Tất cả trạng thái</option><option>Chờ duyệt</option><option>Đã duyệt</option><option>Từ chối</option></select></div><div class="tablewrap"><table><thead><tr><th>Mã HV</th><th>Họ tên</th><th>Lớp</th><th>Ngày đi</th><th>Ngày về</th><th>Lý do</th><th>Trạng thái</th><th></th></tr></thead><tbody id="leaveBody"></tbody></table></div></div></section>
 
@@ -69,26 +70,53 @@ footer{margin-top:30px;background:#fff;border-top:1px solid #e5edf4;padding:24px
 </div></div></section>
 </main>
 <footer><div class="footerin"><b>TRUNG TÂM ĐÀO TẠO DU HỌC & XUẤT KHẨU LAO ĐỘNG</b><br><span class="muted">Hệ thống quản lý học viên</span></div></footer>
-<script>
-const API_URL='https://script.google.com/macros/s/AKfycbxGyUB6pxG9P7fxSmcGyXsIkYJvf09DNJGRqVkem7GGhHEuCIcNHoTzb-n0KgcgM80jFw/exec';let students=[], leaves=[], todayAtt=[];
-const pages=[['home','Trang chủ'],['students','Học viên'],['docs','Tài liệu'],['leaves','Quản lý về quê'],['leaveForm','Đăng ký về quê'],['attendance','Điểm danh']];
-document.getElementById('nav').innerHTML=pages.map(([id,t])=>`<button data-id="${id}" onclick="show('${id}')">${t}</button>`).join('');
-document.querySelector('[data-id="home"]').classList.add('active');
 
-function show(id){document.querySelectorAll('.page').forEach(x=>x.classList.remove('active'));document.getElementById(id).classList.add('active');document.querySelectorAll('nav button').forEach(x=>x.classList.toggle('active',x.dataset.id===id));if(id==='students')renderStudents();if(id==='leaves')renderLeaves();if(id==='attendance')renderAtt();}
-function api(action,data={}){if(!API_URL)return Promise.resolve(null);return fetch(API_URL,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({action,...data})}).then(r=>r.json());}
-function load(){api('getAll').then(r=>{if(!r)return;students=r.students||[];leaves=r.leaves||[];todayAtt=r.attendance||[];renderAll()}).catch(console.error);renderAll()}
-function renderAll(){document.getElementById('total').textContent=students.length;document.getElementById('present').textContent=todayAtt.filter(x=>x.status==='Có mặt').length;document.getElementById('absent').textContent=todayAtt.filter(x=>x.status==='Vắng').length;document.getElementById('away').textContent=leaves.filter(x=>x.status==='Đã duyệt').length;fillFilters();renderStudents();renderLeaves();renderAtt();}
-function uniq(a){return [...new Set(a.filter(Boolean))].sort()}
-function fillFilters(){for(const [id,vals] of [['classFilter',students.map(x=>x.class)],['centerFilter',students.map(x=>x.center)],['statusFilter',students.map(x=>x.status)],['attClass',students.map(x=>x.class)]]){const el=document.getElementById(id);const first=el.options[0].text;el.innerHTML=`<option value="">${first}</option>`+uniq(vals).map(v=>`<option>${esc(v)}</option>`).join('')}}
-function renderStudents(){let q=(document.getElementById('q')?.value||'').toLowerCase(),cl=document.getElementById('classFilter')?.value||'',ce=document.getElementById('centerFilter')?.value||'',st=document.getElementById('statusFilter')?.value||'';let a=students.filter(x=>(!q||`${x.name} ${x.code}`.toLowerCase().includes(q))&&(!cl||x.class===cl)&&(!ce||x.center===ce)&&(!st||x.status===st));document.getElementById('studentBody').innerHTML=a.map(x=>`<tr><td>${esc(x.code)}</td><td><b>${esc(x.name)}</b></td><td>${esc(x.class)}</td><td>${esc(x.center)}</td><td>${esc(x.teacher)}</td><td><span class="badge">${esc(x.status)}</span></td><td>${esc(x.birth)}</td><td><button class="btn light" onclick='profile(${JSON.stringify(x)})'>Xem</button></td></tr>`).join('')||`<tr><td colspan="8" class="empty">Chưa có dữ liệu học viên.</td></tr>`}
-function profile(x){show('profile');document.getElementById('profileBody').innerHTML=`<div class="grid"><div><b>Mã học viên</b><p>${esc(x.code)}</p></div><div><b>Họ tên</b><p>${esc(x.name)}</p></div><div><b>Họ tên Katakana</b><p>${esc(x.katakana)}</p></div><div><b>Lớp</b><p>${esc(x.class)}</p></div><div><b>Trung tâm</b><p>${esc(x.center)}</p></div><div><b>Giáo viên</b><p>${esc(x.teacher)}</p></div><div><b>Ngày sinh</b><p>${esc(x.birth)}</p></div><div><b>Trạng thái</b><p>${esc(x.status)}</p></div></div>`}
-function renderAtt(){let cl=document.getElementById('attClass')?.value||'';let a=students.filter(x=>!cl||x.class===cl);document.getElementById('attBody').innerHTML=a.map(x=>`<tr data-code="${esc(x.code)}"><td>${esc(x.code)}</td><td>${esc(x.name)}</td><td><select class="attStatus"><option>Có mặt</option><option>Vắng</option><option>Có phép</option></select></td></tr>`).join('')||`<tr><td colspan="3" class="empty">Chưa có học viên.</td></tr>`}
-function saveAttendance(){let date=document.getElementById('attDate').value||new Date().toISOString().slice(0,10);let rows=[...document.querySelectorAll('#attBody tr[data-code]')].map(r=>({code:r.dataset.code,name:r.children[1].textContent,status:r.querySelector('select').value,date}));api('saveAttendance',{rows}).then(()=>{todayAtt=rows;renderAll();alert('Đã lưu điểm danh.')}).catch(()=>alert('Không thể kết nối dữ liệu.'))}
-function renderLeaves(){let q=(document.getElementById('leaveQ')?.value||'').toLowerCase(),st=document.getElementById('leaveStatus')?.value||'';let a=leaves.filter(x=>(!q||`${x.name} ${x.code}`.toLowerCase().includes(q))&&(!st||x.status===st));document.getElementById('leaveBody').innerHTML=a.map((x,i)=>`<tr><td>${esc(x.code)}</td><td>${esc(x.name)}</td><td>${esc(x.class)}</td><td>${esc(x.from)}</td><td>${esc(x.to)}</td><td>${esc(x.reason)}</td><td><span class="badge">${esc(x.status)}</span></td><td>${x.status==='Chờ duyệt'?`<button class="btn light" onclick="approve(${i},'Đã duyệt')">Duyệt</button> <button class="btn danger" onclick="approve(${i},'Từ chối')">Từ chối</button>`:''}</td></tr>`).join('')||`<tr><td colspan="8" class="empty">Chưa có đăng ký.</td></tr>`}
-function approve(i,status){let q=(document.getElementById('leaveQ')?.value||'').toLowerCase();let st=document.getElementById('leaveStatus')?.value||'';let a=leaves.filter(x=>(!q||`${x.name} ${x.code}`.toLowerCase().includes(q))&&(!st||x.status===st));let x=a[i];api('updateLeave',{id:x.id,status}).then(()=>{x.status=status;renderAll()})}
-document.getElementById('leaveF').onsubmit=e=>{e.preventDefault();let d=Object.fromEntries(new FormData(e.target));d.status='Chờ duyệt';d.id=Date.now().toString();api('addLeave',{row:d}).then(()=>{leaves.push(d);e.target.reset();renderAll();show('leaves');alert('Đã lưu đăng ký.')}).catch(()=>alert('Không thể kết nối dữ liệu.'))}
-function esc(v){return String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]))}
-document.getElementById('attDate').value=new Date().toISOString().slice(0,10);load();
-</script>
-</body></html>
+<script>
+const API_URL='https://script.google.com/macros/s/AKfycbxGyUB6pxG9P7fxSmcGyXsIkYJvf09DNJGRqVkem7GGhHEuCIcNHoTzb-n0KgcgM80jFw/exec';
+let students=[], leaves=[], todayAtt=[];
+const pages=[['home','Trang chủ'],['students','Học viên'],['docs','Tài liệu'],['leaves','Quản lý về quê']];
+
+document.addEventListener('DOMContentLoaded', () => {
+  initMenu();
+  document.getElementById('attDate').valueAsDate = new Date();
+  loadData();
+});
+
+function initMenu() {
+  const nav = document.getElementById('nav');
+  nav.innerHTML = pages.map(p => `<button id="btn-${p[0]}" onclick="show('${p[0]}')">${p[1]}</button>`).join('');
+}
+
+function show(id) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
+  const target = document.getElementById(id);
+  if(target) target.classList.add('active');
+  const btn = document.getElementById(`btn-${id}`);
+  if(btn) btn.classList.add('active');
+}
+
+async function loadData() {
+  try {
+    const res = await fetch(`${API_URL}?action=getAll`);
+    const data = await res.json();
+    students = data.students || [];
+    leaves = data.leaves || [];
+    
+    updateDashboard();
+    initFilters();
+    renderStudents();
+    renderLeaves();
+  } catch (err) {
+    console.error("Lỗi lấy dữ liệu:", err);
+  }
+}
+
+function updateDashboard() {
+  document.getElementById('total').innerText = students.length;
+  const awayCount = students.filter(s => s['ステータス'] === 'Về quê' || s['Trạng thái'] === 'Về quê').length;
+  document.getElementById('away').innerText = awayCount;
+}
+
+function initFilters() {
+  const classes = [...new Set(students.map(s => s['クラス']).filter(Boolean))];
