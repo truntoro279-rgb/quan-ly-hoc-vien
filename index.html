@@ -50,17 +50,7 @@ header{
 .logo{
   font-weight:800;
   color:#1769d1;
-  font-size:18px;
-  display:flex;
-  align-items:center;
-  gap:9px
-}
-
-.logo img{
-  width:34px;
-  height:34px;
-  object-fit:contain;
-  border-radius:6px
+  font-size:18px
 }
 
 nav{
@@ -263,110 +253,6 @@ th{
   color:#c53030
 }
 
-.modal-backdrop{
-  display:none;
-  position:fixed;
-  inset:0;
-  background:rgba(0,0,0,.62);
-  z-index:100;
-  align-items:center;
-  justify-content:center;
-  padding:20px
-}
-
-.modal-backdrop.show{display:flex}
-
-.student-modal{
-  width:min(900px,100%);
-  max-height:90vh;
-  overflow:auto;
-  background:#1a2333;
-  border:1px solid #2a374a;
-  border-radius:14px;
-  box-shadow:0 20px 60px rgba(0,0,0,.45);
-  padding:22px
-}
-
-.student-modal-head{
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  gap:15px;
-  margin-bottom:18px
-}
-
-.student-modal-head h2{margin:0;color:#fff}
-
-.modal-close{
-  border:0;
-  background:#222f47;
-  color:#fff;
-  width:38px;
-  height:38px;
-  border-radius:50%;
-  cursor:pointer;
-  font-size:22px
-}
-
-.student-info-grid{
-  display:grid;
-  grid-template-columns:repeat(2,minmax(0,1fr));
-  gap:10px
-}
-
-.info-item{
-  background:#121824;
-  border:1px solid #2a374a;
-  border-radius:9px;
-  padding:12px
-}
-
-.info-label{
-  color:#9fb3c8;
-  font-size:12px;
-  font-weight:700;
-  margin-bottom:6px
-}
-
-.info-value{
-  color:#fff;
-  font-size:14px;
-  white-space:pre-wrap;
-  word-break:break-word
-}
-
-.detail-section{
-  margin-bottom:16px
-}
-
-.detail-section:last-child{margin-bottom:0}
-
-.detail-section-title{
-  font-size:13px;
-  font-weight:800;
-  color:#38a169;
-  padding:8px 2px;
-  letter-spacing:.3px
-}
-
-.student-info-grid-inner{
-  display:grid;
-  grid-template-columns:repeat(2,minmax(0,1fr));
-  gap:10px
-}
-
-@media(max-width:650px){
-  .student-info-grid-inner{grid-template-columns:1fr}
-}
-
-.student-name-link{
-  color:#fff;
-  cursor:pointer;
-  font-weight:700
-}
-
-.student-name-link:hover{color:#38a169;text-decoration:underline}
-
 @media(max-width:850px){
   .nav{
     flex-direction:column;
@@ -380,7 +266,242 @@ th{
   }
 }
 
-.month-cell{cursor:pointer;text-align:center;font-weight:800;user-select:none;min-width:38px}.month-cell:hover{filter:brightness(1.12)}.day-present{color:#2f855a}.day-absent{color:#c53030}.day-empty{color:#829ab1}.monthly-total{text-align:center;font-weight:800}.present-total{color:#2f855a}.absent-total{color:#c53030}
+/* =========================================================
+   THẺ THÔNG TIN CHI TIẾT HỌC VIÊN
+   ========================================================= */
+
+.student-cards{
+  display:grid;
+  grid-template-columns:1fr;
+  gap:16px;
+}
+
+.student-card{
+  background:#fff;
+  border:1px solid #dfe8f1;
+  border-radius:14px;
+  overflow:hidden;
+  box-shadow:0 4px 16px rgba(22,50,75,.08);
+}
+
+.student-card-head{
+  padding:18px 20px;
+  background:linear-gradient(110deg,#143f72,#1769d1);
+  color:#fff;
+}
+
+.student-details{
+  display:none;
+}
+
+.student-card.expanded .student-details{
+  display:block;
+}
+
+.student-name{
+  cursor:pointer;
+  user-select:none;
+}
+
+.student-name::after{
+  content:'  ▾';
+  font-size:12px;
+  opacity:.75;
+}
+
+.student-card.expanded .student-name::after{
+  content:'  ▴';
+}
+
+.student-summary{
+  display:flex;
+  flex-wrap:wrap;
+  gap:18px;
+  margin-top:9px;
+  font-size:13px;
+  color:rgba(255,255,255,.9);
+  cursor:pointer;
+  user-select:none;
+}
+
+.student-summary b{
+  color:#fff;
+}
+
+.student-card-head-top{
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:16px;
+}
+
+.student-code{
+  font-size:22px;
+  font-weight:800;
+  letter-spacing:.2px;
+}
+
+.student-name{
+  margin-top:5px;
+  font-size:18px;
+  font-weight:700;
+}
+
+.student-katakana{
+  margin-top:5px;
+  font-size:14px;
+  opacity:.9;
+}
+
+.student-status{
+  padding:7px 11px;
+  border-radius:999px;
+  background:#fff;
+  color:#1769d1;
+  font-size:12px;
+  font-weight:800;
+  white-space:nowrap;
+}
+
+.student-section-title{
+  padding:11px 18px;
+  background:#f7fafc;
+  color:#486581;
+  font-size:12px;
+  font-weight:800;
+  border-bottom:1px solid #e5edf4;
+}
+
+.student-info{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+}
+
+.student-info-item{
+  padding:13px 18px;
+  border-bottom:1px solid #e8eef3;
+  border-right:1px solid #e8eef3;
+}
+
+.student-info-item:nth-child(3n){
+  border-right:0;
+}
+
+.student-info-label{
+  font-size:11px;
+  color:#627d98;
+  margin-bottom:5px;
+  font-weight:600;
+}
+
+.student-info-value{
+  font-size:14px;
+  line-height:1.4;
+  font-weight:700;
+  color:#102a43;
+  min-height:19px;
+  word-break:break-word;
+}
+
+.student-empty{
+  text-align:center;
+  padding:28px 18px;
+  color:#627d98;
+}
+
+.student-result-count{
+  margin:-2px 0 12px;
+  font-size:12px;
+  color:#627d98;
+}
+
+@media(prefers-color-scheme:dark){
+
+  .student-card{
+    background:#1a2333;
+    border-color:#2a374a;
+    box-shadow:0 4px 16px rgba(0,0,0,.18);
+  }
+
+  .student-section-title{
+    background:#121824;
+    color:#9fb3c8;
+    border-bottom-color:#2a374a;
+  }
+
+  .student-info-item{
+    border-bottom-color:#2a374a;
+    border-right-color:#2a374a;
+  }
+
+  .student-info-label{
+    color:#9fb3c8;
+  }
+
+  .student-info-value{
+    color:#fff;
+  }
+
+  .student-result-count{
+    color:#9fb3c8;
+  }
+
+  .student-empty{
+    color:#9fb3c8;
+  }
+}
+
+@media(max-width:850px){
+
+  .student-info{
+    grid-template-columns:repeat(2,1fr);
+  }
+
+  .student-info-item:nth-child(3n){
+    border-right:1px solid #e8eef3;
+  }
+
+  .student-info-item:nth-child(2n){
+    border-right:0;
+  }
+
+  @media(prefers-color-scheme:dark){
+    .student-info-item:nth-child(3n){
+      border-right-color:#2a374a;
+    }
+  }
+}
+
+@media(max-width:550px){
+
+  .student-card-head-top{
+    flex-direction:column;
+    gap:10px;
+  }
+
+  .student-code{
+    font-size:19px;
+  }
+
+  .student-name{
+    font-size:16px;
+  }
+
+  .student-info{
+    grid-template-columns:1fr;
+  }
+
+  .student-info-item,
+  .student-info-item:nth-child(2n),
+  .student-info-item:nth-child(3n){
+    border-right:0;
+  }
+}
+
+.source-detail-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+@media(max-width:650px){.source-detail-grid{grid-template-columns:1fr}}
+.student-details{max-height:0;overflow:hidden;transition:max-height .25s ease,padding .25s ease}
+.student-card.expanded .student-details{max-height:5000px}
 </style>
 </head>
 
@@ -388,7 +509,7 @@ th{
 
 <header>
   <div class="nav">
-    <div class="logo"><img src="logo.png" alt="THANH DO"> <span>TTĐT THÀNH ĐÔ - THANH HOÁ</span></div>
+    <div class="logo">✈ QUẢN LÝ HỌC VIÊN</div>
     <nav id="nav"></nav>
   </div>
 </header>
@@ -399,16 +520,6 @@ th{
     <p>Hệ thống quản lý học viên tập trung</p>
   </div>
 </section>
-
-<div id="studentModal" class="modal-backdrop" onclick="closeStudentModal(event)">
-  <div class="student-modal" onclick="event.stopPropagation()">
-    <div class="student-modal-head">
-      <h2 id="studentModalTitle">Thông tin học viên</h2>
-      <button class="modal-close" onclick="closeStudentModal()">×</button>
-    </div>
-    <div id="studentInfoGrid" class="student-info-grid"></div>
-  </div>
-</div>
 
 <main>
 
@@ -497,49 +608,16 @@ th{
     </div>
 
 
-    <div style="overflow:auto">
+    <div id="studentResultCount" class="student-result-count"></div>
 
-      <table>
+    <div id="studentBody" class="student-cards">
 
-        <thead>
-          <tr>
-            <th>Mã HV</th>
-            <th>Họ tên</th>
-            <th>Lớp</th>
-            <th>GVCN</th>
-            <th>Trạng thái</th>
-          </tr>
-        </thead>
-
-        <tbody id="studentBody">
-
-          <tr>
-            <td
-              colspan="5"
-              class="loading">
-
-              Đang tải dữ liệu...
-
-            </td>
-          </tr>
-
-        </tbody>
-
-      </table>
+      <div class="student-empty">
+        Đang tải dữ liệu...
+      </div>
 
     </div>
 
-  </div>
-
-</section>
-
-
-<!-- TÀI LIỆU -->
-<section id="documents" class="page">
-
-  <div class="panel">
-    <h2>📚 Tài liệu</h2>
-    <p style="color:#627d98">Khu vực quản lý tài liệu của hệ thống.</p>
   </div>
 
 </section>
@@ -550,51 +628,71 @@ th{
 
   <div class="panel">
 
-    <h2>Điểm danh theo tháng</h2>
+    <h2>Điểm danh</h2>
 
-    <div class="toolbar" style="grid-template-columns:1fr 1fr auto">
+    <div
+      class="toolbar"
+      style="grid-template-columns:1fr 1fr">
 
-      <input id="attMonth" type="month" onchange="loadMonthlyAttendance()">
+      <input
+        id="attDate"
+        type="date">
 
-      <select id="attClass" onchange="loadMonthlyAttendance()">
-        <option value="">Chọn lớp</option>
+      <select
+        id="attClass"
+        onchange="renderAttendanceList()">
+
+        <option value="">
+          Chọn lớp
+        </option>
+
       </select>
 
-      <button class="btn" onclick="loadMonthlyAttendance()">Tải bảng tháng</button>
-
     </div>
 
-    <div id="monthlySummary" style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px"></div>
 
-    <div style="overflow:auto;max-height:68vh">
-      <table id="monthlyTable" style="min-width:1100px">
-        <thead id="monthlyHead">
+    <div style="overflow:auto">
+
+      <table>
+
+        <thead>
           <tr>
-            <th>MSHV</th>
+            <th>Mã HV</th>
             <th>Họ tên</th>
-            <th>GVCN</th>
-            <th>Ngày 1...</th>
+            <th>Trạng thái</th>
           </tr>
         </thead>
-        <tbody id="monthlyBody">
+
+        <tbody id="attBody">
+
           <tr>
-            <td colspan="4" style="text-align:center;padding:20px">
-              Chọn tháng và lớp để xem bảng điểm danh
+            <td
+              colspan="3"
+              style="text-align:center;padding:20px">
+
+              Chọn lớp để điểm danh
+
             </td>
           </tr>
+
         </tbody>
+
       </table>
+
     </div>
+
 
     <div class="actions">
-      <button class="btn" onclick="saveMonthlyAttendance()">Lưu bảng điểm danh tháng</button>
-      <button class="btn light" onclick="show('students')">Danh sách học viên</button>
-    </div>
 
-    <p style="margin:10px 0 0;color:#627d98;font-size:13px">
-      Ô ngày: bấm lần lượt <b>✓ Có mặt</b> → <b>× Vắng</b> → <b>· Chưa điểm danh</b>.
-      Bảng tháng được tải bằng <b>1 lần gọi API</b>, không gọi từng ngày.
-    </p>
+      <button
+        class="btn"
+        onclick="saveAttendance()">
+
+        Lưu điểm danh
+
+      </button>
+
+    </div>
 
   </div>
 
@@ -609,8 +707,7 @@ th{
    API GOOGLE APPS SCRIPT
    ========================================================= */
 
-const API_URL =
-'https://script.google.com/macros/s/AKfycbz4Eip_vfQlDOa0SvB_BFUEDTEc85Qq9e2Qxc8uPYumZF_69oZW6OAraHC9pUJhx9I7Tg/exec';
+const API_URL = 'https://script.google.com/macros/s/AKfycbz4Eip_vfQlDOa0SvB_BFUEDTEc85Qq9e2Qxc8uPYumZF_69oZW6OAraHC9pUJhx9I7Tg/exec';
 
 
 /* =========================================================
@@ -622,8 +719,7 @@ let students = [];
 const pages = [
   ['home','Trang chủ'],
   ['students','Học viên'],
-  ['attendance','Điểm danh'],
-  ['documents','Tài liệu']
+  ['attendance','Điểm danh']
 ];
 
 
@@ -631,17 +727,12 @@ const pages = [
    KHỞI ĐỘNG
    ========================================================= */
 
-document.addEventListener('keydown', e => {
-  if(e.key === 'Escape') closeStudentModal();
-});
-
 document.addEventListener('DOMContentLoaded', () => {
 
   initMenu();
 
-  const now = new Date();
-  document.getElementById('attMonth').value =
-    now.getFullYear() + '-' + String(now.getMonth()+1).padStart(2,'0');
+  document.getElementById('attDate').valueAsDate =
+    new Date();
 
   loadData();
 
@@ -735,15 +826,9 @@ async function loadData(){
   if(body){
 
     body.innerHTML = `
-      <tr>
-        <td
-          colspan="5"
-          class="loading">
-
-          Đang tải dữ liệu...
-
-        </td>
-      </tr>
+      <div class="student-empty">
+        Đang tải dữ liệu...
+      </div>
     `;
 
   }
@@ -827,18 +912,13 @@ async function loadData(){
     if(body){
 
       body.innerHTML = `
-        <tr>
-          <td
-            colspan="5"
-            class="error">
-
-            Không tải được dữ liệu.
-            <br>
-            Vui lòng kiểm tra lại
-            Google Apps Script.
-
-          </td>
-        </tr>
+        <div class="student-empty error">
+          Không tải được dữ liệu.
+          <br>
+          Vui lòng kiểm tra Google Apps Script / API.
+          <br>
+          <small>${escapeHtml(error.message || error)}</small>
+        </div>
       `;
 
     }
@@ -966,88 +1046,168 @@ function initFilters(){
 
 function renderStudents(){
 
-  const searchInput =
-    document.getElementById('q');
+  const searchInput = document.getElementById('q');
+  const classInput = document.getElementById('classFilter');
+  const statusInput = document.getElementById('statusFilter');
+  const body = document.getElementById('studentBody');
+  const countBox = document.getElementById('studentResultCount');
 
+  if(!searchInput || !classInput || !statusInput || !body) return;
 
-  const classInput =
-    document.getElementById('classFilter');
+  const q = String(searchInput.value || '').toLowerCase().trim();
+  const classFilter = classInput.value;
+  const statusFilter = statusInput.value;
 
+  const filtered = students.filter(student => {
+    const maHV = String(student.maHV || student.code || '').toLowerCase();
+    const hoTen = String(student.hoTen || student.name || '').toLowerCase();
+    const katakana = String(student.katakana || '').toLowerCase();
+    return (!q || maHV.includes(q) || hoTen.includes(q) || katakana.includes(q))
+      && (!classFilter || student.lop === classFilter)
+      && (!statusFilter || student.trangThai === statusFilter);
+  });
 
-  const statusInput =
-    document.getElementById('statusFilter');
-
-
-  if(!searchInput ||
-     !classInput ||
-     !statusInput){
-
-    return;
-
+  if(countBox){
+    countBox.textContent = filtered.length === students.length
+      ? `Tổng ${students.length} học viên`
+      : `Hiển thị ${filtered.length} / ${students.length} học viên`;
   }
 
+  if(filtered.length === 0){
+    body.innerHTML = `<div class="student-empty">Không tìm thấy học viên phù hợp.</div>`;
+    return;
+  }
 
-  const q =
-    String(
-      searchInput.value || ''
-    )
-    .toLowerCase()
-    .trim();
+  body.innerHTML = filtered.map(student => {
+    const maHV = student.maHV || student.code || '';
+    const hoTen = student.hoTen || student.name || '';
+    const katakana = student.katakana || '';
+    const trangThai = student.trangThai || student.status || '';
+    const detailHtml = renderAllSourceDetail(student.detail || student);
 
+    return `
+      <div class="student-card" data-mshv="${escapeHtml(maHV)}">
+        <div class="student-card-head">
+          <div class="student-card-head-top">
+            <div>
+              <div class="student-code">${escapeHtml(maHV)}</div>
+              <div class="student-name"
+                   onclick="toggleStudent(this)"
+                   title="Bấm vào tên để xem toàn bộ thông tin từ Google Sheet">
+                ${escapeHtml(hoTen)}
+              </div>
+              <div class="student-summary" onclick="toggleStudent(this)">
+                <span><b>Lớp:</b> ${escapeHtml(student.lop || '—')}</span>
+                <span><b>GVCN:</b> ${escapeHtml(student.gvcn || '—')}</span>
+              </div>
+              ${katakana ? `<div class="student-katakana">${escapeHtml(katakana)}</div>` : ''}
+            </div>
+            <div class="student-status">${escapeHtml(trangThai || '—')}</div>
+          </div>
+        </div>
 
-  const classFilter =
-    classInput.value;
+        <div class="student-details">
+          <div class="student-section-title">TOÀN BỘ THÔNG TIN TỪ GOOGLE SHEET</div>
+          <div class="student-info source-detail-grid">
+            ${detailHtml}
+          </div>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
 
+async function toggleStudent(element){
+  const card = element.closest('.student-card');
+  if(!card) return;
 
-  const statusFilter =
-    statusInput.value;
+  const alreadyOpen = card.classList.contains('expanded');
+  if(alreadyOpen){
+    card.classList.remove('expanded');
+    return;
+  }
 
+  card.classList.add('expanded');
+  const details = card.querySelector('.student-info');
+  if(details){
+    details.innerHTML = `<div class="student-info-item"><div class="student-info-label">DỮ LIỆU GỐC</div><div class="student-info-value">Đang lấy toàn bộ thông tin từ Google Sheet...</div></div>`;
+  }
 
-  const filtered =
-    students.filter(student => {
-
-      const maHV =
-        String(
-          student.maHV || ''
-        )
-        .toLowerCase();
-
-
-      const hoTen =
-        String(
-          student.hoTen || ''
-        )
-        .toLowerCase();
-
-
-      const matchSearch =
-        !q ||
-        maHV.includes(q) ||
-        hoTen.includes(q);
-
-
-      const matchClass =
-        !classFilter ||
-        student.lop === classFilter;
-
-
-      const matchStatus =
-        !statusFilter ||
-        student.trangThai === statusFilter;
-
-
-      return (
-        matchSearch &&
-        matchClass &&
-        matchStatus
-      );
-
+  const mshv = card.getAttribute('data-mshv') || '';
+  try{
+    const response = await fetch(`${API_URL}?action=getStudentDetail&mshv=${encodeURIComponent(mshv)}`, {
+      method:'GET',
+      cache:'no-store'
     });
+    if(!response.ok) throw new Error('HTTP ' + response.status);
+    const data = await response.json();
+    if(!data.ok || !data.student) throw new Error(data.error || 'Không tìm thấy học viên');
+
+    const student = data.student;
+    const fresh = student.detail || student;
+    if(details) details.innerHTML = renderAllSourceDetail(fresh);
+  }catch(error){
+    console.error('Lỗi lấy chi tiết học viên:', error);
+    if(details){
+      details.innerHTML = `<div class="student-info-item"><div class="student-info-label">LỖI</div><div class="student-info-value">Không lấy được dữ liệu gốc: ${escapeHtml(error.message || error)}</div></div>`;
+    }
+  }
+}
+
+function renderAllSourceDetail(detail){
+  const entries = Object.entries(detail || {});
+  if(!entries.length){
+    return studentInfoItem('Thông tin', 'Không có dữ liệu');
+  }
+
+  return entries.map(([label, value]) => {
+    const key = String(label || '').trim();
+    const text = String(value == null ? '' : value).trim();
+    if(!key) return '';
+    return studentInfoItem(key, text);
+  }).join('');
+}
+
+function studentInfoItem(label, value){
+
+  const text =
+    String(value || '').trim();
+
+  return `
+    <div class="student-info-item">
+
+      <div class="student-info-label">
+        ${escapeHtml(label)}
+      </div>
+
+      <div class="student-info-value">
+        ${
+          text
+            ? escapeHtml(text)
+            : '—'
+        }
+      </div>
+
+    </div>
+  `;
+}
+
+
+/* =========================================================
+   DANH SÁCH ĐIỂM DANH
+   ========================================================= */
+
+function renderAttendanceList(){
+
+  const classValue =
+    document.getElementById(
+      'attClass'
+    ).value;
 
 
   const body =
     document.getElementById(
-      'studentBody'
+      'attBody'
     );
 
 
@@ -1056,18 +1216,48 @@ function renderStudents(){
   }
 
 
-  if(filtered.length === 0){
+  if(!classValue){
 
     body.innerHTML = `
       <tr>
         <td
-          colspan="5"
+          colspan="3"
           style="
             text-align:center;
             padding:20px
           ">
 
-          Không tìm thấy dữ liệu
+          Chọn lớp để điểm danh
+
+        </td>
+      </tr>
+    `;
+
+    return;
+
+  }
+
+
+  const list =
+    students.filter(
+      student =>
+        student.lop === classValue
+    );
+
+
+  if(list.length === 0){
+
+    body.innerHTML = `
+      <tr>
+        <td
+          colspan="3"
+          style="
+            text-align:center;
+            padding:20px
+          ">
+
+          Không có học viên
+          trong lớp này
 
         </td>
       </tr>
@@ -1079,388 +1269,191 @@ function renderStudents(){
 
 
   body.innerHTML =
-    filtered
-      .map(student => `
+    list.map(student => `
 
-        <tr>
+      <tr>
 
-          <td>
-            <b>
-              ${escapeHtml(
-                student.maHV
-              )}
-            </b>
-          </td>
+        <td>
+          ${escapeHtml(
+            student.maHV
+          )}
+        </td>
 
-          <td>
-            <span
-              class="student-name-link"
-              onclick="showStudentDetail(${students.indexOf(student)})"
-              title="Bấm để xem toàn bộ thông tin">
-              ${escapeHtml(student.hoTen)}
-            </span>
-          </td>
+        <td>
+          ${escapeHtml(
+            student.hoTen
+          )}
+        </td>
 
-          <td>
+        <td>
 
-            <span class="badge">
+          <select
+            data-id="${escapeHtml(
+              student.maHV
+            )}"
+            class="att-status">
 
-              ${escapeHtml(
-                student.lop
-              )}
+            <option value="Có mặt">
+              Có mặt
+            </option>
 
-            </span>
+            <option value="Vắng">
+              Vắng
+            </option>
 
-          </td>
+          </select>
 
-          <td>
-            ${escapeHtml(
-              student.gvcn
-            )}
-          </td>
+        </td>
 
-          <td>
-            ${escapeHtml(
-              student.trangThai
-            )}
-          </td>
+      </tr>
 
-        </tr>
-
-      `)
-      .join('');
+    `)
+    .join('');
 
 }
 
 
 /* =========================================================
-   ĐIỂM DANH THEO THÁNG - 1 LẦN API
+   LƯU ĐIỂM DANH
    ========================================================= */
 
-let monthlyAttendance = {};
-let monthlyDays = 0;
-let monthlyLoadedKey = '';
+async function saveAttendance(){
 
-function getMonthDays(month){
-  const [y,m] = month.split('-').map(Number);
-  return new Date(y, m, 0).getDate();
-}
+  const date =
+    document.getElementById(
+      'attDate'
+    ).value;
 
-function monthKey(date){
-  return String(date || '').slice(0,7);
-}
 
-function monthlyBadge(label, value){
-  return `<span style="padding:6px 10px;border-radius:999px;background:#edf4ff;color:#1769d1;font-weight:700;font-size:12px">${escapeHtml(label)}: ${escapeHtml(value)}</span>`;
-}
+  const classValue =
+    document.getElementById(
+      'attClass'
+    ).value;
 
-async function loadMonthlyAttendance(){
-  const monthEl = document.getElementById('attMonth');
-  const classEl = document.getElementById('attClass');
-  const head = document.getElementById('monthlyHead');
-  const body = document.getElementById('monthlyBody');
-  const summary = document.getElementById('monthlySummary');
 
-  if(!monthEl || !classEl || !head || !body) return;
+  if(!date){
 
-  const month = monthEl.value;
-  const classValue = classEl.value;
-
-  if(!month || !classValue){
-    body.innerHTML = `<tr><td colspan="40" style="text-align:center;padding:20px">Chọn tháng và lớp để xem bảng điểm danh</td></tr>`;
-    summary.innerHTML = '';
-    return;
-  }
-
-  const key = month + '|' + classValue;
-  if(key === monthlyLoadedKey && body.dataset.ready === '1') return;
-
-  const days = getMonthDays(month);
-  monthlyDays = days;
-  body.dataset.ready = '0';
-  body.innerHTML = `<tr><td colspan="${days+3}" style="text-align:center;padding:24px">Đang tải bảng điểm danh tháng...</td></tr>`;
-
-  try{
-    const response = await fetch(
-      `${API_URL}?action=getAttendanceMonth&month=${encodeURIComponent(month)}&class=${encodeURIComponent(classValue)}&v=2`,
-      {method:'GET', cache:'no-store'}
+    alert(
+      'Vui lòng chọn ngày'
     );
 
-    if(!response.ok) throw new Error('HTTP ' + response.status);
-    const result = await response.json();
-    if(result.ok === false) throw new Error(result.error || result.message || 'Không tải được bảng tháng');
+    return;
 
-    monthlyAttendance = result.records || {};
-    monthlyLoadedKey = key;
-
-    head.innerHTML = `
-      <tr>
-        <th style="position:sticky;left:0;z-index:2">MSHV</th>
-        <th style="position:sticky;left:100px;z-index:2">Họ tên</th>
-        <th>GVCN</th>
-        ${Array.from({length:days}, (_,i) => `<th style="text-align:center;min-width:38px">${i+1}</th>`).join('')}
-        <th style="text-align:center">Có mặt</th>
-        <th style="text-align:center">Vắng</th>
-      </tr>`;
-
-    const list = students.filter(s => String(s.lop || '').trim() === classValue);
-
-    if(!list.length){
-      body.innerHTML = `<tr><td colspan="${days+5}" style="text-align:center;padding:24px">Không có học viên trong lớp này</td></tr>`;
-      summary.innerHTML = monthlyBadge('Học viên','0');
-      body.dataset.ready = '1';
-      return;
-    }
-
-    let totalPresent = 0, totalAbsent = 0;
-
-    body.innerHTML = list.map(student => {
-      let present = 0, absent = 0;
-      const cells = [];
-
-      for(let d=1; d<=days; d++){
-        const date = `${month}-${String(d).padStart(2,'0')}`;
-        const status = String((monthlyAttendance[student.maHV] || {})[date] || '').trim();
-        if(status === 'Có mặt') present++;
-        if(status === 'Vắng') absent++;
-        cells.push(monthlyCell(student.maHV, date, status));
-      }
-
-      totalPresent += present;
-      totalAbsent += absent;
-
-      return `<tr>
-        <td style="position:sticky;left:0;background:inherit;z-index:1"><b>${escapeHtml(student.maHV)}</b></td>
-        <td style="position:sticky;left:100px;background:inherit;z-index:1;text-align:left">${escapeHtml(student.hoTen)}</td>
-        <td>${escapeHtml(student.gvcn || '—')}</td>
-        ${cells.join('')}
-        <td class="monthly-total present-total" data-present-for="${escapeHtml(student.maHV)}">${present}</td>
-        <td class="monthly-total absent-total" data-absent-for="${escapeHtml(student.maHV)}">${absent}</td>
-      </tr>`;
-    }).join('');
-
-    summary.innerHTML =
-      monthlyBadge('Lớp', classValue) +
-      monthlyBadge('Tháng', month.split('-').reverse().join('/')) +
-      monthlyBadge('Học viên', String(list.length)) +
-      monthlyBadge('Lượt có mặt', String(totalPresent)) +
-      monthlyBadge('Lượt vắng', String(totalAbsent));
-
-    body.dataset.ready = '1';
-  }catch(error){
-    console.error('Lỗi bảng điểm danh tháng:', error);
-    body.innerHTML = `<tr><td colspan="40" style="text-align:center;padding:24px;color:#e53e3e">${escapeHtml(error.message || 'Không tải được dữ liệu')}</td></tr>`;
-    summary.innerHTML = '';
   }
-}
 
-function monthlyCell(maHV, date, status){
-  const safeStatus = status === 'Có mặt' ? 'Có mặt' : status === 'Vắng' ? 'Vắng' : '';
-  const symbol = safeStatus === 'Có mặt' ? '✓' : safeStatus === 'Vắng' ? '×' : '·';
-  const cls = safeStatus === 'Có mặt' ? 'day-present' : safeStatus === 'Vắng' ? 'day-absent' : 'day-empty';
-  return `<td class="month-cell ${cls}" data-id="${escapeHtml(maHV)}" data-date="${escapeHtml(date)}" data-status="${escapeHtml(safeStatus)}" onclick="toggleMonthlyCell(this)" title="${escapeHtml(date)}">${symbol}</td>`;
-}
 
-function toggleMonthlyCell(cell){
-  const current = cell.dataset.status || '';
-  const next = current === '' ? 'Có mặt' : current === 'Có mặt' ? 'Vắng' : '';
-  cell.dataset.status = next;
-  cell.textContent = next === 'Có mặt' ? '✓' : next === 'Vắng' ? '×' : '·';
-  cell.className = 'month-cell ' + (next === 'Có mặt' ? 'day-present' : next === 'Vắng' ? 'day-absent' : 'day-empty');
-  recalcMonthlyRow(cell.closest('tr'));
-}
+  if(!classValue){
 
-function recalcMonthlyRow(row){
-  if(!row) return;
-  const cells = [...row.querySelectorAll('.month-cell')];
-  const present = cells.filter(c => c.dataset.status === 'Có mặt').length;
-  const absent = cells.filter(c => c.dataset.status === 'Vắng').length;
-  const p = row.querySelector('.present-total');
-  const a = row.querySelector('.absent-total');
-  if(p) p.textContent = present;
-  if(a) a.textContent = absent;
-}
+    alert(
+      'Vui lòng chọn lớp'
+    );
 
-async function saveMonthlyAttendance(){
-  const month = document.getElementById('attMonth').value;
-  const classValue = document.getElementById('attClass').value;
-  const body = document.getElementById('monthlyBody');
+    return;
 
-  if(!month){ alert('Vui lòng chọn tháng'); return; }
-  if(!classValue){ alert('Vui lòng chọn lớp'); return; }
+  }
+
 
   const records = [];
-  body.querySelectorAll('.month-cell').forEach(cell => {
-    const status = cell.dataset.status || '';
-    if(status){
-      records.push({id:cell.dataset.id, date:cell.dataset.date, status});
-    }
-  });
+
+
+  document
+    .querySelectorAll(
+      '.att-status'
+    )
+    .forEach(select => {
+
+      records.push({
+
+        id:
+          select.dataset.id,
+
+        status:
+          select.value
+
+      });
+
+    });
+
 
   try{
-    const response = await fetch(API_URL, {
-      method:'POST',
-      headers:{'Content-Type':'text/plain;charset=utf-8'},
-      body:JSON.stringify({action:'saveAttendanceMonth', month, class:classValue, records})
-    });
-    const result = await response.json();
-    if(result.ok === false) throw new Error(result.error || result.message || 'Lỗi lưu bảng tháng');
 
-    alert('Lưu bảng điểm danh tháng thành công!');
-    monthlyLoadedKey = '';
-    await loadMonthlyAttendance();
+    const response =
+      await fetch(
+        API_URL,
+        {
+          method:'POST',
+
+          headers:{
+            'Content-Type':
+              'text/plain;charset=utf-8'
+          },
+
+          body:
+            JSON.stringify({
+
+              action:
+                'attendance',
+
+              date:
+                date,
+
+              class:
+                classValue,
+
+              records:
+                records
+
+            })
+
+        }
+      );
+
+
+    const result =
+      await response.json();
+
+
+    if(result.ok === false){
+
+      throw new Error(
+        result.message ||
+        'Lỗi lưu điểm danh'
+      );
+
+    }
+
+
+    alert(
+      'Lưu thành công!'
+    );
+
+
+    await loadData();
+
+    show('home');
+
+
   }catch(error){
-    console.error('Lỗi lưu bảng tháng:', error);
-    alert('Lỗi lưu bảng điểm danh tháng: ' + error.message);
+
+    console.error(
+      'Lỗi lưu điểm danh:',
+      error
+    );
+
+
+    alert(
+      'Lỗi lưu điểm danh: ' +
+      error.message
+    );
+
   }
+
 }
+
 
 /* =========================================================
    BẢO VỆ HTML
    ========================================================= */
-
-function showStudentDetail(index){
-
-  const student = students[index];
-  const modal = document.getElementById('studentModal');
-  const grid = document.getElementById('studentInfoGrid');
-  const title = document.getElementById('studentModalTitle');
-
-  if(!student || !modal || !grid) return;
-
-  title.innerText = 'Thông tin học viên: ' + String(student.hoTen || student.maHV || '');
-
-  const field = (label, value) => `
-    <div class="info-item">
-      <div class="info-label">${escapeHtml(label)}</div>
-      <div class="info-value">${escapeHtml(String(value ?? '').trim() || '-')}</div>
-    </div>
-  `;
-
-  const detail = student.detail || {};
-  const entries = Object.entries(detail);
-
-  // Các tên cột quan trọng được đưa lên đầu để dễ xem.
-  const preferredAliases = [
-    'STT','Trạng thái','MÃ SỐ HV','Mã Số HV','MSHV','Mã HV',
-    'Tên Romaji','Họ tên','Họ và tên','Tên Katakana','Katakana',
-    'Lớp','GVCN','Giáo viên chủ nhiệm','Trung tâm','Đối ngoại','Level','Giới tính',
-    'Ngày sinh','Ngày tháng năm sinh','Nghiệp đoàn','Nghiệp đoàn (Kana)',
-    'Nghiệp đoàn Kana','Công ty','Công ty (Kana)','Công ty Kana','Đơn vị tiếp nhận',
-    'Ngành nghề','Ngày thi','Ngày thi / Phỏng vấn','Ngày phỏng vấn',
-    'Ngày nhập học','Ngày nhập học dự kiến'
-  ];
-
-  const normalizedPreferred = new Set(preferredAliases.map(normalizeFieldKey));
-  const preferred = [];
-  const remaining = [];
-
-  entries.forEach(([key,value]) => {
-    if(normalizedPreferred.has(normalizeFieldKey(key))) preferred.push([key,value]);
-    else remaining.push([key,value]);
-  });
-
-  // Nếu backend có trường chuẩn hóa nhưng header thực tế không có, vẫn hiển thị.
-  const normalized = {
-    'Mã học viên': student.maHV,
-    'Họ tên': student.hoTen,
-    'Tên Katakana': student.katakana,
-    'Lớp': student.lop,
-    'Giáo viên chủ nhiệm': student.gvcn,
-    'Trung tâm': student.trungTam,
-    'Đối ngoại': student.doiNgoai,
-    'Level': student.level,
-    'Giới tính': student.gioiTinh,
-    'Ngày tháng năm sinh': student.ngaySinh,
-    'Trạng thái': student.trangThai,
-    'Nghiệp đoàn': student.nghiepDoan,
-    'Nghiệp đoàn (Kana)': student.nghiepDoanKana,
-    'Công ty': student.congTy,
-    'Công ty (Kana)': student.congTyKana,
-    'Ngành nghề': student.nganhNghe,
-    'Ngày thi / Phỏng vấn': student.ngayThi,
-    'Ngày nhập học dự kiến': student.ngayNhapHoc
-  };
-
-  const sections = [];
-  const used = new Set();
-  const addNormalized = (label,value) => {
-    if(value !== undefined && value !== null && String(value).trim() !== '') {
-      const k = normalizeFieldKey(label);
-      if(!used.has(k)){
-        used.add(k);
-        sections.push(field(label,value));
-      }
-    }
-  };
-
-  Object.entries(normalized).forEach(([label,value]) => addNormalized(label,value));
-
-  entries.forEach(([key,value]) => {
-    const nk = normalizeFieldKey(key);
-    if(!used.has(nk)){
-      used.add(nk);
-      sections.push(field(key,value));
-    }
-  });
-
-  grid.innerHTML = `
-    <div class="detail-section">
-      <div class="detail-section-title">TOÀN BỘ THÔNG TIN HỌC VIÊN</div>
-      <div class="student-info-grid-inner">
-        ${sections.join('')}
-      </div>
-    </div>
-  `;
-
-  modal.classList.add('show');
-  document.body.style.overflow='hidden';
-}
-
-function normalizeFieldKey(value){
-  return String(value ?? '')
-    .trim()
-    .toLowerCase()
-    .normalize('NFD')
-    .replace(/[\u0300-\u036f]/g,'')
-    .replace(/đ/g,'d')
-    .replace(/[^a-z0-9]+/g,'');
-}
-
-function closeStudentModal(event){
-  if(event && event.target !== event.currentTarget) return;
-  const modal = document.getElementById('studentModal');
-  if(modal) modal.classList.remove('show');
-  document.body.style.overflow='';
-}
-
-function formatFieldName(key){
-  const labels = {
-    maHV:'Mã học viên',
-    hoTen:'Họ tên',
-    lop:'Lớp',
-    gvcn:'Giáo viên chủ nhiệm',
-    trangThai:'Trạng thái',
-    sdt:'Số điện thoại',
-    ngaySinh:'Ngày sinh',
-    gioiTinh:'Giới tính',
-    diaChi:'Địa chỉ',
-    queQuan:'Quê quán',
-    cccd:'CCCD',
-    ngayNhapHoc:'Ngày nhập học',
-    katakana:'Tên Katakana',
-    trungTam:'Trung tâm',
-    doiNgoai:'Đối ngoại',
-    level:'Level',
-    nghiepDoan:'Nghiệp đoàn',
-    nghiepDoanKana:'Nghiệp đoàn (Kana)',
-    congTy:'Công ty',
-    congTyKana:'Công ty (Kana)',
-    nganhNghe:'Ngành nghề',
-    ngayThi:'Ngày thi / Phỏng vấn'
-  };
-  return labels[key] || String(key);
-}
 
 function escapeHtml(value){
 
