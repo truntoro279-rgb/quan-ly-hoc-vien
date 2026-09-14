@@ -39,7 +39,6 @@
     .btn-success { background: #00b42a; color: white; }
     .btn-success:hover { background: #009a23; }
 
-    /* === BẢNG DỮ LIỆU === */
     .table-wrapper { width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; }
     table { 
       width: 100%; border-collapse: collapse; margin-top: 8px; 
@@ -60,11 +59,9 @@
     .page.active { display: block; }
     .loading { text-align: center; padding: 20px; color: #ffd700; }
 
-    /* === Tên học viên có thể nhấn === */
     .ten-hv { color: #ffd700; cursor: pointer; font-weight: bold; text-decoration: underline; }
     .ten-hv:hover { color: #fff; background: #165DFF; padding: 2px 4px; border-radius: 3px; }
 
-    /* === CỬA SỔ CHI TIẾT === */
     .modal-overlay {
       position: fixed; top: 0; left: 0; width: 100%; height: 100%;
       background: rgba(0,0,0,0.8); display: none; justify-content: center; align-items: center; 
@@ -122,7 +119,6 @@
     <button class="tab-btn" data-page="tai-lieu">Tài liệu</button>
   </div>
 
-  <!-- TRANG CHỦ -->
   <div id="trang-chu" class="page active">
     <div class="card">
       <h2>Thống kê tổng quan</h2>
@@ -135,7 +131,6 @@
     </div>
   </div>
 
-  <!-- DANH SÁCH HỌC VIÊN -->
   <div id="hoc-vien" class="page">
     <div class="card">
       <h2>Danh sách học viên</h2>
@@ -150,7 +145,6 @@
     </div>
   </div>
 
-  <!-- HV VỀ QUÊ -->
   <div id="hv-ve-que" class="page">
     <div class="card">
       <h2>Học viên về quê</h2>
@@ -158,7 +152,6 @@
     </div>
   </div>
 
-  <!-- ĐIỂM DANH -->
   <div id="diem-danh" class="page">
     <div class="card">
       <h2>Điểm danh hàng ngày</h2>
@@ -175,7 +168,6 @@
     </div>
   </div>
 
-  <!-- TÀI LIỆU -->
   <div id="tai-lieu" class="page">
     <div class="card">
       <h2>Tài liệu</h2>
@@ -183,7 +175,6 @@
     </div>
   </div>
 
-  <!-- === CỬA SỔ THÔNG TIN CHI TIẾT === -->
   <div id="modal-chitiet" class="modal-overlay" onclick="dongModal(event)">
     <div class="modal-content" onclick="event.stopPropagation()">
       <h3>📋 THÔNG TIN CHI TIẾT HỌC VIÊN</h3>
@@ -211,15 +202,26 @@ function xuLyNgayThang(giaTri, tieuDe) {
   return s;
 }
 
-// === ✅ LOGIC ĐẾM MỚI - RẤT ĐƠN GIẢN ===
-function capNhatThongKeTongSo() {
-  const tong = danhSachHocVien.length;
-  let dangHoc = 0, veQue = 0, vang = 0;
+// === ✅ LỌC DỮ LIỆU HỢP LỆ & ĐẾM ĐÚNG ===
+function locVaDemDuLieu(danhSachTuAPI) {
+  // === BƯỚC 1: LỌC BỎ DÒNG TRỐNG / DỮ LIỆU KHÔNG HỢP LỆ ===
+  danhSachHocVien = danhSachTuAPI.filter(hv => {
+    const ma = String(hv.maHV || hv.MaHV || "").trim();
+    const ten = String(hv.hoTen || hv.HoTen || "").trim();
+    // Chỉ giữ lại dòng có Mã HV HOẶC Họ tên hợp lệ → Bỏ dòng undefined
+    return ma !== "" || ten !== "";
+  });
 
-  // === DUYỆT TỪNG HỌC VIÊN & ĐẾM TRỰC TIẾP ===
+  // === BƯỚC 2: ĐẾM TRẠNG THÁI ===
+  let dangHoc = 0, veQue = 0, vang = 0;
+  const tong = danhSachHocVien.length;
+
   for (let i = 0; i < danhSachHocVien.length; i++) {
     const hv = danhSachHocVien[i];
-    const trangThai = String(hv.trangThai || hv.TrangThai || "").trim();
+    let trangThai = String(hv.trangThai || hv.TrangThai || "").trim();
+    
+    // === CHUẨN HÓA: Bỏ dấu cách thừa, chuẩn hóa chữ ===
+    trangThai = trangThai.replace(/\s+/g, " ").trim();
 
     if (trangThai === "Đang học" || trangThai === "Có mặt") {
       dangHoc++;
@@ -228,26 +230,24 @@ function capNhatThongKeTongSo() {
     } else if (trangThai === "Vắng" || trangThai === "Vắng mặt") {
       vang++;
     } else {
-      // === Nếu trạng thái không khớp → mặc định tính là Vắng ===
       vang++;
     }
   }
 
-  // === CẬP NHẬT VÀO MÀN HÌNH ===
+  // === BƯỚC 3: CẬP NHẬT MÀN HÌNH ===
   document.getElementById("stat-tong").textContent = tong;
   document.getElementById("stat-danghoc").textContent = dangHoc;
   document.getElementById("stat-vang").textContent = vang;
   document.getElementById("stat-veque").textContent = veQue;
 
-  // === IN RA BẢNG ĐỂ BẠN KIỂM TRA ===
-  console.log("=== THỐNG KÊ ===");
-  console.log("Tổng:", tong);
+  // === IN RA CONSOLE ĐỂ KIỂM TRA ===
+  console.log("=== ✅ SAU KHI LỌC ===");
+  console.log("Tổng hợp lệ:", tong);
   console.log("Đang học:", dangHoc);
   console.log("Về quê:", veQue);
   console.log("Vắng:", vang);
-  console.log("=== DANH SÁCH DỮ LIỆU ===");
   danhSachHocVien.forEach((hv, idx) => {
-    console.log(`${idx+1}. ${hv.maHV || hv.MaHV} - ${hv.hoTen || hv.HoTen} → Trạng thái: "${hv.trangThai || hv.TrangThai}"`);
+    console.log(`${idx+1}. ${hv.maHV || hv.MaHV} - ${hv.hoTen || hv.HoTen} → "${hv.trangThai || hv.TrangThai}"`);
   });
 }
 
@@ -278,12 +278,11 @@ async function taiDuLieu() {
     console.log("=== DỮ LIỆU API TRẢ VỀ ===", kq);
 
     if (kq.ok) {
-      // === LẤY DANH SÁCH HỌC VIÊN ===
-      danhSachHocVien = kq.students || kq.data || kq.danhSach || [];
-      console.log("=== DANH SÁCH HV ===", danhSachHocVien);
-
-      // === GỌI HÀM ĐẾM ===
-      capNhatThongKeTongSo();
+      const duLieuGoc = kq.students || kq.data || kq.danhSach || [];
+      console.log("=== SỐ DÒNG GỐC TỪ API:", duLieuGoc.length);
+      
+      // === GỌI HÀM LỌC BỎ DÒNG TRỐNG & ĐẾM ===
+      locVaDemDuLieu(duLieuGoc);
 
       capNhatDanhSachHocVien();
       capNhatDanhSachVeQue();
@@ -330,7 +329,7 @@ function capNhatDanhSachHocVien() {
 // === HV VỀ QUÊ ===
 function capNhatDanhSachVeQue() {
   const ds = danhSachHocVien.filter(hv => {
-    const tt = String(hv.trangThai || hv.TrangThai || "");
+    const tt = String(hv.trangThai || hv.TrangThai || "").trim();
     return tt.includes("Quê") || tt.includes("Nghỉ phép");
   });
   document.getElementById("danhsach-veque").innerHTML = 
