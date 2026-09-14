@@ -8,7 +8,6 @@
     * { margin: 0; padding: 0; box-sizing: border-box; font-family: Arial, sans-serif; }
     body { background: #1a1a3a; color: #fff; min-height: 100vh; }
 
-    /* === TIÊU ĐỀ === */
     .header-bar {
       background: #165DFF; color: white;
       padding: 15px; text-align: center;
@@ -16,7 +15,6 @@
     .header-bar h1 { font-size: 22px; margin-bottom: 4px; }
     .header-bar p { opacity: 0.9; font-size: 13px; }
 
-    /* === NÚT ĐIỀU HƯỚNG === */
     .nav { text-align: center; margin: 15px 0; }
     .nav button {
       background: #165DFF; color: white; border: none;
@@ -28,14 +26,12 @@
       border-bottom: 2px solid #ffd700; 
     }
 
-    /* === NỘI DUNG === */
     .container { padding: 0 15px; }
     .card { 
       background: #16213e; padding: 15px; 
       border-radius: 8px; margin-top: 10px;
     }
 
-    /* === THỐNG KÊ TRANG CHỦ === */
     .stats-row {
       display: grid;
       grid-template-columns: repeat(4, 1fr);
@@ -51,27 +47,23 @@
     .stat-box .label { font-size: 13px; opacity: 0.8; }
     .stat-box .value { font-size: 20px; font-weight: bold; color: #ffd700; margin-top: 4px; }
 
-    /* === BẢNG ĐIỂM DANH === */
     .date-range { margin: 10px 0; display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
     table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 12px; }
     th, td { padding: 6px 4px; text-align: center; border: 1px solid #2a3b5c; }
     th { background: #165DFF; }
     tr:nth-child(even) { background: #1f2b48; }
 
-    /* === TRANG ẨN / HIỆN === */
     .page { display: none; }
     .page.active { display: block; }
   </style>
 </head>
 <body>
 
-  <!-- TIÊU ĐỀ - GIỮ NGUYÊN -->
   <div class="header-bar">
     <h1>TDTT THÀNH ĐÔ - THANH HÓA</h1>
     <p>Hệ thống quản lý học viên tập trung</p>
   </div>
 
-  <!-- NÚT ĐIỀU HƯỚNG - GIỮ NGUYÊN -->
   <div class="nav">
     <button class="tab-btn active" data-page="trang-chu">Trang chủ</button>
     <button class="tab-btn" data-page="hoc-vien">Học viên</button>
@@ -80,10 +72,9 @@
     <button class="tab-btn" data-page="tai-lieu">Tài liệu</button>
   </div>
 
-  <!-- NỘI DUNG CHÍNH -->
   <div class="container">
 
-    <!-- TRANG CHỦ - THỐNG KÊ - GIỮ NGUYÊN BỐ CỤC -->
+    <!-- TRANG CHỦ - TỰ TÍNH SỐ LIỆU -->
     <div id="trang-chu" class="page active">
       <div class="card">
         <h2>Thống kê tổng quan</h2>
@@ -118,7 +109,7 @@
       <div class="card"><h2>Học viên về quê</h2></div>
     </div>
 
-    <!-- TRANG ĐIỂM DANH -->
+    <!-- TRANG ĐIỂM DANH - DỮ LIỆU ĐỂ TÍNH -->
     <div id="diem-danh" class="page">
       <div class="card">
         <h2>Điểm danh hàng ngày</h2>
@@ -142,7 +133,17 @@
             </tr>
           </thead>
           <tbody>
-            <!-- Dữ liệu điểm danh của bạn giữ nguyên ở đây -->
+            <tr><td>TH202608</td><td>NGUYỄN TRẦN LÊ HUY</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td></td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td></tr>
+            <tr><td>TH202609</td><td>LƯƠNG THỊ HOÀI</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td></td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td></tr>
+            <tr><td>TH202610</td><td>VI VĂN LỢI</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td></td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td></tr>
+            <tr><td>TH202613</td><td>LÂNG THỊ HÒA</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td></td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td></tr>
+            <tr><td>TH202614</td><td>LƯƠNG THỊ THÙY</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td></tr>
+            <tr><td>TH202615</td><td>LÊ NGỌC THƯỜNG</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td></tr>
+            <tr><td>TH202617</td><td>NGUYỄN NGỌC NAM</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td></tr>
+            <tr><td>TH202618</td><td>LƯƠNG VĂN QUANG</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td></tr>
+            <tr><td>TH202619</td><td>LÂNG VĂN TÍNH</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td></tr>
+            <tr><td>TH202620</td><td>PHẠM TUẤN DƯƠNG</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td></tr>
+            <tr><td>TH202621</td><td>LÊ THỊ HẢI YẾN</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td></tr>
           </tbody>
         </table>
       </div>
@@ -156,57 +157,65 @@
   </div>
 
 <script>
-// === CHUYỂN TRANG - GIỮ NGUYÊN ===
+// === CHUYỂN TRANG ===
 document.querySelectorAll(".tab-btn").forEach(btn => {
   btn.addEventListener("click", function () {
     document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
     document.querySelectorAll(".page").forEach(p => p.classList.remove("active"));
     this.classList.add("active");
     document.getElementById(this.dataset.page).classList.add("active");
+    
+    // === MỖI KHI NHẤN VÀO TRANG CHỦ → TÍNH LẠI ===
+    if (this.dataset.page === "trang-chu") {
+      tinhThongKe();
+    }
   });
 });
 
-// === TÍNH THỐNG KÊ - QUY TẮC MỚI ===
+// === HÀM TÍNH THỐNG KÊ - ĐƠN GIẢN & ĐÚNG ===
 function tinhThongKe() {
-  const bang = document.querySelectorAll("#bang-diemdanh tbody tr");
-  const tongHV = bang.length;
-  let dangHoc = 0;
-  let vang = 0;
+  const danhSach = document.querySelectorAll("#bang-diemdanh tbody tr");
+  const tong = danhSach.length;
+  let coDiemDanh = 0;
 
-  bang.forEach(dong => {
-    const cacNgay = dong.querySelectorAll("td");
+  danhSach.forEach(hang => {
+    const cacO = hang.querySelectorAll("td");
     let coDauTich = false;
 
-    // Kiểm tra tất cả các cột ngày (bỏ qua Mã HV và Họ tên)
-    for (let i = 2; i < cacNgay.length; i++) {
-      const noiDung = cacNgay[i].textContent.trim();
-      if (noiDung === "✓") {
+    // Kiểm tra các ô từ cột thứ 3 trở đi (các cột ngày)
+    for (let i = 2; i < cacO.length; i++) {
+      if (cacO[i].textContent.trim() === "✓") {
         coDauTich = true;
-        break; // Chỉ cần 1 dấu tích → đủ điều kiện Đang học, dừng kiểm tra
+        break; // Chỉ cần 1 dấu ✓ → Đang học
       }
     }
 
-    // === QUY TẮC CHÍNH ===
-    // ✅ Có ít nhất 1 dấu tích → tính vào Đang học
-    // ❌ Không có dấu tích nào → tính vào Vắng
     if (coDauTich) {
-      dangHoc++;
-    } else {
-      vang++;
+      coDiemDanh++;
     }
   });
 
   // Cập nhật số liệu
-  document.getElementById("tong-hv").textContent = tongHV;
-  document.getElementById("dang-hoc").textContent = dangHoc;
-  document.getElementById("vang").textContent = vang;
+  document.getElementById("tong-hv").textContent = tong;
+  document.getElementById("dang-hoc").textContent = coDiemDanh;
+  document.getElementById("vang").textContent = tong - coDiemDanh;
 }
 
-// === TÍNH LẠI MỖI KHI MỞ TRANG ĐIỂM DANH ===
-document.querySelector('[data-page="diem-danh"]').addEventListener("click", tinhThongKe);
-
 // === TÍNH NGAY KHI MỞ TRANG ===
-window.onload = tinhThongKe;
+window.onload = function() {
+  // Hiển thị trang điểm danh trước để tải dữ liệu
+  document.getElementById("diem-danh").classList.add("active");
+  document.querySelector('[data-page="diem-danh"]').classList.add("active");
+  
+  // Chuyển về trang chủ rồi tính
+  setTimeout(() => {
+    document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
+    document.querySelectorAll(".page").forEach(p => p.classList.remove("active"));
+    document.querySelector('[data-page="trang-chu"]').classList.add("active");
+    document.getElementById("trang-chu").classList.add("active");
+    tinhThongKe();
+  }, 100);
+};
 </script>
 
 </body>
