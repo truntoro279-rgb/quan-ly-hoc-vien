@@ -38,7 +38,6 @@
     .btn-primary:hover { background: #0e4bdd; }
     .btn-success { background: #00b42a; color: white; }
     .btn-success:hover { background: #009a23; }
-
     .table-wrapper { width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; }
     table { 
       width: 100%; border-collapse: collapse; margin-top: 8px; 
@@ -58,10 +57,8 @@
     .page { display: none; }
     .page.active { display: block; }
     .loading { text-align: center; padding: 20px; color: #ffd700; }
-
     .ten-hv { color: #ffd700; cursor: pointer; font-weight: bold; text-decoration: underline; }
     .ten-hv:hover { color: #fff; background: #165DFF; padding: 2px 4px; border-radius: 3px; }
-
     .modal-overlay {
       position: fixed; top: 0; left: 0; width: 100%; height: 100%;
       background: rgba(0,0,0,0.8); display: none; justify-content: center; align-items: center; 
@@ -95,7 +92,6 @@
     }
     .modal-close:hover { background: #0e4bdd; }
     .loading-info { text-align: center; color: #ffd700; padding: 25px; font-size: 15px; }
-
     @media (min-width: 768px) {
       .modal-grid { grid-template-columns: 1fr 1fr; }
       body { padding: 20px; font-size: 15px; }
@@ -105,12 +101,10 @@
   </style>
 </head>
 <body>
-
   <div class="header">
     <h1>TDTT THÀNH ĐÔ - THANH HÓA</h1>
     <p>Hệ thống quản lý học viên tập trung</p>
   </div>
-
   <div class="nav">
     <button class="tab-btn active" data-page="trang-chu">Trang chủ</button>
     <button class="tab-btn" data-page="hoc-vien">Học viên</button>
@@ -118,7 +112,6 @@
     <button class="tab-btn" data-page="diem-danh">Điểm danh</button>
     <button class="tab-btn" data-page="tai-lieu">Tài liệu</button>
   </div>
-
   <div id="trang-chu" class="page active">
     <div class="card">
       <h2>Thống kê tổng quan</h2>
@@ -130,7 +123,6 @@
       </div>
     </div>
   </div>
-
   <div id="hoc-vien" class="page">
     <div class="card">
       <h2>Danh sách học viên</h2>
@@ -144,14 +136,12 @@
       <div id="danhsach-hocvien" class="table-wrapper"></div>
     </div>
   </div>
-
   <div id="hv-ve-que" class="page">
     <div class="card">
       <h2>Học viên về quê</h2>
       <div id="danhsach-veque" class="table-wrapper"></div>
     </div>
   </div>
-
   <div id="diem-danh" class="page">
     <div class="card">
       <h2>Điểm danh hàng ngày</h2>
@@ -167,14 +157,12 @@
       <div id="bang-diemdanh" class="table-wrapper"></div>
     </div>
   </div>
-
   <div id="tai-lieu" class="page">
     <div class="card">
       <h2>Tài liệu</h2>
       <p>Chức năng đang cập nhật...</p>
     </div>
   </div>
-
   <div id="modal-chitiet" class="modal-overlay" onclick="dongModal(event)">
     <div class="modal-content" onclick="event.stopPropagation()">
       <h3>📋 THÔNG TIN CHI TIẾT HỌC VIÊN</h3>
@@ -182,13 +170,11 @@
       <button class="modal-close" onclick="dongModalChiTiet()">Đóng</button>
     </div>
   </div>
-
 <script>
 // =====================================================
-// ⚠️  THAY URL BÊN DƯỚI BẰNG URL THẬT CỦA BẠN NHÉ!
+// ✅ URL CỦA BẠN ĐÃ ĐƯỢC DÁN SẴN — KHÔNG CẦN THAY ĐỔI!
 // =====================================================
 const API_URL = "https://script.google.com/macros/s/AKfycbwOPlxlzXRBKkFJr06NKBxZNpGXgwTP9IJfM1WV4B97HdBhUyFWm-fIgETE8V-4BIzLRA/exec";
-
 let danhSachHocVien = [];
 
 // === XỬ LÝ NGÀY THÁNG ===
@@ -202,27 +188,21 @@ function xuLyNgayThang(giaTri, tieuDe) {
   return s;
 }
 
-// === ✅ LỌC DỮ LIỆU HỢP LỆ & ĐẾM ĐÚNG ===
+// === ✅ LỌC DỮ LIỆU & ĐẾM TRẠNG THÁI ===
 function locVaDemDuLieu(danhSachTuAPI) {
-  // === BƯỚC 1: LỌC BỎ DÒNG TRỐNG / DỮ LIỆU KHÔNG HỢP LỆ ===
   danhSachHocVien = danhSachTuAPI.filter(hv => {
     const ma = String(hv.maHV || hv.MaHV || "").trim();
     const ten = String(hv.hoTen || hv.HoTen || "").trim();
-    // Chỉ giữ lại dòng có Mã HV HOẶC Họ tên hợp lệ → Bỏ dòng undefined
     return ma !== "" || ten !== "";
   });
 
-  // === BƯỚC 2: ĐẾM TRẠNG THÁI ===
   let dangHoc = 0, veQue = 0, vang = 0;
   const tong = danhSachHocVien.length;
-
   for (let i = 0; i < danhSachHocVien.length; i++) {
     const hv = danhSachHocVien[i];
     let trangThai = String(hv.trangThai || hv.TrangThai || "").trim();
-    
-    // === CHUẨN HÓA: Bỏ dấu cách thừa, chuẩn hóa chữ ===
     trangThai = trangThai.replace(/\s+/g, " ").trim();
-
+    
     if (trangThai === "Đang học" || trangThai === "Có mặt") {
       dangHoc++;
     } else if (trangThai === "Về quê" || trangThai === "Nghỉ phép") {
@@ -234,21 +214,10 @@ function locVaDemDuLieu(danhSachTuAPI) {
     }
   }
 
-  // === BƯỚC 3: CẬP NHẬT MÀN HÌNH ===
   document.getElementById("stat-tong").textContent = tong;
   document.getElementById("stat-danghoc").textContent = dangHoc;
   document.getElementById("stat-vang").textContent = vang;
   document.getElementById("stat-veque").textContent = veQue;
-
-  // === IN RA CONSOLE ĐỂ KIỂM TRA ===
-  console.log("=== ✅ SAU KHI LỌC ===");
-  console.log("Tổng hợp lệ:", tong);
-  console.log("Đang học:", dangHoc);
-  console.log("Về quê:", veQue);
-  console.log("Vắng:", vang);
-  danhSachHocVien.forEach((hv, idx) => {
-    console.log(`${idx+1}. ${hv.maHV || hv.MaHV} - ${hv.hoTen || hv.HoTen} → "${hv.trangThai || hv.TrangThai}"`);
-  });
 }
 
 // === KHỞI TẠO ===
@@ -270,30 +239,26 @@ function ganSuKienTab() {
   });
 }
 
-// === TẢI DỮ LIỆU ===
+// === TẢI DỮ LIỆU TỪ API ===
 async function taiDuLieu() {
   try {
     const res = await fetch(API_URL + "?action=getAll");
     const kq = await res.json();
-    console.log("=== DỮ LIỆU API TRẢ VỀ ===", kq);
-
+    console.log("=== DỮ LIỆU TRẢ VỀ ===", kq);
+    
     if (kq.ok) {
       const duLieuGoc = kq.students || kq.data || kq.danhSach || [];
-      console.log("=== SỐ DÒNG GỐC TỪ API:", duLieuGoc.length);
-      
-      // === GỌI HÀM LỌC BỎ DÒNG TRỐNG & ĐẾM ===
       locVaDemDuLieu(duLieuGoc);
-
       capNhatDanhSachHocVien();
       capNhatDanhSachVeQue();
       capNhatChonLop();
       taoBangDiemDanh();
     } else {
-      alert("Lỗi: " + kq.message);
+      alert("Thông báo: " + (kq.message || "Không có dữ liệu hoặc hành động chưa hợp lệ"));
     }
   } catch (e) {
-    alert("Không lấy được dữ liệu!\nKiểm tra lại API_URL đã đúng chưa?");
-    console.error("Lỗi lấy dữ liệu:", e);
+    alert("❌ Không lấy được dữ liệu!\nKiểm tra đã triển khai Apps Script chưa?");
+    console.error("Lỗi:", e);
   }
 }
 
@@ -303,7 +268,6 @@ function capNhatDanhSachHocVien() {
   const lopLoc = document.getElementById("filter-lop").value;
   const ttLoc = document.getElementById("filter-trangthai").value;
   const tuKhoa = document.getElementById("search-ma").value.toLowerCase();
-
   let loc = danhSachHocVien;
   if (lopLoc) loc = loc.filter(hv => (hv.lop || hv.Lop) === lopLoc);
   if (ttLoc) loc = loc.filter(hv => (hv.trangThai || hv.TrangThai) === ttLoc);
@@ -312,9 +276,7 @@ function capNhatDanhSachHocVien() {
     const ten = String(hv.hoTen || hv.HoTen || "").toLowerCase();
     return ma.includes(tuKhoa) || ten.includes(tuKhoa);
   });
-
   document.getElementById("thong-ke-danhsach").textContent = `Tổng ${loc.length} học viên`;
-
   tbody.innerHTML = `<table><tr><th>Mã HV</th><th>Họ tên</th><th>Lớp</th><th>GVCN</th><th>Trạng thái</th></tr>` +
     loc.map(hv => `<tr>
       <td>${hv.maHV || hv.MaHV || ""}</td>
@@ -348,15 +310,12 @@ function capNhatDanhSachVeQue() {
 async function xemChiTietHocVien(maHV) {
   const modal = document.getElementById("modal-chitiet");
   const body = document.getElementById("modal-body");
-  
   modal.style.display = "flex";
   body.innerHTML = `<div class="loading-info">⏳ Đang tải thông tin mã <strong>${maHV}</strong>...</div>`;
-
   try {
     const url = `${API_URL}?action=getStudentDetail&maHV=${encodeURIComponent(maHV)}`;
     const res = await fetch(url, { method: "GET" });
     const kq = await res.json();
-
     if (kq.ok && kq.detail) {
       let html = `<div class="modal-grid">`;
       for (const [tieuDe, giaTri] of Object.entries(kq.detail)) {
@@ -409,7 +368,6 @@ function ganSuKienDiemDanh() {
   const dauThang = new Date(hienTai.getFullYear(), hienTai.getMonth(), 1);
   document.getElementById("tu-ngay").valueAsDate = dauThang;
   document.getElementById("den-ngay").valueAsDate = hienTai;
-
   document.getElementById("btn-tao-bang").onclick = taoBangDiemDanh;
   document.getElementById("btn-luu-bang").onclick = luuBangDiemDanh;
 }
@@ -419,17 +377,14 @@ function taoBangDiemDanh() {
   const lop = document.getElementById("chon-lop-diemdanh").value;
   const tuNgay = new Date(document.getElementById("tu-ngay").value);
   const denNgay = new Date(document.getElementById("den-ngay").value);
-
   const dsLop = lop ? danhSachHocVien.filter(hv => (hv.lop || hv.Lop) === lop) : danhSachHocVien;
   const soNgay = Math.ceil((denNgay - tuNgay) / (1000*60*60*24)) + 1;
-
   let ngayThu = [];
   for (let i = 0; i < soNgay; i++) {
     const d = new Date(tuNgay);
     d.setDate(d.getDate() + i);
     ngayThu.push(d.getDate() + "/" + (d.getMonth()+1));
   }
-
   const bang = document.getElementById("bang-diemdanh");
   bang.innerHTML = `
     <table>
@@ -452,7 +407,6 @@ async function luuBangDiemDanh() {
   const lop = document.getElementById("chon-lop-diemdanh").value;
   const tuNgay = document.getElementById("tu-ngay").value;
   const denNgay = document.getElementById("den-ngay").value;
-
   const bangDiemDanh = [];
   document.querySelectorAll("#bang-diemdanh tr").forEach((hang, idx) => {
     if (idx === 0) return;
@@ -466,14 +420,12 @@ async function luuBangDiemDanh() {
     }
     bangDiemDanh.push({ maHV, hoTen, diemDanh });
   });
-
   const params = new URLSearchParams();
   params.append("action", "saveGrid");
   params.append("lop", lop);
   params.append("from", tuNgay);
   params.append("to", denNgay);
   params.append("data", JSON.stringify(bangDiemDanh));
-
   try {
     const url = `${API_URL}?${params.toString()}`;
     const res = await fetch(url, { method: "GET" });
