@@ -172,10 +172,19 @@
   </div>
 <script>
 // =====================================================
-// ✅ URL CỦA BẠN ĐÃ ĐƯỢC DÁN SẴN — KHÔNG CẦN THAY ĐỔI!
+// ✅ URL APPS SCRIPT CỦA BẠN — ĐÃ SẴN
 // =====================================================
 const API_URL = "https://script.google.com/macros/s/AKfycbwOPlxlzXRBKkFJr06NKBxZNpGXgwTP9IJfM1WV4B97HdBhUyFWm-fIgETE8V-4BIzLRA/exec";
+
+// =====================================================
+// 📋 CẤU HÌNH SHEET HV VỀ QUÊ — ĐÃ SẴN
+// =====================================================
+const SHEET_ID = "1JI8U96SwwQXn5ZLqWNlLtGaxkRzArpljjdW9QdIOr7A";
+const SHEET_NAME = "VE QUE";
+const CSV_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(SHEET_NAME)}`;
+
 let danhSachHocVien = [];
+let danhSachVeQueTuSheet = [];
 
 // === XỬ LÝ NGÀY THÁNG ===
 function xuLyNgayThang(giaTri, tieuDe) {
@@ -188,32 +197,24 @@ function xuLyNgayThang(giaTri, tieuDe) {
   return s;
 }
 
-// === ✅ LỌC DỮ LIỆU & ĐẾM TRẠNG THÁI ===
+// === ✅ LỌC & ĐẾM TRẠNG THÁI ===
 function locVaDemDuLieu(danhSachTuAPI) {
   danhSachHocVien = danhSachTuAPI.filter(hv => {
     const ma = String(hv.maHV || hv.MaHV || "").trim();
     const ten = String(hv.hoTen || hv.HoTen || "").trim();
     return ma !== "" || ten !== "";
   });
-
   let dangHoc = 0, veQue = 0, vang = 0;
   const tong = danhSachHocVien.length;
   for (let i = 0; i < danhSachHocVien.length; i++) {
     const hv = danhSachHocVien[i];
     let trangThai = String(hv.trangThai || hv.TrangThai || "").trim();
     trangThai = trangThai.replace(/\s+/g, " ").trim();
-    
-    if (trangThai === "Đang học" || trangThai === "Có mặt") {
-      dangHoc++;
-    } else if (trangThai === "Về quê" || trangThai === "Nghỉ phép") {
-      veQue++;
-    } else if (trangThai === "Vắng" || trangThai === "Vắng mặt") {
-      vang++;
-    } else {
-      vang++;
-    }
+    if (trangThai === "Đang học" || trangThai === "Có mặt") dangHoc++;
+    else if (trangThai === "Về quê" || trangThai === "Nghỉ phép") veQue++;
+    else if (trangThai === "Vắng" || trangThai === "Vắng mặt") vang++;
+    else vang++;
   }
-
   document.getElementById("stat-tong").textContent = tong;
   document.getElementById("stat-danghoc").textContent = dangHoc;
   document.getElementById("stat-vang").textContent = vang;
@@ -235,17 +236,20 @@ function ganSuKienTab() {
       document.querySelectorAll(".page").forEach(p => p.classList.remove("active"));
       this.classList.add("active");
       document.getElementById(this.dataset.page).classList.add("active");
+      // Nhấn tab HV về quê → tự tải dữ liệu từ Sheet
+      if (this.dataset.page === "hv-ve-que") {
+        taiDuLieuVeQueTuSheet();
+      }
     });
   });
 }
 
-// === TẢI DỮ LIỆU TỪ API ===
+// === TẢI DỮ LIỆU TỪ APPS SCRIPT ===
 async function taiDuLieu() {
   try {
     const res = await fetch(API_URL + "?action=getAll");
     const kq = await res.json();
-    console.log("=== DỮ LIỆU TRẢ VỀ ===", kq);
-    
+    console.log("=== DỮ LIỆU API ===", kq);
     if (kq.ok) {
       const duLieuGoc = kq.students || kq.data || kq.danhSach || [];
       locVaDemDuLieu(duLieuGoc);
@@ -254,12 +258,73 @@ async function taiDuLieu() {
       capNhatChonLop();
       taoBangDiemDanh();
     } else {
-      alert("Thông báo: " + (kq.message || "Không có dữ liệu hoặc hành động chưa hợp lệ"));
+      alert("Thông báo: " + (kq.message || "Hành động không hợp lệ"));
     }
   } catch (e) {
-    alert("❌ Không lấy được dữ liệu!\nKiểm tra đã triển khai Apps Script chưa?");
+    alert("❌ Lỗi kết nối Apps Script!");
     console.error("Lỗi:", e);
   }
+}
+
+// =====================================================
+// 🆕 HÀM MỚI: TẢI HV VỀ QUÊ TỪ SHEET RIÊNG
+// =====================================================
+async function taiDuLieuVeQueTuSheet() {
+  const container = document.getElementById("danhsach-veque");
+  try {
+    container.innerHTML = "<p style='text-align:center; color:#ffd700;'>⏳ Đang tải dữ liệu từ Sheet...</p>";
+    const res = await fetch(CSV_URL);
+    if (!res.ok) throw new Error("Không kết nối được Sheet");
+    
+    const text = await res.text();
+    const dong = text.split("\n").map(d => d.split(",").map(c => c.replace(/^"|"$/g, "").trim()));
+    
+    // Cột: 0=Mã HV, 1=Họ tên, 4=Lớp, 12=Trạng thái
+    danhSachVeQueTuSheet = dong.slice(1).filter(hang => {
+      const ma = hang[0] || "";
+      const ten = hang[1] || "";
+      return ma !== "" || ten !== "";
+    }).map(hang => ({
+      maHV: hang[0] || "",
+      hoTen: hang[1] || "",
+      lop: hang[4] || "",
+      trangThai: hang[12] || ""
+    }));
+
+    console.log("✅ Tải được", danhSachVeQueTuSheet.length, "HV về quê từ Sheet");
+    hienThiDanhSachVeQueTuSheet();
+
+  } catch (e) {
+    console.error("❌ Lỗi Sheet:", e);
+    container.innerHTML = `
+      <p style="color:#ff6b6b; text-align:center; padding:20px;">
+        ⚠️ Không lấy được dữ liệu Sheet<br>
+        <strong>Vui lòng: Mở Sheet → Chia sẻ → Bất kỳ ai có liên kết</strong>
+      </p>`;
+  }
+}
+
+// === HIỂN THỊ DANH SÁCH TỪ SHEET ===
+function hienThiDanhSachVeQueTuSheet() {
+  if (!danhSachVeQueTuSheet.length) {
+    document.getElementById("danhsach-veque").innerHTML = 
+      "<p style='text-align:center;'>Không có dữ liệu</p>";
+    return;
+  }
+  const dsLoc = danhSachVeQueTuSheet.filter(hv => {
+    const tt = String(hv.trangThai || "").trim();
+    return tt.includes("Quê") || tt.includes("Nghỉ phép");
+  });
+  document.getElementById("danhsach-veque").innerHTML = 
+    `<p style="font-weight:bold; margin-bottom:10px;">Tổng ${dsLoc.length} học viên về quê (từ Sheet VE QUE)</p>` +
+    `<table><tr><th>Mã HV</th><th>Họ tên</th><th>Lớp</th><th>Trạng thái</th></tr>` +
+    dsLoc.map(hv => `<tr>
+      <td>${hv.maHV || ""}</td>
+      <td class="ten-hv" onclick="xemChiTietHocVien('${hv.maHV || ""}')">${hv.hoTen || ""}</td>
+      <td>${hv.lop || ""}</td>
+      <td>${hv.trangThai || ""}</td>
+    </tr>`).join("") + `</table>`;
+  document.getElementById("stat-veque").textContent = dsLoc.length;
 }
 
 // === DANH SÁCH HỌC VIÊN ===
@@ -284,26 +349,26 @@ function capNhatDanhSachHocVien() {
       <td>${hv.lop || hv.Lop || ""}</td>
       <td>${hv.gvcn || hv.GVCN || ""}</td>
       <td>${hv.trangThai || hv.TrangThai || ""}</td>
-    </tr>`).join("") +
-    `</table>`;
+    </tr>`).join("") + `</table>`;
 }
 
-// === HV VỀ QUÊ ===
+// === HV VỀ QUÊ (từ dữ liệu chính) ===
 function capNhatDanhSachVeQue() {
   const ds = danhSachHocVien.filter(hv => {
     const tt = String(hv.trangThai || hv.TrangThai || "").trim();
     return tt.includes("Quê") || tt.includes("Nghỉ phép");
   });
+  // Ưu tiên hiển thị dữ liệu từ Sheet nếu đã tải
+  if (danhSachVeQueTuSheet.length > 0) return;
   document.getElementById("danhsach-veque").innerHTML = 
-    `<p>Tổng ${ds.length} học viên về quê</p>` +
+    `<p>Tổng ${ds.length} học viên về quê (từ danh sách chính)</p>` +
     `<table><tr><th>Mã HV</th><th>Họ tên</th><th>Lớp</th><th>Trạng thái</th></tr>` +
     ds.map(hv => `<tr>
       <td>${hv.maHV || hv.MaHV || ""}</td>
       <td class="ten-hv" onclick="xemChiTietHocVien('${hv.maHV || hv.MaHV || ""}')">${hv.hoTen || hv.HoTen || ""}</td>
       <td>${hv.lop || hv.Lop || ""}</td>
       <td>${hv.trangThai || hv.TrangThai || ""}</td>
-    </tr>`).join("") +
-    `</table>`;
+    </tr>`).join("") + `</table>`;
 }
 
 // === XEM CHI TIẾT ===
