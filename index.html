@@ -6,72 +6,107 @@
   <title>TDTT THÀNH ĐÔ - QUẢN LÝ HỌC VIÊN</title>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; font-family: Arial, sans-serif; }
-    body { background: #1a1a2e; color: #eee; padding: 20px; }
-    .header { background: #165DFF; padding: 20px; text-align: center; border-radius: 8px; margin-bottom: 20px; }
-    .header h1 { font-size: 24px; margin-bottom: 5px; }
-    .header p { opacity: 0.9; }
-    .nav { text-align: right; margin-bottom: 20px; }
-    .nav button { background: #165DFF; color: white; border: none; padding: 8px 16px; margin-left: 5px; border-radius: 4px; cursor: pointer; }
+    body { 
+      background: #1a1a2e; color: #eee; padding: 10px; 
+      font-size: 14px; line-height: 1.5;
+    }
+    .header { background: #165DFF; padding: 15px; text-align: center; border-radius: 8px; margin-bottom: 15px; }
+    .header h1 { font-size: clamp(18px, 4vw, 24px); margin-bottom: 5px; }
+    .header p { opacity: 0.9; font-size: clamp(12px, 3vw, 14px); }
+    .nav { text-align: center; margin-bottom: 15px; display: flex; flex-wrap: wrap; gap: 6px; justify-content: center; }
+    .nav button { 
+      background: #165DFF; color: white; border: none; padding: 8px 10px; 
+      border-radius: 4px; cursor: pointer; font-size: 13px; white-space: nowrap;
+    }
     .nav button:hover { background: #0e4bdd; }
     .nav button.active { background: #0e4bdd; border-bottom: 2px solid #ffd700; }
-    .card { background: #16213e; padding: 20px; border-radius: 8px; margin-bottom: 20px; }
-    .toolbar { margin-bottom: 15px; display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
-    select, input[type="date"], input[type="text"] { padding: 6px 10px; border-radius: 4px; border: 1px solid #444; background: #0f1626; color: white; }
-    button { padding: 7px 14px; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; }
+    .card { background: #16213e; padding: 12px; border-radius: 8px; margin-bottom: 15px; }
+    .card h2 { font-size: clamp(16px, 3.5vw, 18px); margin-bottom: 12px; }
+    .toolbar { 
+      margin-bottom: 12px; display: flex; gap: 8px; align-items: center; 
+      flex-wrap: wrap; 
+    }
+    select, input[type="date"], input[type="text"] { 
+      padding: 6px 8px; border-radius: 4px; border: 1px solid #444; 
+      background: #0f1626; color: white; font-size: 14px; max-width: 100%;
+    }
+    button { 
+      padding: 7px 12px; border: none; border-radius: 4px; 
+      cursor: pointer; font-weight: bold; font-size: 13px;
+    }
     .btn-primary { background: #165DFF; color: white; }
     .btn-primary:hover { background: #0e4bdd; }
     .btn-success { background: #00b42a; color: white; }
     .btn-success:hover { background: #009a23; }
-    table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 13px; }
-    th, td { border: 1px solid #333; padding: 6px 4px; text-align: center; }
+
+    /* === BẢNG DỮ LIỆU — TRÁNH TRÀN TRÊN ĐIỆN THOẠI === */
+    .table-wrapper { width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+    table { 
+      width: 100%; border-collapse: collapse; margin-top: 8px; 
+      font-size: clamp(11px, 2.5vw, 13px); min-width: 600px;
+    }
+    th, td { border: 1px solid #333; padding: 5px 3px; text-align: center; white-space: nowrap; }
     th { background: #165DFF; }
     tr:nth-child(even) { background: #1f2b48; }
-    .search-bar { margin-bottom: 15px; }
-    .stats { display: flex; gap: 20px; margin-top: 10px; }
-    .stat-item { background: #1f2b48; padding: 10px 15px; border-radius: 6px; }
+    .search-bar { margin-bottom: 12px; }
+    .stats { 
+      display: flex; gap: 10px; margin-top: 10px; flex-wrap: wrap; 
+    }
+    .stat-item { 
+      background: #1f2b48; padding: 8px 12px; border-radius: 6px; 
+      flex: 1 1 130px; text-align: center;
+    }
     .page { display: none; }
     .page.active { display: block; }
     .loading { text-align: center; padding: 20px; color: #ffd700; }
 
     /* === Tên học viên có thể nhấn === */
     .ten-hv { color: #ffd700; cursor: pointer; font-weight: bold; text-decoration: underline; }
-    .ten-hv:hover { color: #fff; background: #165DFF; padding: 2px 6px; border-radius: 3px; }
+    .ten-hv:hover { color: #fff; background: #165DFF; padding: 2px 4px; border-radius: 3px; }
 
-    /* === CỬA SỔ THÔNG TIN CHI TIẾT — ĐƯỢC SỬA THÀNH DẠNG NGANG === */
+    /* === CỬA SỔ CHI TIẾT — TỐI ƯU ĐIỆN THOẠI === */
     .modal-overlay {
       position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-      background: rgba(0,0,0,0.75); display: none; justify-content: center; align-items: center; z-index: 999;
+      background: rgba(0,0,0,0.8); display: none; justify-content: center; align-items: center; 
+      z-index: 999; padding: 10px;
     }
     .modal-content {
-      background: #0f2862; /* Xanh đậm giống trong ảnh */
-      padding: 25px 30px; border-radius: 10px; 
-      width: 92%; max-width: 850px; /* ✅ RỘNG hơn — dạng ngang */
-      max-height: 85vh; overflow-y: auto; /* Cuộn dọc nếu nội dung dài */
+      background: #0f2862; padding: 18px; border-radius: 10px; 
+      width: 100%; max-width: 850px; max-height: 90vh; overflow-y: auto;
       border: 2px solid #4a80f0; box-shadow: 0 0 30px rgba(74,128,240,0.35);
     }
     .modal-content h3 { 
-      color: #ffd700; margin-bottom: 20px; text-align: center; 
-      border-bottom: 1px solid #336; padding-bottom: 12px; font-size: 18px;
+      color: #ffd700; margin-bottom: 15px; text-align: center; 
+      border-bottom: 1px solid #336; padding-bottom: 10px; 
+      font-size: clamp(16px, 4vw, 18px);
     }
-    /* === Bố cục 2 cột cho thông tin === */
+    /* === Bố cục 2 cột trên máy tính, 1 cột trên điện thoại === */
     .modal-grid {
       display: grid;
-      grid-template-columns: 1fr 1fr; /* ✅ 2 cột ngang */
-      gap: 8px 25px;
+      grid-template-columns: 1fr; /* Mặc định 1 cột cho điện thoại */
+      gap: 6px 15px;
     }
-    .modal-row { display: flex; margin: 4px 0; }
+    .modal-row { display: flex; margin: 3px 0; flex-wrap: wrap; }
     .modal-label { 
-      width: 140px; color: #aad; font-weight: bold; 
-      flex-shrink: 0; text-align: right; padding-right: 12px;
+      width: 110px; min-width: 110px; color: #aad; font-weight: bold; 
+      text-align: right; padding-right: 10px; font-size: 13px;
     }
-    .modal-value { flex: 1; color: #fff; word-break: break-word; }
+    .modal-value { flex: 1; color: #fff; word-break: break-word; font-size: 13px; }
     .modal-close { 
-      margin-top: 20px; width: 100%; padding: 12px; 
+      margin-top: 18px; width: 100%; padding: 10px; 
       background: #165DFF; color: white; border: none; 
       border-radius: 5px; cursor: pointer; font-weight: bold; font-size: 15px;
     }
     .modal-close:hover { background: #0e4bdd; }
-    .loading-info { text-align: center; color: #ffd700; padding: 30px; font-size: 16px; }
+    .loading-info { text-align: center; color: #ffd700; padding: 25px; font-size: 15px; }
+
+    /* === TỰ ĐỘNG CHUYỂN 2 CỘT KHI MÀN HÌNH LỚN === */
+    @media (min-width: 768px) {
+      .modal-grid { grid-template-columns: 1fr 1fr; }
+      body { padding: 20px; font-size: 15px; }
+      .modal-label { width: 140px; min-width: 140px; }
+      .toolbar { flex-wrap: nowrap; }
+    }
   </style>
 </head>
 <body>
@@ -107,13 +142,13 @@
     <div class="card">
       <h2>Danh sách học viên</h2>
       <div class="search-bar toolbar">
-        <input type="text" id="search-ma" placeholder="Tìm mã hoặc tên...">
+        <input type="text" id="search-ma" placeholder="Tìm mã hoặc tên..." style="flex:1; min-width:120px;">
         <select id="filter-lop"><option value="">Tất cả lớp</option></select>
         <select id="filter-trangthai"><option value="">Tất cả trạng thái</option><option>Đang học</option><option>Vắng</option><option>Về quê</option></select>
         <button class="btn-primary" id="btn-tai-lai">🔄 Tải lại</button>
       </div>
       <p id="thong-ke-danhsach">Tổng 0 học viên</p>
-      <div id="danhsach-hocvien"></div>
+      <div id="danhsach-hocvien" class="table-wrapper"></div>
     </div>
   </div>
 
@@ -121,7 +156,7 @@
   <div id="hv-ve-que" class="page">
     <div class="card">
       <h2>Học viên về quê</h2>
-      <div id="danhsach-veque"></div>
+      <div id="danhsach-veque" class="table-wrapper"></div>
     </div>
   </div>
 
@@ -131,14 +166,14 @@
       <h2>Điểm danh hàng ngày</h2>
       <div class="toolbar">
         <select id="chon-lop-diemdanh"></select>
-        <label>Từ ngày:</label>
-        <input type="date" id="tu-ngay">
-        <label>Đến ngày:</label>
-        <input type="date" id="den-ngay">
-        <button class="btn-primary" id="btn-tao-bang">📋 Tạo bảng</button>
-        <button class="btn-success" id="btn-luu-bang">💾 Lưu bảng</button>
+        <label style="font-size:13px; white-space:nowrap;">Từ:</label>
+        <input type="date" id="tu-ngay" style="flex:1; min-width:110px;">
+        <label style="font-size:13px; white-space:nowrap;">Đến:</label>
+        <input type="date" id="den-ngay" style="flex:1; min-width:110px;">
+        <button class="btn-primary" id="btn-tao-bang">📋 Tạo</button>
+        <button class="btn-success" id="btn-luu-bang">💾 Lưu</button>
       </div>
-      <div id="bang-diemdanh"></div>
+      <div id="bang-diemdanh" class="table-wrapper"></div>
     </div>
   </div>
 
@@ -188,7 +223,7 @@ function ganSuKienTab() {
   });
 }
 
-// === TẢI DỮ LIỆU TỪ GOOGLE SHEETS ===
+// === TẢI DỮ LIỆU ===
 async function taiDuLieu() {
   try {
     const res = await fetch(API_URL + "?action=getAll");
@@ -209,7 +244,7 @@ async function taiDuLieu() {
   }
 }
 
-// === CẬP NHẬT THỐNG KÊ ===
+// === THỐNG KÊ ===
 function capNhatThongKe(s) {
   document.getElementById("stat-tong").textContent = s.tong;
   document.getElementById("stat-comat").textContent = s.coMat;
@@ -217,7 +252,7 @@ function capNhatThongKe(s) {
   document.getElementById("stat-veque").textContent = s.veQue;
 }
 
-// === CẬP NHẬT DANH SÁCH HỌC VIÊN ===
+// === DANH SÁCH HỌC VIÊN ===
 function capNhatDanhSachHocVien() {
   const tbody = document.getElementById("danhsach-hocvien");
   const lopLoc = document.getElementById("filter-lop").value;
@@ -259,13 +294,13 @@ function capNhatDanhSachVeQue() {
     `</table>`;
 }
 
-// === XEM THÔNG TIN CHI TIẾT — ĐỊNH DẠNG 2 CỘT NGANG ===
+// === XEM CHI TIẾT ===
 async function xemChiTietHocVien(maHV) {
   const modal = document.getElementById("modal-chitiet");
   const body = document.getElementById("modal-body");
   
   modal.style.display = "flex";
-  body.innerHTML = `<div class="loading-info">⏳ Đang tải thông tin mã <strong>${maHV}</strong> từ Google Sheets...</div>`;
+  body.innerHTML = `<div class="loading-info">⏳ Đang tải thông tin mã <strong>${maHV}</strong>...</div>`;
 
   try {
     const url = `${API_URL}?action=getStudentDetail&maHV=${encodeURIComponent(maHV)}`;
@@ -273,7 +308,6 @@ async function xemChiTietHocVien(maHV) {
     const kq = await res.json();
 
     if (kq.ok && kq.detail) {
-      // === Hiển thị dạng LƯỚI 2 CỘT NGANG ===
       let html = `<div class="modal-grid">`;
       for (const [tieuDe, giaTri] of Object.entries(kq.detail)) {
         const sTieuDe = String(tieuDe || "").trim();
@@ -291,7 +325,7 @@ async function xemChiTietHocVien(maHV) {
       body.innerHTML = `<div style="color:#ff6b6b;text-align:center;padding:20px">⚠️ ${kq.message || 'Không tìm thấy thông tin'}</div>`;
     }
   } catch (loi) {
-    body.innerHTML = `<div style="color:#ff6b6b;text-align:center;padding:20px">❌ Lỗi kết nối: ${loi.message}<br>Kiểm tra lại URL API</div>`;
+    body.innerHTML = `<div style="color:#ff6b6b;text-align:center;padding:20px">❌ Lỗi kết nối<br>Kiểm tra lại URL API</div>`;
     console.error("Lỗi chi tiết:", loi);
   }
 }
@@ -314,7 +348,7 @@ function capNhatChonLop() {
   document.getElementById("chon-lop-diemdanh").innerHTML = html;
 }
 
-// === GÁN SỰ KIỆN LỌC ===
+// === GÁN SỰ KIỆN ===
 document.getElementById("search-ma").addEventListener("input", capNhatDanhSachHocVien);
 document.getElementById("filter-lop").addEventListener("change", capNhatDanhSachHocVien);
 document.getElementById("filter-trangthai").addEventListener("change", capNhatDanhSachHocVien);
@@ -358,7 +392,7 @@ function taoBangDiemDanh() {
       ${dsLop.map(hv => `
         <tr data-ma="${hv.maHV}">
           <td>${hv.maHV}</td>
-          <td class="ten-hv" onclick="xemChiTietHocVien('${hv.maHV}')" title="Nhấn xem thông tin chi tiết">${hv.hoTen}</td>
+          <td class="ten-hv" onclick="xemChiTietHocVien('${hv.maHV}')">${hv.hoTen}</td>
           ${ngayThu.map(() => `<td><input type="checkbox" checked></td>`).join("")}
         </tr>`).join("")}
     </table>`;
@@ -403,11 +437,10 @@ async function luuBangDiemDanh() {
         alert("⚠️ " + kq.message);
       }
     } catch {
-      alert("✅ Đã lưu thành công! Mở Google Sheet → xem tab 'DiemDanh'");
+      alert("✅ Đã lưu! Mở Google Sheet → xem tab 'DiemDanh'");
     }
   } catch (loi) {
     alert("✅ Đã gửi lưu! Mở Google Sheet → kiểm tra tab 'DiemDanh'");
-    console.error("Chi tiết lỗi:", loi);
   }
 }
 </script>
