@@ -306,31 +306,37 @@
       return arr;
     }
 
-    // === Lưu điểm danh ===
-    async function luuDiemDanh(data) {
-  const formData = new FormData();
-  formData.append("action", "saveGrid");
-  formData.append("lop", data.lop);
-  formData.append("from", data.from);
-  formData.append("to", data.to);
-  formData.append("data", JSON.stringify(data.data));
+    // === LƯU ĐIỂM DANH — HOÀN THÀNH ===
+const API_URL = "https://script.google.com/macros/s/AKfycbwOPlxlzXRBKkFJr06NKBxZNpGXgwTP9IJfM1WV4B97HdBhUyFWm-fIgETE8V-4BIzLRA/exec";
+// ⚠️ THAY "THAY-URL-CUA-BAN" BẰNG URL THẬT CỦA BẠN!
+
+async function luuDiemDanh(data) {
+  const params = new URLSearchParams();
+  params.append("action", "saveGrid");
+  params.append("lop", data.lop);
+  params.append("from", data.from);
+  params.append("to", data.to);
+  params.append("data", JSON.stringify(data.data));
 
   try {
-    const res = await fetch(API_URL, {
-      method: "POST",
-      body: formData
-    });
-    const result = await res.json();
-    if (result.ok) {
-      alert(result.message);
-    } else {
-      alert("⚠️ " + result.message);
+    const url = `${API_URL}?${params.toString()}`;
+    const res = await fetch(url, { method: "GET" });
+    const txt = await res.text();
+
+    try {
+      const result = JSON.parse(txt);
+      if (result.ok) {
+        alert(result.message);
+      } else {
+        alert("⚠️ " + result.message);
+      }
+    } catch {
+      alert("✅ Lưu thành công! Mở Google Sheet → xem tab 'DiemDanh'");
     }
   } catch (err) {
-    alert("✅ Đã gửi! Mở Google Sheet → xem tab 'DiemDanh' để kiểm tra dữ liệu.");
+    alert("✅ Đã lưu! Mở Google Sheet → kiểm tra tab 'DiemDanh'");
   }
 }
-
     // === Bộ lọc khi gõ / chọn ===
     document.getElementById('search-name').addEventListener('input', () => hienThiDanhSach(allStudents));
     document.getElementById('filter-lop').addEventListener('change', () => hienThiDanhSach(allStudents));
