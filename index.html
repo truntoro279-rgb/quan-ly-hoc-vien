@@ -153,13 +153,6 @@ main{
     color:#9fb3c8
   }
 }
-.toolbar{
-  display:grid;
-  grid-template-columns:2fr repeat(2,1fr);
-  gap:10px;
-  margin-bottom:14px;
-  align-items:center
-}
 .toolbar-row{
   display:flex;
   gap:10px;
@@ -181,18 +174,14 @@ select{
     color:#fff
   }
 }
-/* =========================================================
-   BẢNG ĐIỂM DANH THEO BỐ CỤC EXCEL
-   ========================================================= */
+/* ========== BẢNG ĐIỂM DANH - GIỐNG BỐ CỤC ẢNH ========== */
 .attendance-wrapper{
   overflow-x:auto;
   border:1px solid #e3ebf3;
   border-radius:10px;
 }
 @media(prefers-color-scheme:dark){
-  .attendance-wrapper{
-    border-color:#2a374a
-  }
+  .attendance-wrapper{border-color:#2a374a}
 }
 .attendance-table{
   width:100%;
@@ -209,9 +198,7 @@ select{
 }
 @media(prefers-color-scheme:dark){
   .attendance-table th,
-  .attendance-table td{
-    border-color:#2a374a
-  }
+  .attendance-table td{border-color:#2a374a}
 }
 .attendance-table th{
   background:#f7fafc;
@@ -225,37 +212,20 @@ select{
     color:#e2e8f0
   }
 }
-.attendance-table .date-col{
-  min-width:46px;
-  font-size:11px
-}
-.attendance-table .date-col .day-num{
-  font-weight:700;
-  font-size:12px
-}
-.attendance-table .date-col .dow{
-  font-size:10px;
-  opacity:.8
-}
+.attendance-table .date-col{min-width:46px}
+.attendance-table .day-num{font-weight:700;font-size:12px}
+.attendance-table .dow{font-size:10px;opacity:.8}
 .attendance-table .sticky-col{
   position:sticky;
   left:0;
   background:#f7fafc;
   z-index:2
 }
-.attendance-table .sticky-col + .sticky-col{
-  left:100px
-}
+.attendance-table .sticky-col:nth-child(2){left:100px}
 @media(prefers-color-scheme:dark){
-  .attendance-table .sticky-col{
-    background:#1e293b
-  }
+  .attendance-table .sticky-col{background:#1e293b}
 }
-.attendance-table .name-col{
-  text-align:left;
-  padding:0 8px;
-  white-space:nowrap
-}
+.attendance-table .name-col{text-align:left;padding:0 8px;white-space:nowrap}
 .attendance-table .rate-col{
   min-width:110px;
   font-weight:600;
@@ -268,17 +238,13 @@ select{
     color:#93c5fd
   }
 }
-/* Ô tick điểm danh */
-.attendance-table .check-td{
-  padding:2px
-}
+.attendance-table .check-td{padding:2px}
 .attendance-table .check-box{
   width:22px;
   height:22px;
   cursor:pointer;
   accent-color:#2f855a;
-  margin:0;
-  vertical-align:middle
+  margin:0
 }
 .attendance-table tr.total-row td{
   font-weight:700;
@@ -286,100 +252,84 @@ select{
   padding:8px 4px
 }
 @media(prefers-color-scheme:dark){
-  .attendance-table tr.total-row td{
-    background:#1e293b
-  }
+  .attendance-table tr.total-row td{background:#1e293b}
 }
-/* Thông tin học viên */
-.student-info{
-  display:grid;
-  grid-template-columns:repeat(3,1fr);
-}
-.student-info-item{
-  padding:13px 18px;
-  border-bottom:1px solid #e8eef3;
-  border-right:1px solid #e8eef3;
-}
-.student-info-label{
-  font-size:11px;
-  color:#627d98;
-  margin-bottom:5px;
-  font-weight:600;
-}
-.student-info-value{
-  font-size:14px;
-  line-height:1.4;
-  font-weight:700;
-  color:#102a43;
-  min-height:19px;
-  word-break:break-word;
+/* ========== TRANG HỌC VIÊN ========== */
+.student-cards{display:grid;gap:16px}
+.student-card{
+  background:#fff;
+  border:1px solid #dfe8f1;
+  border-radius:14px;
+  overflow:hidden;
+  box-shadow:0 4px 16px rgba(22,50,75,.08);
 }
 @media(prefers-color-scheme:dark){
-  .student-info-item{
-    border-bottom-color:#2a374a;
-    border-right-color:#2a374a;
-  }
-  .student-info-label{
-    color:#9fb3c8;
-  }
-  .student-info-value{
-    color:#fff;
+  .student-card{
+    background:#1a2333;
+    border-color:#2a374a
   }
 }
-/* Trang Tài liệu */
+.student-card-head{
+  padding:18px 20px;
+  background:linear-gradient(110deg,#143f72,#1769d1);
+  color:#fff;
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-start;
+  flex-wrap:wrap;
+  gap:10px
+}
+.student-code{font-size:22px;font-weight:800;letter-spacing:.2px}
+.student-name{margin-top:5px;font-size:18px;font-weight:700}
+.student-summary{margin-top:9px;font-size:13px;opacity:.9;display:flex;gap:16px}
+.student-status{
+  padding:7px 11px;
+  border-radius:999px;
+  background:#fff;
+  color:#1769d1;
+  font-size:12px;
+  font-weight:800;
+  white-space:nowrap
+}
+.student-result-count{margin:0 0 10px;font-size:12px;color:#627d98}
+.student-empty{text-align:center;padding:40px 20px;color:#627d98}
+/* ========== TRANG TÀI LIỆU ========== */
 .doc-links{
   display:grid;
-  grid-template-columns:repeat(auto-fill, minmax(280px, 1fr));
+  grid-template-columns:repeat(auto-fill, minmax(280px,1fr));
   gap:16px;
-  margin-top:20px;
+  margin-top:20px
 }
 .doc-card{
   background:#f7fafc;
   border:1px solid #e3ebf3;
   border-radius:10px;
   padding:18px;
-  transition:transform .2s, box-shadow .2s;
+  transition:transform .2s, box-shadow .2s
 }
 .doc-card:hover{
   transform:translateY(-3px);
-  box-shadow:0 6px 18px rgba(22,50,75,.08);
+  box-shadow:0 6px 18px rgba(22,50,75,.08)
 }
-.doc-card h3{
-  color:#1769d1;
-  margin-bottom:8px;
-  font-size:16px;
-}
-.doc-card p{
-  font-size:13px;
-  color:#627d98;
-  margin-bottom:12px;
-}
+.doc-card h3{color:#1769d1;margin-bottom:8px;font-size:16px}
+.doc-card p{font-size:13px;color:#627d98;margin-bottom:12px}
 .doc-card a{
   color:#1769d1;
   font-weight:600;
   text-decoration:none;
-  font-size:14px;
+  font-size:14px
 }
-.doc-card a:hover{
-  text-decoration:underline;
-}
+.doc-card a:hover{text-decoration:underline}
 @media(prefers-color-scheme:dark){
   .doc-card{
     background:#121824;
-    border-color:#2a374a;
+    border-color:#2a374a
   }
 }
 /* Responsive */
 @media(max-width:850px){
-  .nav{
-    flex-direction:column;
-    height:auto;
-    padding:10px
-  }
-  .cards,
-  .toolbar{
-    grid-template-columns:1fr
-  }
+  .nav{flex-direction:column;height:auto;padding:10px}
+  .cards{grid-template-columns:repeat(2,1fr)}
 }
 </style>
 </head>
@@ -402,19 +352,19 @@ select{
 <section id="home" class="page active">
   <div class="cards">
     <div class="card">
-      <div class="num" id="total">0</div>
+      <div class="num" id="total">...</div>
       <h3>Tổng học viên</h3>
     </div>
     <div class="card">
-      <div class="num" id="present">0</div>
+      <div class="num" id="present">...</div>
       <h3>Có mặt</h3>
     </div>
     <div class="card">
-      <div class="num" id="absent">0</div>
+      <div class="num" id="absent">...</div>
       <h3>Vắng</h3>
     </div>
     <div class="card">
-      <div class="num" id="away">0</div>
+      <div class="num" id="away">...</div>
       <h3>Đang về quê</h3>
     </div>
   </div>
@@ -432,8 +382,8 @@ select{
 <section id="students" class="page">
   <div class="panel">
     <h2>Danh sách học viên</h2>
-    <div class="toolbar">
-      <input id="q" placeholder="Tìm tên hoặc mã..." oninput="renderStudents()">
+    <div class="toolbar-row">
+      <input id="q" placeholder="Tìm tên hoặc mã..." oninput="renderStudents()" style="flex:1">
       <select id="classFilter" onchange="renderStudents()">
         <option value="">Tất cả lớp</option>
       </select>
@@ -448,14 +398,10 @@ select{
   </div>
 </section>
 
-<!-- ======================================================
-     TRANG ĐIỂM DANH - BỐ CỤC THEO BẢNG EXCEL
-     ====================================================== -->
+<!-- ĐIỂM DANH - BỐ CỤC GIỐNG ẢNH -->
 <section id="attendance" class="page">
   <div class="panel">
     <h2>Điểm danh hàng ngày</h2>
-
-    <!-- Bộ lọc: Lớp + Ngày bắt đầu + Số ngày -->
     <div class="toolbar-row">
       <div>
         <label style="font-size:13px; color:#627d98; margin-right:6px">Lớp:</label>
@@ -473,28 +419,24 @@ select{
       </div>
       <button class="btn" onclick="saveGridAttendance()">💾 Lưu bảng điểm danh</button>
     </div>
-
-    <!-- Bảng điểm danh -->
     <div class="attendance-wrapper">
       <table class="attendance-table" id="attendanceGrid">
         <thead id="gridHead">
           <tr>
             <th class="sticky-col">Mã HV</th>
-            <th class="sticky-col" style="left:100px">Họ tên</th>
-            <!-- Ngày tháng sẽ được tạo động -->
+            <th class="sticky-col">Họ tên</th>
             <th class="rate-col">Tỷ lệ tham gia học</th>
           </tr>
         </thead>
         <tbody id="gridBody">
-          <tr><td colspan="100" style="padding:30px; color:#627d98">Vui lòng chọn lớp và khoảng ngày để xem bảng điểm danh</td></tr>
+          <tr><td colspan="100" style="padding:30px; color:#627d98">Vui lòng chọn lớp và khoảng ngày</td></tr>
         </tbody>
       </table>
     </div>
-
   </div>
 </section>
 
-<!-- TRANG TÀI LIỆU -->
+<!-- TÀI LIỆU -->
 <section id="documents" class="page">
   <div class="panel">
     <h2>Tài liệu</h2>
@@ -532,8 +474,9 @@ const API_URL = 'https://script.google.com/macros/s/AKfycbwoN5iK1oyxj9NNCpihSEpK
 
 /* ====== Biến toàn cục ====== */
 let students = [];
-let dateColumns = []; // Danh sách ngày hiển thị
-let attendanceData = {}; // {mshv: {ngày: true/false}}
+let dataLoaded = false;
+let dateColumns = [];
+let attendanceData = {};
 
 const pages = [
   ['home','Trang chủ'],
@@ -547,14 +490,14 @@ const DOW_LABELS = ['CN','Thứ 2','Thứ 3','Thứ 4','Thứ 5','Thứ 6','Th�
 /* ====== Khởi động ====== */
 document.addEventListener('DOMContentLoaded', () => {
   initMenu();
-  loadData();
+  show('home');
+  loadDataFast();
 });
 
 /* ====== Menu ====== */
 function initMenu(){
   const nav = document.getElementById('nav');
   nav.innerHTML = pages.map(p => `<button id="btn-${p[0]}" onclick="show('${p[0]}')">${p[1]}</button>`).join('');
-  document.getElementById('btn-home').classList.add('active');
 }
 
 /* ====== Chuyển trang ====== */
@@ -563,25 +506,40 @@ function show(id){
   document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
   document.getElementById(id)?.classList.add('active');
   document.getElementById(`btn-${id}`)?.classList.add('active');
-  if(id === 'attendance') setTimeout(renderAttendanceGrid, 50);
+  if(id === 'attendance' && dataLoaded) setTimeout(renderAttendanceGrid, 20);
 }
 
-/* ====== Tải dữ liệu học viên ====== */
-async function loadData(){
+/* ====== Tải dữ liệu TỐI ƯU ====== */
+async function loadDataFast(){
+  updateDashboard(true);
   try{
-    const res = await fetch(`${API_URL}?action=getAll`, {cache:'no-store'});
+    const res = await fetch(`${API_URL}?action=getAll`, {
+      cache:'force-cache',
+      signal: AbortSignal.timeout(15000)
+    });
     const data = await res.json();
     students = Array.isArray(data.students) ? data.students : [];
-    updateDashboard();
+    dataLoaded = true;
+    updateDashboard(false);
     initFilters();
+    if(document.getElementById('attendance')?.classList.contains('active')){
+      renderAttendanceGrid();
+    }
   }catch(e){
-    console.error(e);
-    students = [];
+    console.error('Lỗi tải dữ liệu:', e);
+    document.getElementById('total').innerText = '!';
   }
 }
 
 /* ====== Thống kê trang chủ ====== */
-function updateDashboard(){
+function updateDashboard(loading=false){
+  if(loading){
+    document.getElementById('total').innerText = '...';
+    document.getElementById('present').innerText = '...';
+    document.getElementById('absent').innerText = '...';
+    document.getElementById('away').innerText = '...';
+    return;
+  }
   document.getElementById('total').innerText = students.length;
   document.getElementById('present').innerText = students.filter(s=>s.trangThai==='Có mặt').length;
   document.getElementById('absent').innerText = students.filter(s=>s.trangThai==='Vắng').length;
@@ -591,25 +549,24 @@ function updateDashboard(){
 /* ====== Khởi tạo bộ lọc lớp ====== */
 function initFilters(){
   const classes = [...new Set(students.map(s=>String(s.lop||'').trim()).filter(Boolean))].sort();
-  const opts = v => `<option value="">${v}</option>` + classes.map(x=>`<option value="${escapeHtml(x)}">${escapeHtml(x)}</option>`).join('');
+  const opts = (def) => `<option value="">${def}</option>` + classes.map(x=>`<option value="${escapeHtml(x)}">${escapeHtml(x)}</option>`).join('');
   document.getElementById('classFilter').innerHTML = opts('Tất cả lớp');
   document.getElementById('attClassGrid').innerHTML = opts('Chọn lớp');
 }
 
-/* ======================================================
-     XÂY DỰNG BẢNG ĐIỂM DANH THEO BỐ CỤC EXCEL
-     ====================================================== */
+/* ====== BẢNG ĐIỂM DANH - GIỐNG BỐ CỤC ẢNH ====== */
 function renderAttendanceGrid(){
-  const classId = document.getElementById('attClassGrid').value;
-  const startDate = document.getElementById('startDate').value;
-  const endDate = document.getElementById('endDate').value;
+  const classId = document.getElementById('attClassGrid')?.value;
+  const startDate = document.getElementById('startDate')?.value;
+  const endDate = document.getElementById('endDate')?.value;
+
   if(!classId || !startDate || !endDate){
-    document.getElementById('gridHead').innerHTML = '<tr><th class="sticky-col">Mã HV</th><th class="sticky-col" style="left:100px">Họ tên</th><th class="rate-col">Tỷ lệ</th></tr>';
+    document.getElementById('gridHead').innerHTML = '<tr><th class="sticky-col">Mã HV</th><th class="sticky-col">Họ tên</th><th class="rate-col">Tỷ lệ tham gia học</th></tr>';
     document.getElementById('gridBody').innerHTML = '<tr><td colspan="100" style="padding:30px; color:#627d98">Vui lòng chọn lớp, Từ ngày và Đến ngày</td></tr>';
     return;
   }
 
-  // Tạo danh sách các cột ngày
+  // Tạo danh sách cột ngày
   const start = new Date(startDate);
   const end = new Date(endDate);
   dateColumns = [];
@@ -618,6 +575,7 @@ function renderAttendanceGrid(){
     dateColumns.push({
       iso: cursor.toISOString().slice(0,10),
       day: cursor.getDate(),
+      month: String(cursor.getMonth()+1).padStart(2,'0'),
       dow: DOW_LABELS[cursor.getDay()]
     });
     cursor.setDate(cursor.getDate()+1);
@@ -630,87 +588,70 @@ function renderAttendanceGrid(){
     return;
   }
 
-  // Tạo dòng tiêu đề ngày
-  const headRow = document.getElementById('gridHead');
-  headRow.innerHTML = `<tr>
+  // Dòng tiêu đề ngày
+  document.getElementById('gridHead').innerHTML = `<tr>
     <th class="sticky-col">Mã HV</th>
-    <th class="sticky-col" style="left:100px">Họ tên</th>
-    ${dateColumns.map(d=>`<th class="date-col"><div class="day-num">${d.day}/${String(d.iso.slice(5,7))}</div><div class="dow">${d.dow}</div></th>`).join('')}
+    <th class="sticky-col">Họ tên</th>
+    ${dateColumns.map(d=>`<th class="date-col"><div class="day-num">${d.day}/${d.month}</div><div class="dow">${d.dow}</div></th>`).join('')}
     <th class="rate-col">Tỷ lệ tham gia học</th>
   </tr>`;
 
-  // Tạo dòng dữ liệu + khởi tạo dữ liệu điểm danh
-  let totalChecked = new Array(dateColumns.length).fill(0);
+  // Khởi tạo dữ liệu & vẽ bảng
   attendanceData = {};
-
-  const body = document.getElementById('gridBody');
-  body.innerHTML = list.map(hv => {
+  const validDays = dateColumns.filter(d=>d.dow!=='CN');
+  const htmlRows = list.map(hv => {
     const mshv = String(hv.maHV || hv.code || '');
     const name = escapeHtml(hv.hoTen || hv.name || '');
     attendanceData[mshv] = {};
 
-    const cells = dateColumns.map((d, idx) => {
-      // Mặc định tick Thứ 2 → Thứ 6, bỏ CN (giống ảnh)
-      const isDefaultChecked = d.dow !== 'CN';
-      attendanceData[mshv][d.iso] = isDefaultChecked;
-      if(isDefaultChecked) totalChecked[idx]++;
-      return `<td class="check-td"><input type="checkbox" class="check-box" data-mshv="${escapeHtml(mshv)}" data-date="${d.iso}" ${isDefaultChecked?'checked':''} onchange="updateRate(this)"></td>`;
+    let hvChecked = 0;
+    const cells = dateColumns.map(d => {
+      const isCheck = d.dow !== 'CN';
+      attendanceData[mshv][d.iso] = isCheck;
+      if(isCheck) hvChecked++;
+      return `<td class="check-td"><input type="checkbox" class="check-box" data-mshv="${escapeHtml(mshv)}" data-date="${d.iso}" ${isCheck?'checked':''} onchange="updateRate(this)"></td>`;
     });
 
-    // Tính tỷ lệ cho học viên này
-    const rate = calcRate(mshv);
+    const rateTxt = `${hvChecked}/${validDays.length} = ${validDays.length ? Math.round(hvChecked/validDays.length*100) : 0}%`;
 
     return `<tr data-mshv="${escapeHtml(mshv)}">
       <td class="sticky-col name-col">${escapeHtml(mshv)}</td>
-      <td class="sticky-col name-col" style="left:100px">${name}</td>
+      <td class="sticky-col name-col">${name}</td>
       ${cells.join('')}
-      <td class="rate-col" data-rate="${escapeHtml(mshv)}">${rate}</td>
+      <td class="rate-col" data-rate="${escapeHtml(mshv)}">${rateTxt}</td>
     </tr>`;
-  }).join('');
+  });
 
   // Dòng tổng cộng
-  const totalDays = dateColumns.filter(d=>d.dow!=='CN').length;
-  const totalStudent = list.length;
-  const totalCheckAll = Object.keys(attendanceData).reduce((sum, mshv) => {
-    return sum + dateColumns.filter(d=>d.dow!=='CN' && attendanceData[mshv][d.iso]).length;
+  const totalCheckedAll = Object.values(attendanceData).reduce((sum, row) => {
+    return sum + validDays.filter(d=>row[d.iso]).length;
   }, 0);
-  const grandRate = totalDays && totalStudent ? `${totalCheckAll}/${totalDays*totalStudent} = ${((totalCheckAll/(totalDays*totalStudent))*100).toFixed(0)}%` : '—';
-
-  body.innerHTML += `<tr class="total-row">
+  const totalValid = validDays.length * list.length;
+  htmlRows.push(`<tr class="total-row">
     <td class="sticky-col">Tổng</td>
-    <td class="sticky-col">${totalStudent} học viên</td>
-    ${dateColumns.map((d,i)=>`<td>${totalChecked[i]}</td>`).join('')}
-    <td class="rate-col">${grandRate}</td>
-  </tr>`;
+    <td class="sticky-col">${list.length} học viên</td>
+    ${dateColumns.map(d=>`<td>${d.dow!=='CN'?'✓':'—'}</td>`).join('')}
+    <td class="rate-col">${totalCheckedAll}/${totalValid} = ${totalValid ? Math.round(totalCheckedAll/totalValid*100) : 0}%</td>
+  </tr>`);
+
+  document.getElementById('gridBody').innerHTML = htmlRows.join('');
 }
 
-/* ====== Tính tỷ lệ tham gia học cho 1 học viên ====== */
-function calcRate(mshv){
-  const data = attendanceData[mshv];
-  if(!data) return '—';
-  const validDays = dateColumns.filter(d=>d.dow!=='CN');
-  const checked = validDays.filter(d=>data[d.iso]).length;
-  const total = validDays.length;
-  return total ? `${checked}/${total} = ${((checked/total)*100).toFixed(0)}%` : '—';
-}
-
-/* ====== Cập nhật khi tick/ bỏ tick ô ====== */
+/* ====== Cập nhật tỷ lệ khi tick ô ====== */
 function updateRate(checkbox){
   const mshv = checkbox.dataset.mshv;
   const date = checkbox.dataset.date;
   attendanceData[mshv][date] = checkbox.checked;
 
-  // Cập nhật ô tỷ lệ
-  const rateCell = document.querySelector(`td[data-rate="${escapeHtml(mshv)}"]`);
-  if(rateCell) rateCell.textContent = calcRate(mshv);
-
-  // Cập nhật lại dòng tổng cộng
-  renderAttendanceGrid();
+  const validDays = dateColumns.filter(d=>d.dow!=='CN');
+  const checkedCount = validDays.filter(d=>attendanceData[mshv]?.[d.iso]).length;
+  const rateTxt = `${checkedCount}/${validDays.length} = ${validDays.length ? Math.round(checkedCount/validDays.length*100) : 0}%`;
+  document.querySelector(`td[data-rate="${escapeHtml(mshv)}"]`).textContent = rateTxt;
 }
 
 /* ====== Lưu bảng điểm danh ====== */
 async function saveGridAttendance(){
-  const classId = document.getElementById('attClassGrid').value;
+  const classId = document.getElementById('attClassGrid')?.value;
   if(!classId) return alert('Chọn lớp trước');
 
   const payload = {
@@ -729,41 +670,41 @@ async function saveGridAttendance(){
       body: JSON.stringify(payload)
     });
     const result = await res.json();
-    if(result.ok) alert('✅ Lưu bảng điểm danh thành công!');
-    else alert('Lưu không thành công: ' + (result.message || 'Lỗi không xác định'));
+    alert(result.ok ? '✅ Lưu thành công!' : 'Lưu thất bại: ' + (result.message||'Lỗi không xác định'));
   }catch(e){
     alert('Lỗi kết nối: ' + e.message);
   }
 }
 
-/* ====== Tìm kiếm & lọc học viên (giữ nguyên chức năng cũ) ====== */
+/* ====== Tìm kiếm & lọc học viên ====== */
 function renderStudents(){
+  if(!dataLoaded) return;
   const q = String(document.getElementById('q')?.value||'').toLowerCase().trim();
   const c = document.getElementById('classFilter')?.value||'';
   const s = document.getElementById('statusFilter')?.value||'';
-  let filtered = students.filter(hv=>{
+  const filtered = students.filter(hv=>{
     const txt = String(`${hv.maHV||''} ${hv.hoTen||''} ${hv.katakana||''}`).toLowerCase();
     return (!q || txt.includes(q)) && (!c || hv.lop===c) && (!s || hv.trangThai===s);
   });
+
   document.getElementById('studentResultCount').textContent =
     filtered.length===students.length ? `Tổng ${students.length} học viên` : `Hiển thị ${filtered.length}/${students.length}`;
+
   document.getElementById('studentBody').innerHTML = filtered.length ? filtered.map(hv=>`
     <div class="student-card">
       <div class="student-card-head">
-        <div><div class="student-code">${escapeHtml(hv.maHV)}</div>
-        <div class="student-name">${escapeHtml(hv.hoTen)}</div>
-        <div class="student-summary"><span>Lớp: ${escapeHtml(hv.lop)}</span><span>GVCN: ${escapeHtml(hv.gvcn||'—')}</span></div>
-        ${hv.katakana?`<div class="student-katakana">${escapeHtml(hv.katakana)}</div>`:''}</div>
+        <div>
+          <div class="student-code">${escapeHtml(hv.maHV)}</div>
+          <div class="student-name">${escapeHtml(hv.hoTen)}</div>
+          <div class="student-summary">
+            <span><b>Lớp:</b> ${escapeHtml(hv.lop||'—')}</span>
+            <span><b>GVCN:</b> ${escapeHtml(hv.gvcn||'—')}</span>
+          </div>
+        </div>
         <span class="student-status">${escapeHtml(hv.trangThai||'—')}</span>
       </div>
     </div>
   `).join('') : '<div class="student-empty">Không tìm thấy học viên</div>';
-}
-
-/* ====== Xử lý chi tiết học viên (rút gọn) ====== */
-async function toggleStudent(el){
-  const card = el.closest('.student-card');
-  card.classList.toggle('expanded');
 }
 
 /* ====== An toàn chuỗi ====== */
