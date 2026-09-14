@@ -3,105 +3,34 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>TDTT THÀNH ĐÔ - QUẢN LÝ HỌC VIÊN</title>
+  <title>TDTT THÀNH ĐÔ - THANH HÓA</title>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; font-family: Arial, sans-serif; }
-    body { 
-      background: #1a1a2e; color: #eee; padding: 10px; 
-      font-size: 14px; line-height: 1.5;
+    body { background: #1a1a2e; color: #eee; padding: 10px; font-size: 14px; }
+    .header {
+      background: #165DFF; color: white; padding: 15px; text-align: center;
+      border-radius: 8px; margin-bottom: 15px;
     }
-    .header { background: #165DFF; padding: 15px; text-align: center; border-radius: 8px; margin-bottom: 15px; }
-    .header h1 { font-size: clamp(18px, 4vw, 24px); margin-bottom: 5px; }
-    .header p { opacity: 0.9; font-size: clamp(12px, 3vw, 14px); }
-    .nav { text-align: center; margin-bottom: 15px; display: flex; flex-wrap: wrap; gap: 6px; justify-content: center; }
-    .nav button { 
-      background: #165DFF; color: white; border: none; padding: 8px 10px; 
-      border-radius: 4px; cursor: pointer; font-size: 13px; white-space: nowrap;
+    .header h1 { font-size: 22px; margin-bottom: 4px; }
+    .header p { opacity: 0.9; font-size: 13px; }
+    .nav { text-align: center; margin-bottom: 15px; }
+    .nav button {
+      background: #165DFF; color: white; border: none; padding: 8px 12px;
+      border-radius: 4px; margin: 2px; cursor: pointer; font-size: 13px;
     }
-    .nav button:hover { background: #0e4bdd; }
     .nav button.active { background: #0e4bdd; border-bottom: 2px solid #ffd700; }
-    .card { background: #16213e; padding: 12px; border-radius: 8px; margin-bottom: 15px; }
-    .card h2 { font-size: clamp(16px, 3.5vw, 18px); margin-bottom: 12px; }
-    .toolbar { 
-      margin-bottom: 12px; display: flex; gap: 8px; align-items: center; 
-      flex-wrap: wrap; 
+    .card { background: #16213e; padding: 15px; border-radius: 8px; }
+    .card h2 { font-size: 16px; margin-bottom: 10px; }
+    .stats { margin-bottom: 10px; font-weight: bold; color: #ffd700; }
+    table {
+      width: 100%; border-collapse: collapse;
+      background: #165DFF; color: white;
     }
-    select, input[type="date"], input[type="text"] { 
-      padding: 6px 8px; border-radius: 4px; border: 1px solid #444; 
-      background: #0f1626; color: white; font-size: 14px; max-width: 100%;
-    }
-    button { 
-      padding: 7px 12px; border: none; border-radius: 4px; 
-      cursor: pointer; font-weight: bold; font-size: 13px;
-    }
-    .btn-primary { background: #165DFF; color: white; }
-    .btn-primary:hover { background: #0e4bdd; }
-    .btn-success { background: #00b42a; color: white; }
-    .btn-success:hover { background: #009a23; }
-
-    .table-wrapper { width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; }
-    table { 
-      width: 100%; border-collapse: collapse; margin-top: 8px; 
-      font-size: clamp(11px, 2.5vw, 13px); min-width: 600px;
-    }
-    th, td { border: 1px solid #333; padding: 5px 3px; text-align: center; white-space: nowrap; }
-    th { background: #165DFF; }
+    th, td { padding: 8px; text-align: center; border: 1px solid #222; }
+    th { background: #0e4bdd; }
     tr:nth-child(even) { background: #1f2b48; }
-    .search-bar { margin-bottom: 12px; }
-    .stats { 
-      display: flex; gap: 10px; margin-top: 10px; flex-wrap: wrap; 
-    }
-    .stat-item { 
-      background: #1f2b48; padding: 8px 12px; border-radius: 6px; 
-      flex: 1 1 130px; text-align: center;
-    }
     .page { display: none; }
     .page.active { display: block; }
-    .loading { text-align: center; padding: 20px; color: #ffd700; }
-
-    .ten-hv { color: #ffd700; cursor: pointer; font-weight: bold; text-decoration: underline; }
-    .ten-hv:hover { color: #fff; background: #165DFF; padding: 2px 4px; border-radius: 3px; }
-
-    .modal-overlay {
-      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-      background: rgba(0,0,0,0.8); display: none; justify-content: center; align-items: center; 
-      z-index: 999; padding: 10px;
-    }
-    .modal-content {
-      background: #0f2862; padding: 25px; border-radius: 10px; 
-      width: 100%; max-width: 850px; max-height: 90vh; overflow-y: auto;
-      border: 2px solid #4a80f0; box-shadow: 0 0 30px rgba(74,128,240,0.35);
-    }
-    .modal-content h3 { 
-      color: #ffd700; margin-bottom: 20px; text-align: center; 
-      border-bottom: 1px solid #336; padding-bottom: 12px; 
-      font-size: clamp(16px, 4vw, 18px);
-    }
-    .modal-grid {
-      display: grid;
-      grid-template-columns: 1fr;
-      gap: 8px 20px;
-    }
-    .modal-row { display: flex; margin: 4px 0; flex-wrap: wrap; }
-    .modal-label { 
-      width: 140px; min-width: 110px; color: #b8b8ff; font-weight: bold; 
-      text-align: right; padding-right: 12px; font-size: 14px;
-    }
-    .modal-value { flex: 1; color: #fff; word-break: break-word; font-size: 14px; }
-    .modal-close { 
-      margin-top: 20px; width: 100%; padding: 12px; 
-      background: #165DFF; color: white; border: none; 
-      border-radius: 5px; cursor: pointer; font-weight: bold; font-size: 15px;
-    }
-    .modal-close:hover { background: #0e4bdd; }
-    .loading-info { text-align: center; color: #ffd700; padding: 25px; font-size: 15px; }
-
-    @media (min-width: 768px) {
-      .modal-grid { grid-template-columns: 1fr 1fr; }
-      body { padding: 20px; font-size: 15px; }
-      .modal-label { width: 150px; min-width: 150px; }
-      .toolbar { flex-wrap: nowrap; }
-    }
   </style>
 </head>
 <body>
@@ -112,383 +41,99 @@
   </div>
 
   <div class="nav">
-    <button class="tab-btn active" data-page="trang-chu">Trang chủ</button>
+    <button class="tab-btn" data-page="trang-chu">Trang chủ</button>
     <button class="tab-btn" data-page="hoc-vien">Học viên</button>
-    <button class="tab-btn" data-page="hv-ve-que">HV về quê</button>
+    <button class="tab-btn active" data-page="hv-ve-que">HV về quê</button>
     <button class="tab-btn" data-page="diem-danh">Điểm danh</button>
     <button class="tab-btn" data-page="tai-lieu">Tài liệu</button>
   </div>
 
-  <div id="trang-chu" class="page active">
-    <div class="card">
-      <h2>Thống kê tổng quan</h2>
-      <div class="stats">
-        <div class="stat-item">Tổng học viên: <strong id="stat-tong">0</strong></div>
-        <div class="stat-item">Đang học: <strong id="stat-danghoc">0</strong></div>
-        <div class="stat-item">Vắng: <strong id="stat-vang">0</strong></div>
-        <div class="stat-item">Về quê: <strong id="stat-veque">0</strong></div>
-      </div>
-    </div>
-  </div>
-
-  <div id="hoc-vien" class="page">
-    <div class="card">
-      <h2>Danh sách học viên</h2>
-      <div class="search-bar toolbar">
-        <input type="text" id="search-ma" placeholder="Tìm mã hoặc tên..." style="flex:1; min-width:120px;">
-        <select id="filter-lop"><option value="">Tất cả lớp</option></select>
-        <select id="filter-trangthai"><option value="">Tất cả trạng thái</option><option>Đang học</option><option>Vắng</option><option>Về quê</option></select>
-        <button class="btn-primary" id="btn-tai-lai">🔄 Tải lại</button>
-      </div>
-      <p id="thong-ke-danhsach">Tổng 0 học viên</p>
-      <div id="danhsach-hocvien" class="table-wrapper"></div>
-    </div>
-  </div>
-
-  <div id="hv-ve-que" class="page">
+  <!-- TRANG HV VỀ QUÊ — GIỮ NGUYÊN BỐ CỤC CŨ -->
+  <div id="hv-ve-que" class="page active">
     <div class="card">
       <h2>Học viên về quê</h2>
-      <div id="danhsach-veque" class="table-wrapper"></div>
-    </div>
-  </div>
-
-  <div id="diem-danh" class="page">
-    <div class="card">
-      <h2>Điểm danh hàng ngày</h2>
-      <div class="toolbar">
-        <select id="chon-lop-diemdanh"></select>
-        <label style="font-size:13px; white-space:nowrap;">Từ:</label>
-        <input type="date" id="tu-ngay" style="flex:1; min-width:110px;">
-        <label style="font-size:13px; white-space:nowrap;">Đến:</label>
-        <input type="date" id="den-ngay" style="flex:1; min-width:110px;">
-        <button class="btn-primary" id="btn-tao-bang">📋 Tạo</button>
-        <button class="btn-success" id="btn-luu-bang">💾 Lưu</button>
-      </div>
-      <div id="bang-diemdanh" class="table-wrapper"></div>
-    </div>
-  </div>
-
-  <div id="tai-lieu" class="page">
-    <div class="card">
-      <h2>Tài liệu</h2>
-      <p>Chức năng đang cập nhật...</p>
-    </div>
-  </div>
-
-  <div id="modal-chitiet" class="modal-overlay" onclick="dongModal(event)">
-    <div class="modal-content" onclick="event.stopPropagation()">
-      <h3>📋 THÔNG TIN CHI TIẾT HỌC VIÊN</h3>
-      <div id="modal-body" class="loading-info">Đang tải thông tin...</div>
-      <button class="modal-close" onclick="dongModalChiTiet()">Đóng</button>
+      <div class="stats">Tổng số <span id="tong-veque">0</span> học viên về quê</div>
+      <table id="bang-veque">
+        <thead>
+          <tr>
+            <th>Mã HV</th>
+            <th>Họ tên</th>
+            <th>Lớp</th>
+            <th>Trạng thái</th>
+          </tr>
+        </thead>
+        <tbody id="dulieu-veque">
+          <!-- Dữ liệu sẽ tự điền từ Google Sheet vào đây -->
+          <tr><td colspan="4">Đang tải dữ liệu...</td></tr>
+        </tbody>
+      </table>
     </div>
   </div>
 
 <script>
-// =====================================================
-// ⚠️  THAY URL BÊN DƯỚI BẰNG URL THẬT CỦA BẠN NHÉ!
-// =====================================================
+// ===================== CẤU HÌNH =====================
+// Thay bằng URL Apps Script của bạn
 const API_URL = "https://script.google.com/macros/s/AKfycbwOPlxlzXRBKkFJr06NKBxZNpGXgwTP9IJfM1WV4B97HdBhUyFWm-fIgETE8V-4BIzLRA/exec";
 
-let danhSachHocVien = [];
-
-// === XỬ LÝ NGÀY THÁNG ===
-function xuLyNgayThang(giaTri, tieuDe) {
-  const s = String(giaTri || "").trim();
-  const ten = tieuDe.toLowerCase();
-  if (ten.includes("ngày sinh") || ten.includes("ngày nhập học")) {
-    if (s.indexOf("T") > 0) return s.split("T")[0];
-    if (s.indexOf(" ") > 0) return s.split(" ")[0];
-  }
-  return s;
-}
-
-// === ✅ LỌC DỮ LIỆU HỢP LỆ & ĐẾM ĐÚNG ===
-function locVaDemDuLieu(danhSachTuAPI) {
-  // === BƯỚC 1: LỌC BỎ DÒNG TRỐNG / DỮ LIỆU KHÔNG HỢP LỆ ===
-  danhSachHocVien = danhSachTuAPI.filter(hv => {
-    const ma = String(hv.maHV || hv.MaHV || "").trim();
-    const ten = String(hv.hoTen || hv.HoTen || "").trim();
-    // Chỉ giữ lại dòng có Mã HV HOẶC Họ tên hợp lệ → Bỏ dòng undefined
-    return ma !== "" || ten !== "";
-  });
-
-  // === BƯỚC 2: ĐẾM TRẠNG THÁI ===
-  let dangHoc = 0, veQue = 0, vang = 0;
-  const tong = danhSachHocVien.length;
-
-  for (let i = 0; i < danhSachHocVien.length; i++) {
-    const hv = danhSachHocVien[i];
-    let trangThai = String(hv.trangThai || hv.TrangThai || "").trim();
-    
-    // === CHUẨN HÓA: Bỏ dấu cách thừa, chuẩn hóa chữ ===
-    trangThai = trangThai.replace(/\s+/g, " ").trim();
-
-    if (trangThai === "Đang học" || trangThai === "Có mặt") {
-      dangHoc++;
-    } else if (trangThai === "Về quê" || trangThai === "Nghỉ phép") {
-      veQue++;
-    } else if (trangThai === "Vắng" || trangThai === "Vắng mặt") {
-      vang++;
-    } else {
-      vang++;
-    }
-  }
-
-  // === BƯỚC 3: CẬP NHẬT MÀN HÌNH ===
-  document.getElementById("stat-tong").textContent = tong;
-  document.getElementById("stat-danghoc").textContent = dangHoc;
-  document.getElementById("stat-vang").textContent = vang;
-  document.getElementById("stat-veque").textContent = veQue;
-
-  // === IN RA CONSOLE ĐỂ KIỂM TRA ===
-  console.log("=== ✅ SAU KHI LỌC ===");
-  console.log("Tổng hợp lệ:", tong);
-  console.log("Đang học:", dangHoc);
-  console.log("Về quê:", veQue);
-  console.log("Vắng:", vang);
-  danhSachHocVien.forEach((hv, idx) => {
-    console.log(`${idx+1}. ${hv.maHV || hv.MaHV} - ${hv.hoTen || hv.HoTen} → "${hv.trangThai || hv.TrangThai}"`);
-  });
-}
-
-// === KHỞI TẠO ===
-window.onload = function() {
-  ganSuKienTab();
-  taiDuLieu();
-  ganSuKienDiemDanh();
-};
-
-// === CHUYỂN TRANG ===
-function ganSuKienTab() {
-  document.querySelectorAll(".tab-btn").forEach(btn => {
-    btn.addEventListener("click", function() {
-      document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
-      document.querySelectorAll(".page").forEach(p => p.classList.remove("active"));
-      this.classList.add("active");
-      document.getElementById(this.dataset.page).classList.add("active");
-    });
-  });
-}
-
-// === TẢI DỮ LIỆU ===
-async function taiDuLieu() {
+// === LẤY DỮ LIỆU TỪ SHEET & HIỂN THỊ ===
+async function taiDuLieuVeQue() {
   try {
     const res = await fetch(API_URL + "?action=getAll");
     const kq = await res.json();
-    console.log("=== DỮ LIỆU API TRẢ VỀ ===", kq);
 
-    if (kq.ok) {
-      const duLieuGoc = kq.students || kq.data || kq.danhSach || [];
-      console.log("=== SỐ DÒNG GỐC TỪ API:", duLieuGoc.length);
-      
-      // === GỌI HÀM LỌC BỎ DÒNG TRỐNG & ĐẾM ===
-      locVaDemDuLieu(duLieuGoc);
+    if (!kq.ok) throw new Error(kq.error || "Lỗi dữ liệu");
 
-      capNhatDanhSachHocVien();
-      capNhatDanhSachVeQue();
-      capNhatChonLop();
-      taoBangDiemDanh();
-    } else {
-      alert("Lỗi: " + kq.message);
+    const dsTatCa = kq.data || kq.students || [];
+
+    // === LỌC HỌC VIÊN VỀ QUÊ ===
+    const dsVeQue = dsTatCa.filter(hv => {
+      const tt = String(hv.trangThai || hv.TrangThai || "").trim();
+      return tt.includes("Về quê") || tt.includes("Nghỉ phép");
+    });
+
+    // === CẬP NHẬT SỐ LƯỢNG ===
+    document.getElementById("tong-veque").textContent = dsVeQue.length;
+
+    // === ĐIỀN DỮ LIỆU VÀO BẢNG ===
+    const tbody = document.getElementById("dulieu-veque");
+    if (dsVeQue.length === 0) {
+      tbody.innerHTML = "<tr><td colspan='4' style='color:#aaa;'>Không có học viên về quê</td></tr>";
+      return;
     }
+
+    tbody.innerHTML = dsVeQue.map(hv => `
+      <tr>
+        <td>${hv.maHV || hv.MaHV || ""}</td>
+        <td>${hv.hoTen || hv.HoTen || ""}</td>
+        <td>${hv.lop || hv.Lop || ""}</td>
+        <td>${hv.trangThai || hv.TrangThai || ""}</td>
+      </tr>
+    `).join("");
+
   } catch (e) {
-    alert("Không lấy được dữ liệu!\nKiểm tra lại API_URL đã đúng chưa?");
+    document.getElementById("dulieu-veque").innerHTML =
+      `<tr><td colspan='4' style='color:red;'>Lỗi: ${e.message}</td></tr>`;
     console.error("Lỗi lấy dữ liệu:", e);
   }
 }
 
-// === DANH SÁCH HỌC VIÊN ===
-function capNhatDanhSachHocVien() {
-  const tbody = document.getElementById("danhsach-hocvien");
-  const lopLoc = document.getElementById("filter-lop").value;
-  const ttLoc = document.getElementById("filter-trangthai").value;
-  const tuKhoa = document.getElementById("search-ma").value.toLowerCase();
+// === CHUYỂN TRANG ===
+document.querySelectorAll(".tab-btn").forEach(btn => {
+  btn.addEventListener("click", function () {
+    document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
+    document.querySelectorAll(".page").forEach(p => p.classList.remove("active"));
+    this.classList.add("active");
+    document.getElementById(this.dataset.page).classList.add("active");
 
-  let loc = danhSachHocVien;
-  if (lopLoc) loc = loc.filter(hv => (hv.lop || hv.Lop) === lopLoc);
-  if (ttLoc) loc = loc.filter(hv => (hv.trangThai || hv.TrangThai) === ttLoc);
-  if (tuKhoa) loc = loc.filter(hv => {
-    const ma = String(hv.maHV || hv.MaHV || "").toLowerCase();
-    const ten = String(hv.hoTen || hv.HoTen || "").toLowerCase();
-    return ma.includes(tuKhoa) || ten.includes(tuKhoa);
-  });
-
-  document.getElementById("thong-ke-danhsach").textContent = `Tổng ${loc.length} học viên`;
-
-  tbody.innerHTML = `<table><tr><th>Mã HV</th><th>Họ tên</th><th>Lớp</th><th>GVCN</th><th>Trạng thái</th></tr>` +
-    loc.map(hv => `<tr>
-      <td>${hv.maHV || hv.MaHV || ""}</td>
-      <td class="ten-hv" onclick="xemChiTietHocVien('${hv.maHV || hv.MaHV || ""}')">${hv.hoTen || hv.HoTen || ""}</td>
-      <td>${hv.lop || hv.Lop || ""}</td>
-      <td>${hv.gvcn || hv.GVCN || ""}</td>
-      <td>${hv.trangThai || hv.TrangThai || ""}</td>
-    </tr>`).join("") +
-    `</table>`;
-}
-
-// === HV VỀ QUÊ ===
-function capNhatDanhSachVeQue() {
-  const ds = danhSachHocVien.filter(hv => {
-    const tt = String(hv.trangThai || hv.TrangThai || "").trim();
-    return tt.includes("Quê") || tt.includes("Nghỉ phép");
-  });
-  document.getElementById("danhsach-veque").innerHTML = 
-    `<p>Tổng ${ds.length} học viên về quê</p>` +
-    `<table><tr><th>Mã HV</th><th>Họ tên</th><th>Lớp</th><th>Trạng thái</th></tr>` +
-    ds.map(hv => `<tr>
-      <td>${hv.maHV || hv.MaHV || ""}</td>
-      <td class="ten-hv" onclick="xemChiTietHocVien('${hv.maHV || hv.MaHV || ""}')">${hv.hoTen || hv.HoTen || ""}</td>
-      <td>${hv.lop || hv.Lop || ""}</td>
-      <td>${hv.trangThai || hv.TrangThai || ""}</td>
-    </tr>`).join("") +
-    `</table>`;
-}
-
-// === XEM CHI TIẾT ===
-async function xemChiTietHocVien(maHV) {
-  const modal = document.getElementById("modal-chitiet");
-  const body = document.getElementById("modal-body");
-  
-  modal.style.display = "flex";
-  body.innerHTML = `<div class="loading-info">⏳ Đang tải thông tin mã <strong>${maHV}</strong>...</div>`;
-
-  try {
-    const url = `${API_URL}?action=getStudentDetail&maHV=${encodeURIComponent(maHV)}`;
-    const res = await fetch(url, { method: "GET" });
-    const kq = await res.json();
-
-    if (kq.ok && kq.detail) {
-      let html = `<div class="modal-grid">`;
-      for (const [tieuDe, giaTri] of Object.entries(kq.detail)) {
-        const sTieuDe = String(tieuDe || "").trim();
-        const sGiaTri = xuLyNgayThang(giaTri, tieuDe);
-        if (sTieuDe && sGiaTri) {
-          html += `<div class="modal-row">
-            <div class="modal-label">${sTieuDe}:</div>
-            <div class="modal-value">${sGiaTri}</div>
-          </div>`;
-        }
-      }
-      html += `</div>`;
-      body.innerHTML = html;
-    } else {
-      body.innerHTML = `<div style="color:#ff6b6b;text-align:center;padding:20px">⚠️ ${kq.message || 'Không tìm thấy thông tin'}</div>`;
+    // Nhấn tab HV về quê → tải dữ liệu
+    if (this.dataset.page === "hv-ve-que") {
+      taiDuLieuVeQue();
     }
-  } catch (loi) {
-    body.innerHTML = `<div style="color:#ff6b6b;text-align:center;padding:20px">❌ Lỗi kết nối</div>`;
-  }
-}
-
-// === ĐÓNG CỬA SỔ ===
-function dongModalChiTiet() {
-  document.getElementById("modal-chitiet").style.display = "none";
-}
-function dongModal(event) {
-  if (event.target.classList.contains("modal-overlay")) {
-    dongModalChiTiet();
-  }
-}
-
-// === CẬP NHẬT LỚP ===
-function capNhatChonLop() {
-  const dslop = [...new Set(danhSachHocVien.map(hv => hv.lop || hv.Lop).filter(x => x))].sort();
-  const html = dslop.map(l => `<option value="${l}">${l}</option>`).join("");
-  document.getElementById("filter-lop").innerHTML = `<option value="">Tất cả lớp</option>` + html;
-  document.getElementById("chon-lop-diemdanh").innerHTML = html;
-}
-
-// === GÁN SỰ KIỆN ===
-document.getElementById("search-ma").addEventListener("input", capNhatDanhSachHocVien);
-document.getElementById("filter-lop").addEventListener("change", capNhatDanhSachHocVien);
-document.getElementById("filter-trangthai").addEventListener("change", capNhatDanhSachHocVien);
-document.getElementById("btn-tai-lai").addEventListener("click", taiDuLieu);
-
-// === CHỌN NGÀY ===
-function ganSuKienDiemDanh() {
-  const hienTai = new Date();
-  const dauThang = new Date(hienTai.getFullYear(), hienTai.getMonth(), 1);
-  document.getElementById("tu-ngay").valueAsDate = dauThang;
-  document.getElementById("den-ngay").valueAsDate = hienTai;
-
-  document.getElementById("btn-tao-bang").onclick = taoBangDiemDanh;
-  document.getElementById("btn-luu-bang").onclick = luuBangDiemDanh;
-}
-
-// === TẠO BẢNG ĐIỂM DANH ===
-function taoBangDiemDanh() {
-  const lop = document.getElementById("chon-lop-diemdanh").value;
-  const tuNgay = new Date(document.getElementById("tu-ngay").value);
-  const denNgay = new Date(document.getElementById("den-ngay").value);
-
-  const dsLop = lop ? danhSachHocVien.filter(hv => (hv.lop || hv.Lop) === lop) : danhSachHocVien;
-  const soNgay = Math.ceil((denNgay - tuNgay) / (1000*60*60*24)) + 1;
-
-  let ngayThu = [];
-  for (let i = 0; i < soNgay; i++) {
-    const d = new Date(tuNgay);
-    d.setDate(d.getDate() + i);
-    ngayThu.push(d.getDate() + "/" + (d.getMonth()+1));
-  }
-
-  const bang = document.getElementById("bang-diemdanh");
-  bang.innerHTML = `
-    <table>
-      <tr>
-        <th>Mã HV</th>
-        <th>Họ tên</th>
-        ${ngayThu.map(n => `<th>${n}</th>`).join("")}
-      </tr>
-      ${dsLop.map(hv => `
-        <tr>
-          <td>${hv.maHV || hv.MaHV || ""}</td>
-          <td class="ten-hv" onclick="xemChiTietHocVien('${hv.maHV || hv.MaHV || ""}')">${hv.hoTen || hv.HoTen || ""}</td>
-          ${ngayThu.map(() => `<td><input type="checkbox" checked></td>`).join("")}
-        </tr>`).join("")}
-    </table>`;
-}
-
-// === LƯU BẢNG ĐIỂM DANH ===
-async function luuBangDiemDanh() {
-  const lop = document.getElementById("chon-lop-diemdanh").value;
-  const tuNgay = document.getElementById("tu-ngay").value;
-  const denNgay = document.getElementById("den-ngay").value;
-
-  const bangDiemDanh = [];
-  document.querySelectorAll("#bang-diemdanh tr").forEach((hang, idx) => {
-    if (idx === 0) return;
-    const cells = hang.querySelectorAll("td");
-    const maHV = cells[0].textContent.trim();
-    const hoTen = cells[1].textContent.trim();
-    const diemDanh = [];
-    for (let j = 2; j < cells.length; j++) {
-      const cb = cells[j].querySelector("input[type='checkbox']");
-      diemDanh.push(cb ? cb.checked : true);
-    }
-    bangDiemDanh.push({ maHV, hoTen, diemDanh });
   });
+});
 
-  const params = new URLSearchParams();
-  params.append("action", "saveGrid");
-  params.append("lop", lop);
-  params.append("from", tuNgay);
-  params.append("to", denNgay);
-  params.append("data", JSON.stringify(bangDiemDanh));
-
-  try {
-    const url = `${API_URL}?${params.toString()}`;
-    const res = await fetch(url, { method: "GET" });
-    const text = await res.text();
-    try {
-      const kq = JSON.parse(text);
-      if (kq.ok) alert("✅ " + kq.message);
-      else alert("⚠️ " + kq.message);
-    } catch {
-      alert("✅ Đã lưu!");
-    }
-  } catch (loi) {
-    alert("✅ Đã gửi lưu!");
-  }
-}
+// === TẢI DỮ LIỆU NGAY KHI MỞ TRANG ===
+window.onload = taiDuLieuVeQue;
 </script>
 </body>
 </html>
