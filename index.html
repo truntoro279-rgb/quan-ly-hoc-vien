@@ -10,7 +10,358 @@ body{
   margin:0;
   font-family:Arial,sans-serif;
   background:#121824;
-  color:#e2e8f0
+  color:#e2e8f0<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TTDT THÀNH ĐÔ - THANH HÓA</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; font-family: Arial, sans-serif; }
+    body { background-color: #1a1a2e; color: #eee; padding: 20px; line-height: 1.6; }
+    .container { max-width: 1400px; margin: 0 auto; }
+    header { text-align: center; margin-bottom: 30px; }
+    .banner { background: linear-gradient(90deg, #1e5799, #2989d8, #207cca); padding: 20px; border-radius: 8px; margin-bottom: 20px; }
+    .banner h1 { color: #fff; font-size: 28px; margin-bottom: 5px; }
+    .banner p { color: #e0e0e0; font-size: 16px; }
+    nav { display: flex; justify-content: flex-end; gap: 10px; margin-bottom: 20px; }
+    nav button { background: transparent; border: none; color: #ccc; padding: 8px 16px; border-radius: 4px; cursor: pointer; font-size: 14px; }
+    nav button.active { background: #2989d8; color: #fff; font-weight: bold; }
+    .stats-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; margin-bottom: 25px; }
+    .stat-card { background: #16213e; padding: 15px; border-radius: 8px; }
+    .stat-card .num { font-size: 28px; font-weight: bold; color: #4facfe; }
+    .stat-card .label { font-size: 13px; color: #999; margin-top: 5px; }
+    .toolbar { display: flex; gap: 10px; margin-bottom: 20px; align-items: center; flex-wrap: wrap; }
+    .toolbar input, .toolbar select { padding: 8px 12px; border: 1px solid #333; border-radius: 4px; background: #16213e; color: #eee; font-size: 14px; }
+    .toolbar button { padding: 8px 16px; background: #2989d8; color: #fff; border: none; border-radius: 4px; cursor: pointer; font-size: 14px; }
+    .toolbar button:hover { background: #1e6fb8; }
+    .card { background: #16213e; padding: 20px; border-radius: 8px; margin-bottom: 15px; }
+    .student-item { border-bottom: 1px solid #2a2a4a; padding: 12px 0; cursor: pointer; }
+    .student-item:last-child { border-bottom: none; }
+    .student-item .code { font-weight: bold; color: #4facfe; margin-right: 10px; }
+    .student-item .name { font-size: 15px; }
+    .student-item .meta { font-size: 13px; color: #888; margin-top: 4px; }
+    .student-item .status-tag { display: inline-block; padding: 2px 8px; border-radius: 12px; font-size: 12px; margin-left: 8px; background: #28a745; color: #fff; }
+    .detail-box { margin-top: 12px; padding: 12px; background: #0f1626; border-radius: 6px; font-size: 13px; }
+    .error-box { color: #ff6b6b; margin-top: 8px; font-size: 13px; }
+    .loading { text-align: center; padding: 30px; color: #888; }
+    .hidden { display: none !important; }
+    .diemdanh-grid { overflow-x: auto; margin-top: 15px; }
+    table { border-collapse: collapse; width: 100%; font-size: 13px; }
+    th, td { border: 1px solid #334; padding: 4px 6px; text-align: center; }
+    th { background: #1e2940; }
+    input[type="date"] { padding: 4px; background: #16213e; color: #eee; border: 1px solid #444; border-radius: 4px; }
+    .checkmark { color: #28a745; font-weight: bold; }
+    .empty { color: #555; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div class="banner">
+        <h1>TTDT THÀNH ĐÔ - THANH HÓA</h1>
+        <p>Hệ thống quản lý học viên tập trung</p>
+      </div>
+      <nav>
+        <button class="nav-btn active" data-page="trangchu">Trang chủ</button>
+        <button class="nav-btn" data-page="hocsinh">Học viên</button>
+        <button class="nav-btn" data-page="hvveque">HV về quê</button>
+        <button class="nav-btn" data-page="diemdanh">Điểm danh</button>
+        <button class="nav-btn" data-page="tailieu">Tài liệu</button>
+      </nav>
+    </header>
+
+    <!-- Trang chủ -->
+    <section id="page-trangchu" class="page">
+      <div class="stats-row">
+        <div class="stat-card"><div class="num" id="stat-total">0</div><div class="label">Tổng học viên</div></div>
+        <div class="stat-card"><div class="num" id="stat-present">0</div><div class="label">Có mặt</div></div>
+        <div class="stat-card"><div class="num" id="stat-absent">0</div><div class="label">Vắng</div></div>
+        <div class="stat-card"><div class="num" id="stat-away">0</div><div class="label">Về quê</div></div>
+      </div>
+      <div class="card">
+        <h3>Thao tác nhanh</h3>
+        <div class="toolbar" style="margin-top:15px;">
+          <button onclick="switchPage('diemdanh')">📝 Điểm danh</button>
+          <button onclick="switchPage('hocsinh')">📋 Danh sách học viên</button>
+          <button onclick="switchPage('hvveque')">🏠 Học viên về quê</button>
+          <button onclick="switchPage('tailieu')">📁 Tài liệu</button>
+          <button onclick="taiLaiDuLieu()">🔄 Tải lại dữ liệu</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Danh sách học viên -->
+    <section id="page-hocsinh" class="page hidden">
+      <div class="card">
+        <h3>Danh sách học viên</h3>
+        <div class="toolbar">
+          <input type="text" id="search-name" placeholder="Tìm tên hoặc mã...">
+          <select id="filter-lop"><option value="">Tất cả lớp</option></select>
+          <select id="filter-status"><option value="">Tất cả trạng thái</option></select>
+        </div>
+        <p style="margin:8px 0; color:#aaa;">Tổng <span id="filter-count">0</span> học viên</p>
+        <div id="student-list"></div>
+      </div>
+    </section>
+
+    <!-- HV về quê -->
+    <section id="page-hvveque" class="page hidden">
+      <div class="card">
+        <h3>Học viên về quê / Nghỉ phép</h3>
+        <div id="hvveque-list"></div>
+      </div>
+    </section>
+
+    <!-- Điểm danh -->
+    <section id="page-diemdanh" class="page hidden">
+      <div class="card">
+        <h3>Điểm danh hàng ngày</h3>
+        <div class="toolbar">
+          <select id="dd-lop"><option value="">Chọn lớp</option></select>
+          <label>Từ ngày:</label>
+          <input type="date" id="dd-tu" value="2026-08-01">
+          <label>Đến ngày:</label>
+          <input type="date" id="dd-den" value="2026-08-30">
+          <button onclick="taoBangDiemDanh()">📊 Tạo bảng</button>
+          <button onclick="luuDiemDanh()">💾 Lưu bảng</button>
+        </div>
+        <div class="diemdanh-grid" id="dd-grid"></div>
+      </div>
+    </section>
+
+    <!-- Tài liệu -->
+    <section id="page-tailieu" class="page hidden">
+      <div class="card">
+        <h3>Tài liệu</h3>
+        <p style="margin-top:15px; color:#aaa;">
+          <a href="https://docs.google.com/spreadsheets/d/1JI8U96SwwQXn5ZLqWNlLtGaxkRzArpljjdW9QdIOr7A/edit#gid=62168460" target="_blank" style="color:#4facfe;">📄 Mở Google Sheets gốc</a>
+        </p>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    // ====================== CẤU HÌNH ======================
+    // === Dán URL MỚI từ Google Apps Script vào đây ===
+    const API_URL = "https://script.google.com/macros/s/THAY-URL-CUA-BAN/exec"; 
+    // ======================================================
+
+    let allStudents = [];
+    let statsData = { tong:0, coMat:0, vang:0, veQue:0 };
+
+    // === Chuyển trang ===
+    document.querySelectorAll('.nav-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        switchPage(btn.dataset.page);
+      });
+    });
+
+    function switchPage(name) {
+      document.querySelectorAll('.page').forEach(p => p.classList.add('hidden'));
+      document.getElementById('page-' + name).classList.remove('hidden');
+    }
+
+    // === Tải toàn bộ dữ liệu ===
+    async function taiLaiDuLieu() {
+      try {
+        const res = await fetch(`${API_URL}?action=getAll`);
+        const data = await res.json();
+        if (!data.ok) throw new Error(data.message || "Lỗi không xác định");
+
+        allStudents = data.students || [];
+        statsData = data.stats || { tong: allStudents.length, coMat:0, vang:0, veQue:0 };
+
+        // Cập nhật số liệu thống kê
+        document.getElementById('stat-total').textContent = statsData.tong;
+        document.getElementById('stat-present').textContent = statsData.coMat;
+        document.getElementById('stat-absent').textContent = statsData.vang;
+        document.getElementById('stat-away').textContent = statsData.veQue;
+
+        // Tạo danh sách lớp cho bộ lọc
+        capNhatBoLocLop();
+
+        // Hiển thị danh sách
+        hienThiDanhSach(allStudents);
+        hienThiHVVeQue();
+
+      } catch (err) {
+        alert("❌ Không tải được dữ liệu:\n" + err.message + "\n👉 Kiểm tra URL API và quyền truy cập!");
+        console.error(err);
+      }
+    }
+
+    // === Bộ lọc lớp ===
+    function capNhatBoLocLop() {
+      const lops = [...new Set(allStudents.map(s => s.lop).filter(x => x))].sort();
+      const fltLop = document.getElementById('filter-lop');
+      const ddLop = document.getElementById('dd-lop');
+      fltLop.innerHTML = '<option value="">Tất cả lớp</option>';
+      ddLop.innerHTML = '<option value="">Chọn lớp</option>';
+      lops.forEach(l => {
+        fltLop.innerHTML += `<option value="${l}">${l}</option>`;
+        ddLop.innerHTML += `<option value="${l}">${l}</option>`;
+      });
+    }
+
+    // === Hiển thị danh sách học viên ===
+    function hienThiDanhSach(list) {
+      const search = document.getElementById('search-name').value.trim().toLowerCase();
+      const lop = document.getElementById('filter-lop').value;
+      const tt = document.getElementById('filter-status').value;
+
+      const loc = list.filter(s => {
+        const matchSearch = !search || s.maHV.toLowerCase().includes(search) || s.hoTen.toLowerCase().includes(search);
+        const matchLop = !lop || s.lop === lop;
+        const matchTT = !tt || layTrangThaiLoai(s.trangThai) === tt;
+        return matchSearch && matchLop && matchTT;
+      });
+
+      document.getElementById('filter-count').textContent = loc.length;
+
+      const container = document.getElementById('student-list');
+      container.innerHTML = loc.map(s => {
+        const loai = layTrangThaiLoai(s.trangThai);
+        const mau = loai==='comat'?'#28a745':loai==='vang'?'#dc3545':'#ffc107';
+        return `
+        <div class="student-item" data-ma="${s.maHV}" onclick="xemChiTiet('${s.maHV}')">
+          <span class="code">${s.maHV}</span>
+          <span class="name">${s.hoTen}</span>
+          <span class="status-tag" style="background:${mau};">${s.trangThai || "Đang học"}</span>
+          <div class="meta">Lớp: ${s.lop || "—"} | GVCN: ${s.gvcn || "—"}</div>
+          <div class="detail-box" id="ct-${s.maHV}" style="display:none;"></div>
+        </div>`;
+      }).join('');
+    }
+
+    // === Phân loại trạng thái ===
+    function layTrangThaiLoai(tt) {
+      if (!tt) return 'comat';
+      const n = tt.trim().normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase().replace(/\s/g,"");
+      if (n==="vang"||n==="vangmat"||n.includes("nghi")) return "vang";
+      if (n==="veque"||n.includes("nghiphep")) return "veque";
+      return "comat";
+    }
+
+    // === Hiển thị HV về quê ===
+    function hienThiHVVeQue() {
+      const veQue = allStudents.filter(s => layTrangThaiLoai(s.trangThai) === 'veque');
+      const container = document.getElementById('hvveque-list');
+      if (!veQue.length) {
+        container.innerHTML = '<p style="color:#888; padding:10px;">Không có học viên về quê / nghỉ phép</p>';
+        return;
+      }
+      container.innerHTML = veQue.map(s => `
+        <div class="student-item">
+          <span class="code">${s.maHV}</span>
+          <span class="name">${s.hoTen}</span>
+          <div class="meta">Lớp: ${s.lop || "—"} | GVCN: ${s.gvcn || "—"} | Trạng thái: ${s.trangThai}</div>
+        </div>`).join('');
+    }
+
+    // === Xem chi tiết học viên ===
+    async function xemChiTiet(ma) {
+      const box = document.getElementById(`ct-${ma}`);
+      if (box.style.display === 'block') { box.style.display = 'none'; return; }
+      box.style.display = 'block';
+      box.innerHTML = "⏳ Đang tải...";
+
+      try {
+        const res = await fetch(`${API_URL}?action=getStudentDetail&mshv=${encodeURIComponent(ma)}`);
+        const data = await res.json();
+        if (!data.ok) throw new Error(data.message || "Lỗi không xác định");
+
+        let html = "<b>📋 TOÀN BỘ DỮ LIỆU TỪ GOOGLE SHEETS:</b><br><br>";
+        for (const [key, val] of Object.entries(data.detail || {})) {
+          html += `<b>${key}:</b> ${val || "—"}<br>`;
+        }
+        box.innerHTML = html;
+      } catch (err) {
+        box.innerHTML = `<span class="error-box">⚠️ Không lấy được dữ liệu chi tiết<br>Lỗi: ${err.message}<br><a href="https://docs.google.com/spreadsheets/d/1JI8U96SwwQXn5ZLqWNlLtGaxkRzArpljjdW9QdIOr7A/edit#gid=62168460" target="_blank" style="color:#4facfe;">👉 Mở Google Sheets trực tiếp</a></span>`;
+      }
+    }
+
+    // === Tạo bảng điểm danh ===
+    function taoBangDiemDanh() {
+      const lop = document.getElementById('dd-lop').value;
+      const tu = document.getElementById('dd-tu').value;
+      const den = document.getElementById('dd-den').value;
+      if (!lop || !tu || !den) { alert("⚠️ Vui lòng chọn lớp và khoảng ngày"); return; }
+
+      const ds = allStudents.filter(s => s.lop === lop);
+      if (!ds.length) { alert("⚠️ Không có học viên lớp này"); return; }
+
+      const days = layNgayTrongKhoang(tu, den);
+      let html = `<table><thead><tr><th>Mã HV</th><th>Họ tên</th>`;
+      days.forEach(d => html += `<th>${d}</th>`);
+      html += `</tr></thead><tbody>`;
+      ds.forEach(s => {
+        html += `<tr><td>${s.maHV}</td><td>${s.hoTen}</td>`;
+        days.forEach(() => html += `<td><input type="checkbox" checked class="diemdanh-ck"></td>`);
+        html += `</tr>`;
+      });
+      html += `</tbody></table>`;
+      document.getElementById('dd-grid').innerHTML = html;
+    }
+
+    // === Lấy danh sách ngày ===
+    function layNgayTrongKhoang(tu, den) {
+      const arr = [];
+      let d = new Date(tu);
+      const end = new Date(den);
+      while (d <= end) {
+        arr.push(`${d.getDate()}/${d.getMonth()+1}`);
+        d.setDate(d.getDate()+1);
+      }
+      return arr;
+    }
+
+    // === Lưu điểm danh ===
+    async function luuDiemDanh() {
+      const lop = document.getElementById('dd-lop').value;
+      const tu = document.getElementById('dd-tu').value;
+      const den = document.getElementById('dd-den').value;
+      if (!lop) { alert("⚠️ Chọn lớp trước khi lưu"); return; }
+
+      const ds = allStudents.filter(s => s.lop === lop);
+      const data = {
+        action: "saveGrid",
+        lop, tu, den,
+        dates: layNgayTrongKhoang(tu, den),
+        data: ds.map(s => ({
+          maHV: s.maHV,
+          checked: Array.from(document.querySelectorAll('.diemdanh-ck')).map((ck,i) => ck.checked)
+        }))
+      };
+
+      try {
+        const res = await fetch(API_URL, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(data)
+        });
+        const ret = await res.json();
+        if (ret.ok) alert("✅ " + ret.message);
+        else alert("❌ " + ret.message);
+      } catch (err) {
+        alert("❌ Lỗi kết nối khi lưu:\n" + err.message);
+      }
+    }
+
+    // === Bộ lọc khi gõ / chọn ===
+    document.getElementById('search-name').addEventListener('input', () => hienThiDanhSach(allStudents));
+    document.getElementById('filter-lop').addEventListener('change', () => hienThiDanhSach(allStudents));
+    document.getElementById('filter-status').addEventListener('change', () => hienThiDanhSach(allStudents));
+
+    // === Tải dữ liệu khi mở trang ===
+    window.onload = () => {
+      taiLaiDuLieu();
+    };
+  </script>
+</body>
+</html>
 }
 header{
   height:68px;
