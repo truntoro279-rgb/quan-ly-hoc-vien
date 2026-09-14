@@ -83,7 +83,7 @@
     /* === Bố cục 2 cột trên máy tính, 1 cột trên điện thoại === */
     .modal-grid {
       display: grid;
-      grid-template-columns: 1fr; /* Mặc định 1 cột cho điện thoại */
+      grid-template-columns: 1fr;
       gap: 8px 20px;
     }
     .modal-row { display: flex; margin: 4px 0; flex-wrap: wrap; }
@@ -130,7 +130,7 @@
       <h2>Thống kê tổng quan</h2>
       <div class="stats">
         <div class="stat-item">Tổng học viên: <strong id="stat-tong">0</strong></div>
-        <div class="stat-item">Có mặt: <strong id="stat-comat">0</strong></div>
+        <div class="stat-item">Đang học: <strong id="stat-comat">0</strong></div>
         <div class="stat-item">Vắng: <strong id="stat-vang">0</strong></div>
         <div class="stat-item">Về quê: <strong id="stat-veque">0</strong></div>
       </div>
@@ -209,18 +209,27 @@ function xuLyNgayThang(giaTri, tieuDe) {
   const s = String(giaTri || "").trim();
   const tenTieuDe = tieuDe.toLowerCase();
   
-  // Nếu là Ngày sinh / Ngày nhập học → cắt bỏ phần sau chữ "T" hoặc khoảng trắng
   if (tenTieuDe.includes("ngày sinh") || tenTieuDe.includes("ngày nhập học") || tenTieuDe.includes("ngày nhập học thực tế")) {
-    // Cắt dạng ISO: 2005-12-24T17:00:00.000Z → 2005-12-24
-    if (s.indexOf("T") > 0) {
-      return s.split("T")[0];
-    }
-    // Cắt dạng có khoảng trắng: 2005-12-24 17:00:00 → 2005-12-24
-    if (s.indexOf(" ") > 0) {
-      return s.split(" ")[0];
-    }
+    if (s.indexOf("T") > 0) return s.split("T")[0];
+    if (s.indexOf(" ") > 0) return s.split(" ")[0];
   }
   return s;
+}
+
+// === HÀM ĐẾM SỐ LƯỢNG HỌC VIÊN — ĐÃ SỬA ===
+function tinhThongKe(danhSach) {
+  const tong = danhSach.length;
+  const dangHoc = danhSach.filter(hv => {
+    const tt = String(hv.trangThai || "").trim();
+    return tt.includes("Đang học") || tt.includes("Có mặt");
+  }).length;
+  const veQue = danhSach.filter(hv => {
+    const tt = String(hv.trangThai || "").trim();
+    return tt.includes("Về quê") || tt.includes("Quê") || tt.includes("Nghỉ phép");
+  }).length;
+  const vang = tong - dangHoc - veQue;
+  
+  return { tong, coMat: dangHoc, vang, veQue };
 }
 
 // === KHỞI TẠO ===
@@ -248,8 +257,12 @@ async function taiDuLieu() {
     const res = await fetch(API_URL + "?action=getAll");
     const kq = await res.json();
     if (kq.ok) {
-      danhSachHocVien = kq.students;
-      capNhatThongKe(kq.stats);
+      danhSachHocVien = kq.students || [];
+      
+      // === Tính toán THỐNG KÊ TRỰC TIẾP từ danh sách ===
+      const soLieu = tinhThongKe(danhSachHocVien);
+      capNhatThongKe(soLieu);
+      
       capNhatDanhSachHocVien();
       capNhatDanhSachVeQue();
       capNhatChonLop();
@@ -263,7 +276,7 @@ async function taiDuLieu() {
   }
 }
 
-// === THỐNG KÊ ===
+// === CẬP NHẬT THỐNG KÊ ===
 function capNhatThongKe(s) {
   document.getElementById("stat-tong").textContent = s.tong;
   document.getElementById("stat-comat").textContent = s.coMat;
@@ -281,39 +294,43 @@ function capNhatDanhSachHocVien() {
   let loc = danhSachHocVien;
   if (lopLoc) loc = loc.filter(hv => hv.lop === lopLoc);
   if (ttLoc) loc = loc.filter(hv => hv.trangThai === ttLoc);
-  if (tuKhoa) loc = loc.filter(hv => hv.maHV.toLowerCase().includes(tuKhoa) || hv.hoTen.toLowerCase().includes(tuKhoa));
+  if (tuKhoa) loc = loc.filter(hv => 
+    (hv.maHV && hv.maHV.toLowerCase().includes(tuKhoa)) || 
+    (hv.hoTen && hv.hoTen.toLowerCase().includes(tuKhoa))
+  );
 
   document.getElementById("thong-ke-danhsach").textContent = `Tổng ${loc.length} học viên`;
 
   tbody.innerHTML = `<table><tr><th>Mã HV</th><th>Họ tên</th><th>Lớp</th><th>GVCN</th><th>Trạng thái</th></tr>` +
     loc.map(hv => `<tr>
-      <td>${hv.maHV}</td>
-      <td class="ten-hv" onclick="xemChiTietHocVien('${hv.maHV}')" title="Nhấn xem thông tin chi tiết">${hv.hoTen}</td>
-      <td>${hv.lop}</td>
-      <td>${hv.gvcn}</td>
-      <td>${hv.trangThai}</td>
+      <td>${hv.maHV || ""}</td>
+      <td class="ten-hv" onclick="xemChiTietHocVien('${hv.maHV || ""}')" title="Nhấn xem thông tin chi tiết">${hv.hoTen || ""}</td>
+      <td>${hv.lop || ""}</td>
+      <td>${hv.gvcn || ""}</td>
+      <td>${hv.trangThai || ""}</td>
     </tr>`).join("") +
     `</table>`;
 }
 
 // === HV VỀ QUÊ ===
 function capNhatDanhSachVeQue() {
-  const ds = danhSachHocVien.filter(hv => 
-    hv.trangThai.includes("Quê") || hv.trangThai.includes("Về quê") || hv.trangThai.includes("Nghỉ phép")
-  );
+  const ds = danhSachHocVien.filter(hv => {
+    const tt = String(hv.trangThai || "");
+    return tt.includes("Quê") || tt.includes("Về quê") || tt.includes("Nghỉ phép");
+  });
   document.getElementById("danhsach-veque").innerHTML = 
     `<p>Tổng ${ds.length} học viên về quê</p>` +
     `<table><tr><th>Mã HV</th><th>Họ tên</th><th>Lớp</th><th>Trạng thái</th></tr>` +
     ds.map(hv => `<tr>
-      <td>${hv.maHV}</td>
-      <td class="ten-hv" onclick="xemChiTietHocVien('${hv.maHV}')" title="Nhấn xem thông tin chi tiết">${hv.hoTen}</td>
-      <td>${hv.lop}</td>
-      <td>${hv.trangThai}</td>
+      <td>${hv.maHV || ""}</td>
+      <td class="ten-hv" onclick="xemChiTietHocVien('${hv.maHV || ""}')">${hv.hoTen || ""}</td>
+      <td>${hv.lop || ""}</td>
+      <td>${hv.trangThai || ""}</td>
     </tr>`).join("") +
     `</table>`;
 }
 
-// === XEM CHI TIẾT — ĐÃ CẮT NGÀY THÁNG ===
+// === XEM CHI TIẾT ===
 async function xemChiTietHocVien(maHV) {
   const modal = document.getElementById("modal-chitiet");
   const body = document.getElementById("modal-body");
@@ -330,7 +347,6 @@ async function xemChiTietHocVien(maHV) {
       let html = `<div class="modal-grid">`;
       for (const [tieuDe, giaTri] of Object.entries(kq.detail)) {
         const sTieuDe = String(tieuDe || "").trim();
-        // === Gọi hàm xử lý ngày tháng ===
         const sGiaTri = xuLyNgayThang(giaTri, tieuDe);
         if (sTieuDe && sGiaTri) {
           html += `<div class="modal-row">
@@ -346,7 +362,6 @@ async function xemChiTietHocVien(maHV) {
     }
   } catch (loi) {
     body.innerHTML = `<div style="color:#ff6b6b;text-align:center;padding:20px">❌ Lỗi kết nối<br>Kiểm tra lại URL API</div>`;
-    console.error("Lỗi chi tiết:", loi);
   }
 }
 
@@ -362,7 +377,7 @@ function dongModal(event) {
 
 // === CẬP NHẬT LỚP ===
 function capNhatChonLop() {
-  const dslop = [...new Set(danhSachHocVien.map(hv => hv.lop))].sort();
+  const dslop = [...new Set(danhSachHocVien.map(hv => hv.lop).filter(x => x))].sort();
   const html = dslop.map(l => `<option value="${l}">${l}</option>`).join("");
   document.getElementById("filter-lop").innerHTML = `<option value="">Tất cả lớp</option>` + html;
   document.getElementById("chon-lop-diemdanh").innerHTML = html;
@@ -410,9 +425,9 @@ function taoBangDiemDanh() {
         ${ngayThu.map(n => `<th>${n}</th>`).join("")}
       </tr>
       ${dsLop.map(hv => `
-        <tr data-ma="${hv.maHV}">
-          <td>${hv.maHV}</td>
-          <td class="ten-hv" onclick="xemChiTietHocVien('${hv.maHV}')">${hv.hoTen}</td>
+        <tr data-ma="${hv.maHV || ""}">
+          <td>${hv.maHV || ""}</td>
+          <td class="ten-hv" onclick="xemChiTietHocVien('${hv.maHV || ""}')">${hv.hoTen || ""}</td>
           ${ngayThu.map(() => `<td><input type="checkbox" checked></td>`).join("")}
         </tr>`).join("")}
     </table>`;
