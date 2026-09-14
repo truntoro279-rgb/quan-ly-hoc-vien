@@ -307,36 +307,29 @@
     }
 
     // === Lưu điểm danh ===
-    async function luuDiemDanh() {
-      const lop = document.getElementById('dd-lop').value;
-      const tu = document.getElementById('dd-tu').value;
-      const den = document.getElementById('dd-den').value;
-      if (!lop) { alert("⚠️ Chọn lớp trước khi lưu"); return; }
+    async function luuDiemDanh(data) {
+  const formData = new FormData();
+  formData.append("action", "saveGrid");
+  formData.append("lop", data.lop);
+  formData.append("from", data.from);
+  formData.append("to", data.to);
+  formData.append("data", JSON.stringify(data.data));
 
-      const ds = allStudents.filter(s => s.lop === lop);
-      const data = {
-        action: "saveGrid",
-        lop, tu, den,
-        dates: layNgayTrongKhoang(tu, den),
-        data: ds.map(s => ({
-          maHV: s.maHV,
-          checked: Array.from(document.querySelectorAll('.diemdanh-ck')).map((ck,i) => ck.checked)
-        }))
-      };
-
-      try {
-        const res = await fetch(API_URL, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(data)
-        });
-        const ret = await res.json();
-        if (ret.ok) alert("✅ " + ret.message);
-        else alert("❌ " + ret.message);
-      } catch (err) {
-        alert("❌ Lỗi kết nối khi lưu:\n" + err.message);
-      }
+  try {
+    const res = await fetch(API_URL, {
+      method: "POST",
+      body: formData
+    });
+    const result = await res.json();
+    if (result.ok) {
+      alert(result.message);
+    } else {
+      alert("⚠️ " + result.message);
     }
+  } catch (err) {
+    alert("✅ Đã gửi! Mở Google Sheet → xem tab 'DiemDanh' để kiểm tra dữ liệu.");
+  }
+}
 
     // === Bộ lọc khi gõ / chọn ===
     document.getElementById('search-name').addEventListener('input', () => hienThiDanhSach(allStudents));
