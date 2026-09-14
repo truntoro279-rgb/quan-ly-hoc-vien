@@ -32,6 +32,27 @@
     .page { display: none; }
     .page.active { display: block; }
     .loading { text-align: center; padding: 20px; color: #ffd700; }
+
+    /* === THÊM: HIỆU ỨNG TÊN HỌC VIÊN CÓ THỂ NHẤN === */
+    .ten-hv { color: #ffd700; cursor: pointer; font-weight: bold; text-decoration: underline; }
+    .ten-hv:hover { color: #fff; background: #165DFF; padding: 2px 6px; border-radius: 3px; }
+
+    /* === THÊM: CỬA SỔ THÔNG TIN CHI TIẾT === */
+    .modal-overlay {
+      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(0,0,0,0.7); display: none; justify-content: center; align-items: center; z-index: 999;
+    }
+    .modal-content {
+      background: #16213e; padding: 25px; border-radius: 10px; width: 90%; max-width: 500px;
+      border: 2px solid #165DFF; box-shadow: 0 0 20px rgba(22,93,255,0.3);
+    }
+    .modal-content h3 { color: #ffd700; margin-bottom: 15px; text-align: center; border-bottom: 1px solid #333; padding-bottom: 10px; }
+    .modal-row { display: flex; margin: 8px 0; border-bottom: 1px dashed #333; padding-bottom: 8px; }
+    .modal-label { width: 140px; color: #aaa; font-weight: bold; }
+    .modal-value { flex: 1; color: #fff; }
+    .modal-close { margin-top: 15px; width: 100%; padding: 10px; background: #165DFF; color: white; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; }
+    .modal-close:hover { background: #0e4bdd; }
+    .loading-info { text-align: center; color: #ffd700; padding: 15px; }
   </style>
 </head>
 <body>
@@ -110,6 +131,15 @@
     </div>
   </div>
 
+  <!-- === CỬA SỔ THÔNG TIN CHI TIẾT === -->
+  <div id="modal-chitiet" class="modal-overlay" onclick="dongModal(event)">
+    <div class="modal-content" onclick="event.stopPropagation()">
+      <h3>📋 THÔNG TIN CHI TIẾT HỌC VIÊN</h3>
+      <div id="modal-body" class="loading-info">Đang tải thông tin...</div>
+      <button class="modal-close" onclick="dongModalChiTiet()">Đóng</button>
+    </div>
+  </div>
+
 <script>
 // =====================================================
 // ⚠️  THAY URL BÊN DƯỚI BẰNG URL THẬT CỦA BẠN NHÉ!
@@ -168,7 +198,7 @@ function capNhatThongKe(s) {
   document.getElementById("stat-veque").textContent = s.veQue;
 }
 
-// === CẬP NHẬT DANH SÁCH HỌC VIÊN ===
+// === CẬP NHẬT DANH SÁCH HỌC VIÊN — CÓ THỂ NHẤN TÊN XEM CHI TIẾT ===
 function capNhatDanhSachHocVien() {
   const tbody = document.getElementById("danhsach-hocvien");
   const lopLoc = document.getElementById("filter-lop").value;
@@ -183,11 +213,17 @@ function capNhatDanhSachHocVien() {
   document.getElementById("thong-ke-danhsach").textContent = `Tổng ${loc.length} học viên`;
 
   tbody.innerHTML = `<table><tr><th>Mã HV</th><th>Họ tên</th><th>Lớp</th><th>GVCN</th><th>Trạng thái</th></tr>` +
-    loc.map(hv => `<tr><td>${hv.maHV}</td><td>${hv.hoTen}</td><td>${hv.lop}</td><td>${hv.gvcn}</td><td>${hv.trangThai}</td></tr>`).join("") +
+    loc.map(hv => `<tr>
+      <td>${hv.maHV}</td>
+      <td class="ten-hv" onclick="xemChiTietHocVien('${hv.maHV}')" title="Nhấn xem thông tin chi tiết">${hv.hoTen}</td>
+      <td>${hv.lop}</td>
+      <td>${hv.gvcn}</td>
+      <td>${hv.trangThai}</td>
+    </tr>`).join("") +
     `</table>`;
 }
 
-// === HV VỀ QUÊ ===
+// === HV VỀ QUÊ — CÓ THỂ NHẤN TÊN XEM CHI TIẾT ===
 function capNhatDanhSachVeQue() {
   const ds = danhSachHocVien.filter(hv => 
     hv.trangThai.includes("Quê") || hv.trangThai.includes("Về quê") || hv.trangThai.includes("Nghỉ phép")
@@ -195,8 +231,59 @@ function capNhatDanhSachVeQue() {
   document.getElementById("danhsach-veque").innerHTML = 
     `<p>Tổng ${ds.length} học viên về quê</p>` +
     `<table><tr><th>Mã HV</th><th>Họ tên</th><th>Lớp</th><th>Trạng thái</th></tr>` +
-    ds.map(hv => `<tr><td>${hv.maHV}</td><td>${hv.hoTen}</td><td>${hv.lop}</td><td>${hv.trangThai}</td></tr>`).join("") +
+    ds.map(hv => `<tr>
+      <td>${hv.maHV}</td>
+      <td class="ten-hv" onclick="xemChiTietHocVien('${hv.maHV}')" title="Nhấn xem thông tin chi tiết">${hv.hoTen}</td>
+      <td>${hv.lop}</td>
+      <td>${hv.trangThai}</td>
+    </tr>`).join("") +
     `</table>`;
+}
+
+// === XEM THÔNG TIN CHI TIẾT — GỌI GOOGLE SHEETS ===
+async function xemChiTietHocVien(maHV) {
+  const modal = document.getElementById("modal-chitiet");
+  const body = document.getElementById("modal-body");
+  
+  // Hiện cửa sổ + trạng thái đang tải
+  modal.style.display = "flex";
+  body.innerHTML = `<div class="loading-info">⏳ Đang tải thông tin mã <strong>${maHV}</strong> từ Google Sheets...</div>`;
+
+  try {
+    // Gọi API lấy thông tin đầy đủ từ Google Sheets
+    const url = `${API_URL}?action=getStudentDetail&maHV=${encodeURIComponent(maHV)}`;
+    const res = await fetch(url, { method: "GET" });
+    const kq = await res.json();
+
+    if (kq.ok && kq.detail) {
+      // Hiển thị toàn bộ các cột trong Sheet
+      let html = "";
+      for (const [tieuDe, giaTri] of Object.entries(kq.detail)) {
+        if (String(tieuDe).trim() && String(giaTri).trim()) {
+          html += `<div class="modal-row">
+            <div class="modal-label">${tieuDe}:</div>
+            <div class="modal-value">${giaTri}</div>
+          </div>`;
+        }
+      }
+      body.innerHTML = html;
+    } else {
+      body.innerHTML = `<div style="color:#ff6b6b;text-align:center">⚠️ ${kq.message || 'Không tìm thấy thông tin'}</div>`;
+    }
+  } catch (loi) {
+    body.innerHTML = `<div style="color:#ff6b6b;text-align:center">❌ Lỗi kết nối: ${loi.message}<br>Kiểm tra lại URL API</div>`;
+    console.error("Lỗi chi tiết:", loi);
+  }
+}
+
+// === ĐÓNG CỬA SỔ CHI TIẾT ===
+function dongModalChiTiet() {
+  document.getElementById("modal-chitiet").style.display = "none";
+}
+function dongModal(event) {
+  if (event.target.classList.contains("modal-overlay")) {
+    dongModalChiTiet();
+  }
 }
 
 // === CẬP NHẬT DANH SÁCH LỚP ===
@@ -251,7 +338,7 @@ function taoBangDiemDanh() {
       ${dsLop.map(hv => `
         <tr data-ma="${hv.maHV}">
           <td>${hv.maHV}</td>
-          <td>${hv.hoTen}</td>
+          <td class="ten-hv" onclick="xemChiTietHocVien('${hv.maHV}')" title="Nhấn xem thông tin chi tiết">${hv.hoTen}</td>
           ${ngayThu.map(() => `<td><input type="checkbox" checked></td>`).join("")}
         </tr>`).join("")}
     </table>`;
