@@ -420,6 +420,51 @@ th{
 @media(max-width:650px){.source-detail-grid{grid-template-columns:1fr}}
 .student-details{max-height:0;overflow:hidden;transition:max-height .25s ease,padding .25s ease}
 .student-card.expanded .student-details{max-height:5000px}
+/* =========================================================
+   TRANG TÀI LIỆU
+   ========================================================= */
+.doc-links{
+  display:grid;
+  grid-template-columns:repeat(auto-fill, minmax(280px, 1fr));
+  gap:16px;
+  margin-top:20px;
+}
+.doc-card{
+  background:#f7fafc;
+  border:1px solid #e3ebf3;
+  border-radius:10px;
+  padding:18px;
+  transition:transform .2s, box-shadow .2s;
+}
+.doc-card:hover{
+  transform:translateY(-3px);
+  box-shadow:0 6px 18px rgba(22,50,75,.08);
+}
+.doc-card h3{
+  color:#1769d1;
+  margin-bottom:8px;
+  font-size:16px;
+}
+.doc-card p{
+  font-size:13px;
+  color:#627d98;
+  margin-bottom:12px;
+}
+.doc-card a{
+  color:#1769d1;
+  font-weight:600;
+  text-decoration:none;
+  font-size:14px;
+}
+.doc-card a:hover{
+  text-decoration:underline;
+}
+@media(prefers-color-scheme:dark){
+  .doc-card{
+    background:#121824;
+    border-color:#2a374a;
+  }
+}
 </style>
 </head>
 <body>
@@ -468,6 +513,11 @@ th{
         class="btn light"
         onclick="show('students')">
         Danh sách học viên
+      </button>
+      <button
+        class="btn light"
+        onclick="show('documents')">
+        Tài liệu
       </button>
     </div>
   </div>
@@ -551,6 +601,35 @@ th{
     </div>
   </div>
 </section>
+<!-- TRANG TÀI LIỆU -->
+<section id="documents" class="page">
+  <div class="panel">
+    <h2>Tài liệu</h2>
+    <p style="margin-bottom:10px; color:#627d98">Danh sách tài liệu, biểu mẫu và quy trình được sử dụng tại trung tâm</p>
+    <div class="doc-links">
+      <div class="doc-card">
+        <h3>Biểu mẫu nhập học</h3>
+        <p>Biểu mẫu đăng ký thông tin học viên mới</p>
+        <a href="#" target="_blank">Xem tài liệu →</a>
+      </div>
+      <div class="doc-card">
+        <h3>Quy chế đào tạo</h3>
+        <p>Quy định, nội quy và quy trình học tập</p>
+        <a href="#" target="_blank">Xem tài liệu →</a>
+      </div>
+      <div class="doc-card">
+        <h3>Biểu mẫu điểm danh</h3>
+        <p>File Excel điểm danh hàng tháng</p>
+        <a href="#" target="_blank">Tải về →</a>
+      </div>
+      <div class="doc-card">
+        <h3>Thời khóa biểu</h3>
+        <p>Lịch học và lịch thi theo từng lớp</p>
+        <a href="#" target="_blank">Xem lịch →</a>
+      </div>
+    </div>
+  </div>
+</section>
 </main>
 <script>
 /* =========================================================
@@ -564,7 +643,8 @@ let students = [];
 const pages = [
   ['home','Trang chủ'],
   ['students','Học viên'],
-  ['attendance','Điểm danh']
+  ['attendance','Điểm danh'],
+  ['documents','Tài liệu']
 ];
 /* =========================================================
    KHỞI ĐỘNG
@@ -856,8 +936,6 @@ async function toggleStudent(element){
   card.classList.add('expanded');
   const details = card.querySelector('.student-info');
   const mshv = card.getAttribute('data-mshv') || '';
-  // Ưu tiên dữ liệu gốc đã được getAll() trả về.
-  // Như vậy không phụ thuộc vào action getStudentDetail của bản Web App cũ.
   const cached = studentSourceCache[String(mshv)];
   const cachedDetail = cached && cached.detail ? cached.detail : null;
   if(cachedDetail && Object.keys(cachedDetail).length){
@@ -887,11 +965,7 @@ async function toggleStudent(element){
   }
 }
 function renderAllSourceDetail(detail){
-  // Giữ nguyên bố cục thẻ học viên, chỉ hiển thị các thông tin
-  // CÒN LẠI từ Google Sheet, không lặp lại MSHV / Họ tên / Lớp / GVCN / Trạng thái
-  // đã có sẵn ở phần đầu thẻ.
   const hiddenKeys = new Set([
-    // Các thông tin đã hiển thị sẵn ở phần đầu thẻ
     'Mã học viên', 'Mã Số HV', 'MÃ SỐ HV', 'MSHV', 'Mã HV', 'Mã học viên',
     'studentCode', '実習生番号', '実習生番号（MSHV）',
     'Họ tên', 'Họ và tên', 'Tên học viên', 'Tên Romaji',
@@ -924,20 +998,11 @@ function normalizeDetailKey(value){
     .replace(/[^a-z0-9]+/g, '');
 }
 function studentInfoItem(label, value){
-  const text =
-    String(value || '').trim();
+  const text = String(value || '').trim();
   return `
     <div class="student-info-item">
-      <div class="student-info-label">
-        ${escapeHtml(label)}
-      </div>
-      <div class="student-info-value">
-        ${
-          text
-            ? escapeHtml(text)
-            : '—'
-        }
-      </div>
+      <div class="student-info-label">${escapeHtml(label)}</div>
+      <div class="student-info-value">${text ? escapeHtml(text) : '—'}</div>
     </div>
   `;
 }
@@ -945,195 +1010,73 @@ function studentInfoItem(label, value){
    DANH SÁCH ĐIỂM DANH
    ========================================================= */
 function renderAttendanceList(){
-  const classValue =
-    document.getElementById(
-      'attClass'
-    ).value;
-  const body =
-    document.getElementById(
-      'attBody'
-    );
-  if(!body){
-    return;
-  }
+  const classValue = document.getElementById('attClass').value;
+  const body = document.getElementById('attBody');
+  if(!body) return;
   if(!classValue){
     body.innerHTML = `
-      <tr>
-        <td
-          colspan="3"
-          style="
-            text-align:center;
-            padding:20px
-          ">
-          Chọn lớp để điểm danh
-        </td>
-      </tr>
+      <tr><td colspan="3" style="text-align:center;padding:20px">Chọn lớp để điểm danh</td></tr>
     `;
     return;
   }
-  const list =
-    students.filter(
-      student =>
-        student.lop === classValue
-    );
+  const list = students.filter(student => student.lop === classValue);
   if(list.length === 0){
     body.innerHTML = `
-      <tr>
-        <td
-          colspan="3"
-          style="
-            text-align:center;
-            padding:20px
-          ">
-          Không có học viên
-          trong lớp này
-        </td>
-      </tr>
+      <tr><td colspan="3" style="text-align:center;padding:20px">Không có học viên trong lớp này</td></tr>
     `;
     return;
   }
-  body.innerHTML =
-    list.map(student => `
-      <tr>
-        <td>
-          ${escapeHtml(
-            student.maHV
-          )}
-        </td>
-        <td>
-          ${escapeHtml(
-            student.hoTen
-          )}
-        </td>
-        <td>
-          <select
-            data-id="${escapeHtml(
-              student.maHV
-            )}"
-            class="att-status">
-            <option value="Có mặt">
-              Có mặt
-            </option>
-            <option value="Vắng">
-              Vắng
-            </option>
-          </select>
-        </td>
-      </tr>
-    `)
-    .join('');
+  body.innerHTML = list.map(student => `
+    <tr>
+      <td>${escapeHtml(student.maHV)}</td>
+      <td>${escapeHtml(student.hoTen)}</td>
+      <td>
+        <select data-id="${escapeHtml(student.maHV)}" class="att-status">
+          <option value="Có mặt">Có mặt</option>
+          <option value="Vắng">Vắng</option>
+        </select>
+      </td>
+    </tr>
+  `).join('');
 }
 /* =========================================================
    LƯU ĐIỂM DANH
    ========================================================= */
 async function saveAttendance(){
-  const date =
-    document.getElementById(
-      'attDate'
-    ).value;
-  const classValue =
-    document.getElementById(
-      'attClass'
-    ).value;
-  if(!date){
-    alert(
-      'Vui lòng chọn ngày'
-    );
-    return;
-  }
-  if(!classValue){
-    alert(
-      'Vui lòng chọn lớp'
-    );
-    return;
-  }
+  const date = document.getElementById('attDate').value;
+  const classValue = document.getElementById('attClass').value;
+  if(!date){ alert('Vui lòng chọn ngày'); return; }
+  if(!classValue){ alert('Vui lòng chọn lớp'); return; }
   const records = [];
-  document
-    .querySelectorAll(
-      '.att-status'
-    )
-    .forEach(select => {
-      records.push({
-        id:
-          select.dataset.id,
-        status:
-          select.value
-      });
-    });
+  document.querySelectorAll('.att-status').forEach(select => {
+    records.push({ id: select.dataset.id, status: select.value });
+  });
   try{
-    const response =
-      await fetch(
-        API_URL,
-        {
-          method:'POST',
-          headers:{
-            'Content-Type':
-              'text/plain;charset=utf-8'
-          },
-          body:
-            JSON.stringify({
-              action:
-                'attendance',
-              date:
-                date,
-              class:
-                classValue,
-              records:
-                records
-            })
-        }
-      );
-    const result =
-      await response.json();
-    if(result.ok === false){
-      throw new Error(
-        result.message ||
-        'Lỗi lưu điểm danh'
-      );
-    }
-    alert(
-      'Lưu thành công!'
-    );
+    const response = await fetch(API_URL, {
+      method:'POST',
+      headers:{ 'Content-Type': 'text/plain;charset=utf-8' },
+      body: JSON.stringify({ action: 'attendance', date: date, class: classValue, records: records })
+    });
+    const result = await response.json();
+    if(result.ok === false) throw new Error(result.message || 'Lỗi lưu điểm danh');
+    alert('Lưu thành công!');
     await loadData();
     show('home');
   }catch(error){
-    console.error(
-      'Lỗi lưu điểm danh:',
-      error
-    );
-    alert(
-      'Lỗi lưu điểm danh: ' +
-      error.message
-    );
+    console.error('Lỗi lưu điểm danh:', error);
+    alert('Lỗi lưu điểm danh: ' + error.message);
   }
 }
 /* =========================================================
    BẢO VỆ HTML
    ========================================================= */
 function escapeHtml(value){
-  return String(
-    value ?? ''
-  )
-  .replace(
-    /&/g,
-    '&amp;'
-  )
-  .replace(
-    /</g,
-    '&lt;'
-  )
-  .replace(
-    />/g,
-    '&gt;'
-  )
-  .replace(
-    /"/g,
-    '&quot;'
-  )
-  .replace(
-    /'/g,
-    '&#039;'
-  );
+  return String(value ?? '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;');
 }
 </script>
 </body>
