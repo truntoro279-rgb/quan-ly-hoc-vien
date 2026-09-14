@@ -136,20 +136,31 @@ select:focus{outline:none;border-color:#3b82f6}
   color:#fca5a5
 }
 .retry-btn{margin-top:10px}
+
+/* ====== THẺ HỌC VIÊN ====== */
 .student-cards{display:grid;gap:12px}
 .student-card{
   background:#0f172a;
   border:1px solid #1e293b;
   border-radius:8px;
+  overflow:hidden;
+}
+.student-card-header{
   padding:16px;
   display:flex;
   justify-content:space-between;
   align-items:center;
   flex-wrap:wrap;
-  gap:10px
+  gap:10px;
+  cursor:pointer
 }
+.student-card-header:hover{background:#1e293b}
 .student-info .code{font-weight:700;color:#93c5fd;font-size:15px}
 .student-info .name{font-size:16px;margin:4px 0}
+.student-info .name span{
+  border-bottom:1px dashed #60a5fa;
+  color:#93c5fd
+}
 .student-info .meta{font-size:13px;color:#94a3b8}
 .student-status{
   padding:6px 12px;
@@ -161,7 +172,54 @@ select:focus{outline:none;border-color:#3b82f6}
 }
 .status-vang{background:#991b1b;color:#fecaca}
 .status-veque{background:#854d0e;color:#fef08a}
+
+/* ====== KHỐI THÔNG TIN CHI TIẾT ====== */
+.student-detail{
+  max-height:0;
+  overflow:hidden;
+  transition:max-height .35s ease-out;
+  border-top:1px solid #1e293b
+}
+.student-card.expanded .student-detail{
+  max-height:3000px
+}
+.detail-title{
+  padding:10px 16px;
+  background:#1e293b;
+  color:#cbd5e1;
+  font-size:12px;
+  font-weight:600
+}
+.detail-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(280px,1fr));
+  gap:1px;
+  background:#1e293b
+}
+.detail-item{
+  background:#0f172a;
+  padding:12px 16px
+}
+.detail-label{
+  font-size:12px;
+  color:#94a3b8;
+  margin-bottom:4px
+}
+.detail-value{
+  font-size:14px;
+  color:#e2e8f0;
+  font-weight:500;
+  word-break:break-word
+}
+.detail-loading{
+  padding:20px;
+  text-align:center;
+  color:#94a3b8;
+  font-size:14px
+}
 .result-count{font-size:13px;color:#94a3b8;margin-bottom:12px}
+
+/* ====== BẢNG ĐIỂM DANH ====== */
 .attendance-wrapper{overflow-x:auto;border:1px solid #2a374a;border-radius:8px}
 .attendance-table{
   width:100%;
@@ -209,6 +267,8 @@ select:focus{outline:none;border-color:#3b82f6}
 }
 .date-col .day{font-weight:600}
 .date-col .dow{font-size:10px;opacity:.7}
+
+/* ====== THỐNG KÊ & TÀI LIỆU ====== */
 .cards{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:20px}
 .stat-card{
   background:#0f172a;
@@ -228,6 +288,7 @@ select:focus{outline:none;border-color:#3b82f6}
 .doc-card h4{margin:0 0 8px;color:#93c5fd}
 .doc-card p{font-size:13px;color:#94a3b8;margin:0 0 10px}
 .doc-card a{color:#3b82f6;text-decoration:none;font-size:14px}
+
 @media(max-width:900px){
   .cards{grid-template-columns:repeat(2,1fr)}
   .nav{flex-direction:column;gap:8px;padding:10px}
@@ -277,6 +338,7 @@ select:focus{outline:none;border-color:#3b82f6}
     <div class="toolbar-row">
       <button class="btn" onclick="goPage('attendance')">📋 Điểm danh</button>
       <button class="btn light" onclick="goPage('students')">👥 Danh sách học viên</button>
+      <button class="btn light" onclick="goPage('away')">🏠 Học viên về quê</button>
       <button class="btn light" onclick="goPage('docs')">📁 Tài liệu</button>
       <button class="btn light" onclick="reloadData()">🔄 Tải lại dữ liệu</button>
     </div>
@@ -301,6 +363,21 @@ select:focus{outline:none;border-color:#3b82f6}
     </div>
     <div class="result-count" id="result-info"></div>
     <div id="students-list"></div>
+  </div>
+</section>
+
+<!-- HỌC VIÊN VỀ QUÊ -->
+<section id="page-away" class="page">
+  <div class="panel">
+    <h2>🏠 Danh sách học viên đang về quê</h2>
+    <div class="toolbar-row">
+      <input type="text" id="away-search-q" placeholder="Tìm tên hoặc mã..." style="flex:1;min-width:200px" oninput="filterAwayStudents()">
+      <select id="away-filter-class" onchange="filterAwayStudents()">
+        <option value="">Tất cả lớp</option>
+      </select>
+    </div>
+    <div class="result-count" id="away-result-info"></div>
+    <div id="away-students-list"></div>
   </div>
 </section>
 
@@ -376,18 +453,20 @@ select:focus{outline:none;border-color:#3b82f6}
 <script>
 // ========== CẤU HÌNH ==========
 const API_URL = 'https://script.google.com/macros/s/AKfycbwoN5iK1oyxj9NNCpihSEpKFr4l1KJTbk4VBQMuGmze3twKG7lC9G4ZynW2Hps242tFLg/exec';
+const SHEET_URL = 'https://docs.google.com/spreadsheets/d/1JI8U96SwwQXn5ZLqWNlLtGaxkRzArpljjdW9QdIOr7A/edit?gid=62168460#gid=62168460';
 const DOW = ['CN','Thứ 2','Thứ 3','Thứ 4','Thứ 5','Thứ 6','Thứ 7'];
 
 // ========== DỮ LIỆU ==========
 let students = [];
 let cacheData = null;
 let cacheTime = 0;
-const CACHE_DURATION = 10 * 60 * 1000; // 10 phút
+const CACHE_DURATION = 10 * 60 * 1000;
+let detailCache = {}; // Lưu chi tiết đã lấy
 
 // ========== KHỞI ĐỘNG ==========
 document.addEventListener('DOMContentLoaded', () => {
   renderMenu();
-  loadData(); // Tải dữ liệu NGAY, không chờ
+  loadData();
 });
 
 // ========== MENU ==========
@@ -395,6 +474,7 @@ function renderMenu(){
   const pages = [
     {id:'home',name:'Trang chủ'},
     {id:'students',name:'Học viên'},
+    {id:'away',name:'HV về quê'},
     {id:'attendance',name:'Điểm danh'},
     {id:'docs',name:'Tài liệu'}
   ];
@@ -415,59 +495,47 @@ function goPage(pageId){
   document.getElementById(`page-${pageId}`).classList.add('active');
   updateMenuActive(pageId);
   if(pageId==='students' && students.length>0) renderStudentsList();
+  if(pageId==='away' && students.length>0) renderAwayStudentsList();
   if(pageId==='attendance' && students.length>0) buildAttendanceTable();
 }
 
-// ========== TẢI DỮ LIỆU - TỐI ƯU CỰC MẠNH ==========
+// ========== TẢI DỮ LIỆU CHÍNH ==========
 async function loadData(){
-  // Bước 1: Dùng cache nếu còn hạn
   if(cacheData && (Date.now() - cacheTime) < CACHE_DURATION){
-    console.log('📂 Dùng cache');
     students = cacheData;
     onDataLoaded();
     return;
   }
 
-  // Bước 2: Hiển thị trạng thái đang tải
   showLoadingState();
 
-  // Bước 3: Gọi API với thời hạn & thử lại 1 lần
   let attempt = 0;
   const maxAttempts = 2;
-
   while(attempt < maxAttempts){
     try{
-      console.log(`🔄 Gọi API - Lần ${attempt+1}`);
       const controller = new AbortController();
-      const timeout = setTimeout(()=>controller.abort(), 12000); // 12 giây
+      const timeout = setTimeout(()=>controller.abort(), 12000);
 
       const res = await fetch(`${API_URL}?action=getAll&t=${Date.now()}`, {
         signal: controller.signal,
-        cache: 'no-store' // Bỏ cache nếu muốn dữ liệu mới nhất
+        cache: 'no-store'
       });
       clearTimeout(timeout);
 
       if(!res.ok) throw new Error(`Lỗi HTTP ${res.status}`);
-
       const data = await res.json();
       students = Array.isArray(data.students) ? data.students : [];
-
-      // Lưu cache
       cacheData = students;
       cacheTime = Date.now();
-
-      console.log(`✅ Tải xong: ${students.length} học viên`);
       onDataLoaded();
       return;
 
     }catch(err){
       attempt++;
-      console.warn(`❌ Lần ${attempt} lỗi:`, err.message);
       if(attempt >= maxAttempts){
         showErrorState(err.message);
         return;
       }
-      // Chờ 2s rồi thử lại
       await new Promise(r=>setTimeout(r,2000));
     }
   }
@@ -476,6 +544,7 @@ async function loadData(){
 function reloadData(){
   cacheData = null;
   cacheTime = 0;
+  detailCache = {};
   loadData();
 }
 
@@ -487,8 +556,7 @@ function showLoadingState(){
   document.getElementById('students-list').innerHTML = `
     <div class="loading-box">
       <div class="spinner"></div>
-      <div>Đang tải dữ liệu từ Google...</div>
-      <div style="font-size:12px;margin-top:6px">Lần đầu có thể mất vài giây</div>
+      <div>Đang tải dữ liệu từ Google Sheets...</div>
     </div>`;
 }
 
@@ -502,7 +570,6 @@ function showErrorState(msg){
 }
 
 function onDataLoaded(){
-  // Cập nhật số liệu
   const total = students.length;
   const present = students.filter(s=>s.trangThai==='Có mặt').length;
   const absent = students.filter(s=>s.trangThai==='Vắng').length;
@@ -513,17 +580,123 @@ function onDataLoaded(){
   document.getElementById('stat-absent').textContent = absent;
   document.getElementById('stat-away').textContent = away;
 
-  // Tạo danh sách lớp cho bộ lọc
   const classes = [...new Set(students.map(s=>String(s.lop||'').trim()).filter(Boolean))].sort();
   const classOpts = v => `<option value="">${v}</option>` + classes.map(x=>`<option value="${esc(x)}">${esc(x)}</option>`).join('');
   document.getElementById('filter-class').innerHTML = classOpts('Tất cả lớp');
+  document.getElementById('away-filter-class').innerHTML = classOpts('Tất cả lớp');
   document.getElementById('att-class').innerHTML = classOpts('Chọn lớp');
 
-  // Hiển thị danh sách học viên
   renderStudentsList();
 }
 
-// ========== DANH SÁCH HỌC VIÊN ==========
+// ========== TẠO THẺ HỌC VIÊN + NÚT NHẤN XEM CHI TIẾT ==========
+function renderStudentCard(hv){
+  let stClass = '';
+  if(hv.trangThai==='Vắng') stClass='status-vang';
+  if(hv.trangThai==='Về quê') stClass='status-veque';
+
+  const mshv = String(hv.maHV||'');
+  const name = esc(hv.hoTen||'');
+
+  return `
+    <div class="student-card" data-mshv="${mshv}" id="card-${mshv}">
+      <div class="student-card-header" onclick="toggleDetail('${mshv}')">
+        <div class="student-info">
+          <div class="code">${mshv}</div>
+          <div class="name">🔽 <span>${name}</span></div>
+          <div class="meta">Lớp: ${esc(hv.lop||'—')} | GVCN: ${esc(hv.gvcn||'—')}</div>
+        </div>
+        <span class="student-status ${stClass}">${esc(hv.trangThai||'—')}</span>
+      </div>
+      <div class="student-detail" id="detail-${mshv}">
+        <div class="detail-title">📋 TOÀN BỘ DỮ LIỆU TỪ GOOGLE SHEETS</div>
+        <div class="detail-grid" id="detail-content-${mshv}">
+          <div class="detail-loading">Đang lấy dữ liệu chi tiết...</div>
+        </div>
+      </div>
+    </div>`;
+}
+
+// ========== NHẤN TÊN → MỞ / ĐÓNG + LẤY DỮ LIỆU CHI TIẾT ==========
+async function toggleDetail(mshv){
+  const card = document.getElementById(`card-${mshv}`);
+  const detailContent = document.getElementById(`detail-content-${mshv}`);
+  const isExpanding = !card.classList.contains('expanded');
+
+  // Đóng nếu đang mở
+  if(!isExpanding){
+    card.classList.remove('expanded');
+    return;
+  }
+
+  // Mở + Lấy dữ liệu nếu chưa có
+  card.classList.add('expanded');
+
+  if(detailCache[mshv]){
+    renderDetailData(mshv, detailCache[mshv]);
+    return;
+  }
+
+  // Gọi API lấy chi tiết từ Google Sheets
+  try{
+    const res = await fetch(`${API_URL}?action=getStudentDetail&mshv=${encodeURIComponent(mshv)}&t=${Date.now()}`, {
+      cache: 'no-store',
+      signal: AbortSignal.timeout(15000)
+    });
+
+    if(!res.ok) throw new Error(`Lỗi ${res.status}`);
+    const result = await res.json();
+
+    if(!result.ok || !result.student) throw new Error(result.message || 'Không tìm thấy dữ liệu');
+
+    detailCache[mshv] = result.student;
+    renderDetailData(mshv, result.student);
+
+  }catch(err){
+    detailContent.innerHTML = `
+      <div style="padding:20px;text-align:center;color:#fca5a5">
+        ⚠️ Không lấy được dữ liệu chi tiết<br>
+        <small>${esc(err.message)}</small><br>
+        <a href="${SHEET_URL}" target="_blank" style="color:#93c5fd;font-size:13px">👉 Mở Google Sheets trực tiếp</a>
+      </div>`;
+  }
+}
+
+// ========== HIỂN THỊ DỮ LIỆU CHI TIẾT ==========
+function renderDetailData(mshv, data){
+  const detailContent = document.getElementById(`detail-content-${mshv}`);
+  const detail = data.detail || data;
+
+  // Lọc bỏ các trường đã hiển thị ở trên cùng
+  const hideKeys = ['Mã học viên','Mã HV','Mã số HV','Họ tên','Họ và tên','Tên','Lớp','GVCN','Giáo viên chủ nhiệm','Trạng thái','status','lop','maHV','hoTen','trangThai','gvcn'];
+  const isHidden = k => hideKeys.some(h => k.trim().toLowerCase() === h.toLowerCase());
+
+  let html = '';
+  for(const [key, value] of Object.entries(detail)){
+    const label = String(key||'').trim();
+    const val = String(value??'').trim();
+    if(!label) continue;
+    if(isHidden(label)) continue;
+    html += `
+      <div class="detail-item">
+        <div class="detail-label">${esc(label)}</div>
+        <div class="detail-value">${val||'—'}</div>
+      </div>`;
+  }
+
+  if(!html){
+    html = `<div style="padding:20px;text-align:center;color:#94a3b8">Đã hiển thị hết thông tin chính ở trên<br><a href="${SHEET_URL}" target="_blank" style="color:#60a5fa">👉 Xem toàn bộ trên Google Sheets</a></div>`;
+  }else{
+    html += `<div class="detail-item" style="background:#1e293b">
+      <div class="detail-label">Nguồn dữ liệu</div>
+      <div class="detail-value"><a href="${SHEET_URL}" target="_blank" style="color:#93c5fd">📄 Mở Google Sheets gốc</a></div>
+    </div>`;
+  }
+
+  detailContent.innerHTML = html;
+}
+
+// ========== DANH SÁCH HỌC VIÊN CHUNG ==========
 function renderStudentsList(list){
   const arr = list || students;
   document.getElementById('result-info').textContent =
@@ -534,20 +707,7 @@ function renderStudentsList(list){
     return;
   }
 
-  document.getElementById('students-list').innerHTML = arr.map(hv=>{
-    let stClass = '';
-    if(hv.trangThai==='Vắng') stClass='status-vang';
-    if(hv.trangThai==='Về quê') stClass='status-veque';
-    return `
-      <div class="student-card">
-        <div class="student-info">
-          <div class="code">${esc(hv.maHV)}</div>
-          <div class="name">${esc(hv.hoTen)}</div>
-          <div class="meta">Lớp: ${esc(hv.lop||'—')} | GVCN: ${esc(hv.gvcn||'—')}</div>
-        </div>
-        <span class="student-status ${stClass}">${esc(hv.trangThai||'—')}</span>
-      </div>`;
-  }).join('');
+  document.getElementById('students-list').innerHTML = arr.map(hv=>renderStudentCard(hv)).join('');
 }
 
 function filterStudents(){
@@ -562,6 +722,36 @@ function filterStudents(){
            (!stt || hv.trangThai===stt);
   });
   renderStudentsList(filtered);
+}
+
+// ========== TRANG HỌC VIÊN VỀ QUÊ ==========
+function renderAwayStudentsList(list){
+  const awayStudents = list || students.filter(s=>s.trangThai==='Về quê');
+  document.getElementById('away-result-info').textContent = `Tổng ${awayStudents.length} học viên đang về quê`;
+
+  if(!awayStudents.length){
+    document.getElementById('away-students-list').innerHTML = `<div class="loading-box">✅ Không có học viên nào đang về quê</div>`;
+    return;
+  }
+
+  document.getElementById('away-students-list').innerHTML = awayStudents.map(hv=>renderStudentCard(hv)).join('');
+}
+
+function filterAwayStudents(){
+  const q = document.getElementById('away-search-q').value.trim().toLowerCase();
+  const cls = document.getElementById('away-filter-class').value;
+
+  let filtered = students.filter(s=>s.trangThai==='Về quê');
+  if(q){
+    filtered = filtered.filter(hv=>{
+      const txt = String(`${hv.maHV||''} ${hv.hoTen||''}`).toLowerCase();
+      return txt.includes(q);
+    });
+  }
+  if(cls){
+    filtered = filtered.filter(hv=>hv.lop===cls);
+  }
+  renderAwayStudentsList(filtered);
 }
 
 // ========== BẢNG ĐIỂM DANH ==========
@@ -579,7 +769,6 @@ function buildAttendanceTable(){
     return;
   }
 
-  // Tạo danh sách ngày
   const start = new Date(from);
   const end = new Date(to);
   dateColumns = [];
@@ -600,7 +789,6 @@ function buildAttendanceTable(){
     return;
   }
 
-  // Tiêu đề
   document.getElementById('att-head').innerHTML = `<tr>
     <th class="sticky-col">Mã HV</th>
     <th class="sticky-col">Họ tên</th>
@@ -608,7 +796,6 @@ function buildAttendanceTable(){
     <th class="rate-col">Tỷ lệ tham gia học</th>
   </tr>`;
 
-  // Dữ liệu
   attData = {};
   const validDays = dateColumns.filter(d=>d.dow!=='CN');
   const rows = list.map(hv=>{
@@ -631,7 +818,6 @@ function buildAttendanceTable(){
     </tr>`;
   });
 
-  // Dòng tổng
   const totalChecked = Object.values(attData).reduce((sum,row)=>sum+validDays.filter(d=>row[d.iso]).length,0);
   const totalDays = validDays.length * list.length;
   rows.push(`<tr class="total-row">
