@@ -33,26 +33,45 @@
     .page.active { display: block; }
     .loading { text-align: center; padding: 20px; color: #ffd700; }
 
-    /* === THÊM: HIỆU ỨNG TÊN HỌC VIÊN CÓ THỂ NHẤN === */
+    /* === Tên học viên có thể nhấn === */
     .ten-hv { color: #ffd700; cursor: pointer; font-weight: bold; text-decoration: underline; }
     .ten-hv:hover { color: #fff; background: #165DFF; padding: 2px 6px; border-radius: 3px; }
 
-    /* === THÊM: CỬA SỔ THÔNG TIN CHI TIẾT === */
+    /* === CỬA SỔ THÔNG TIN CHI TIẾT — ĐƯỢC SỬA THÀNH DẠNG NGANG === */
     .modal-overlay {
       position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-      background: rgba(0,0,0,0.7); display: none; justify-content: center; align-items: center; z-index: 999;
+      background: rgba(0,0,0,0.75); display: none; justify-content: center; align-items: center; z-index: 999;
     }
     .modal-content {
-      background: #16213e; padding: 25px; border-radius: 10px; width: 90%; max-width: 500px;
-      border: 2px solid #165DFF; box-shadow: 0 0 20px rgba(22,93,255,0.3);
+      background: #0f2862; /* Xanh đậm giống trong ảnh */
+      padding: 25px 30px; border-radius: 10px; 
+      width: 92%; max-width: 850px; /* ✅ RỘNG hơn — dạng ngang */
+      max-height: 85vh; overflow-y: auto; /* Cuộn dọc nếu nội dung dài */
+      border: 2px solid #4a80f0; box-shadow: 0 0 30px rgba(74,128,240,0.35);
     }
-    .modal-content h3 { color: #ffd700; margin-bottom: 15px; text-align: center; border-bottom: 1px solid #333; padding-bottom: 10px; }
-    .modal-row { display: flex; margin: 8px 0; border-bottom: 1px dashed #333; padding-bottom: 8px; }
-    .modal-label { width: 140px; color: #aaa; font-weight: bold; }
-    .modal-value { flex: 1; color: #fff; }
-    .modal-close { margin-top: 15px; width: 100%; padding: 10px; background: #165DFF; color: white; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; }
+    .modal-content h3 { 
+      color: #ffd700; margin-bottom: 20px; text-align: center; 
+      border-bottom: 1px solid #336; padding-bottom: 12px; font-size: 18px;
+    }
+    /* === Bố cục 2 cột cho thông tin === */
+    .modal-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr; /* ✅ 2 cột ngang */
+      gap: 8px 25px;
+    }
+    .modal-row { display: flex; margin: 4px 0; }
+    .modal-label { 
+      width: 140px; color: #aad; font-weight: bold; 
+      flex-shrink: 0; text-align: right; padding-right: 12px;
+    }
+    .modal-value { flex: 1; color: #fff; word-break: break-word; }
+    .modal-close { 
+      margin-top: 20px; width: 100%; padding: 12px; 
+      background: #165DFF; color: white; border: none; 
+      border-radius: 5px; cursor: pointer; font-weight: bold; font-size: 15px;
+    }
     .modal-close:hover { background: #0e4bdd; }
-    .loading-info { text-align: center; color: #ffd700; padding: 15px; }
+    .loading-info { text-align: center; color: #ffd700; padding: 30px; font-size: 16px; }
   </style>
 </head>
 <body>
@@ -198,7 +217,7 @@ function capNhatThongKe(s) {
   document.getElementById("stat-veque").textContent = s.veQue;
 }
 
-// === CẬP NHẬT DANH SÁCH HỌC VIÊN — CÓ THỂ NHẤN TÊN XEM CHI TIẾT ===
+// === CẬP NHẬT DANH SÁCH HỌC VIÊN ===
 function capNhatDanhSachHocVien() {
   const tbody = document.getElementById("danhsach-hocvien");
   const lopLoc = document.getElementById("filter-lop").value;
@@ -223,7 +242,7 @@ function capNhatDanhSachHocVien() {
     `</table>`;
 }
 
-// === HV VỀ QUÊ — CÓ THỂ NHẤN TÊN XEM CHI TIẾT ===
+// === HV VỀ QUÊ ===
 function capNhatDanhSachVeQue() {
   const ds = danhSachHocVien.filter(hv => 
     hv.trangThai.includes("Quê") || hv.trangThai.includes("Về quê") || hv.trangThai.includes("Nghỉ phép")
@@ -240,43 +259,44 @@ function capNhatDanhSachVeQue() {
     `</table>`;
 }
 
-// === XEM THÔNG TIN CHI TIẾT — GỌI GOOGLE SHEETS ===
+// === XEM THÔNG TIN CHI TIẾT — ĐỊNH DẠNG 2 CỘT NGANG ===
 async function xemChiTietHocVien(maHV) {
   const modal = document.getElementById("modal-chitiet");
   const body = document.getElementById("modal-body");
   
-  // Hiện cửa sổ + trạng thái đang tải
   modal.style.display = "flex";
   body.innerHTML = `<div class="loading-info">⏳ Đang tải thông tin mã <strong>${maHV}</strong> từ Google Sheets...</div>`;
 
   try {
-    // Gọi API lấy thông tin đầy đủ từ Google Sheets
     const url = `${API_URL}?action=getStudentDetail&maHV=${encodeURIComponent(maHV)}`;
     const res = await fetch(url, { method: "GET" });
     const kq = await res.json();
 
     if (kq.ok && kq.detail) {
-      // Hiển thị toàn bộ các cột trong Sheet
-      let html = "";
+      // === Hiển thị dạng LƯỚI 2 CỘT NGANG ===
+      let html = `<div class="modal-grid">`;
       for (const [tieuDe, giaTri] of Object.entries(kq.detail)) {
-        if (String(tieuDe).trim() && String(giaTri).trim()) {
+        const sTieuDe = String(tieuDe || "").trim();
+        const sGiaTri = String(giaTri || "").trim();
+        if (sTieuDe && sGiaTri) {
           html += `<div class="modal-row">
-            <div class="modal-label">${tieuDe}:</div>
-            <div class="modal-value">${giaTri}</div>
+            <div class="modal-label">${sTieuDe}:</div>
+            <div class="modal-value">${sGiaTri}</div>
           </div>`;
         }
       }
+      html += `</div>`;
       body.innerHTML = html;
     } else {
-      body.innerHTML = `<div style="color:#ff6b6b;text-align:center">⚠️ ${kq.message || 'Không tìm thấy thông tin'}</div>`;
+      body.innerHTML = `<div style="color:#ff6b6b;text-align:center;padding:20px">⚠️ ${kq.message || 'Không tìm thấy thông tin'}</div>`;
     }
   } catch (loi) {
-    body.innerHTML = `<div style="color:#ff6b6b;text-align:center">❌ Lỗi kết nối: ${loi.message}<br>Kiểm tra lại URL API</div>`;
+    body.innerHTML = `<div style="color:#ff6b6b;text-align:center;padding:20px">❌ Lỗi kết nối: ${loi.message}<br>Kiểm tra lại URL API</div>`;
     console.error("Lỗi chi tiết:", loi);
   }
 }
 
-// === ĐÓNG CỬA SỔ CHI TIẾT ===
+// === ĐÓNG CỬA SỔ ===
 function dongModalChiTiet() {
   document.getElementById("modal-chitiet").style.display = "none";
 }
@@ -286,7 +306,7 @@ function dongModal(event) {
   }
 }
 
-// === CẬP NHẬT DANH SÁCH LỚP ===
+// === CẬP NHẬT LỚP ===
 function capNhatChonLop() {
   const dslop = [...new Set(danhSachHocVien.map(hv => hv.lop))].sort();
   const html = dslop.map(l => `<option value="${l}">${l}</option>`).join("");
@@ -300,7 +320,7 @@ document.getElementById("filter-lop").addEventListener("change", capNhatDanhSach
 document.getElementById("filter-trangthai").addEventListener("change", capNhatDanhSachHocVien);
 document.getElementById("btn-tai-lai").addEventListener("click", taiDuLieu);
 
-// === CHỌN NGÀY MẶC ĐỊNH ===
+// === CHỌN NGÀY ===
 function ganSuKienDiemDanh() {
   const hienTai = new Date();
   const dauThang = new Date(hienTai.getFullYear(), hienTai.getMonth(), 1);
