@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>TDTT Thành Đô - Thanh Hóa</title>
+  <title>Quản lý học viên - TDTT Thành Đô</title>
 
   <style>
     * {
@@ -12,64 +12,64 @@
 
     body {
       margin: 0;
-      padding: 16px;
-      background: #17182b;
-      color: #fff;
+      padding: 15px;
       font-family: Arial, Helvetica, sans-serif;
+      background: #121426;
+      color: #ffffff;
     }
 
     .header {
-      background: #2161f5;
-      padding: 22px 15px;
+      background: #2463ed;
       text-align: center;
+      padding: 20px;
       border-radius: 7px;
       margin-bottom: 18px;
     }
 
     .header h1 {
-      margin: 0;
-      font-size: 26px;
+      margin: 0 0 8px;
+      font-size: 25px;
     }
 
     .header p {
-      margin: 8px 0 0;
-      font-size: 14px;
+      margin: 0;
+      font-size: 15px;
     }
 
     .menu {
       display: flex;
       justify-content: center;
-      gap: 8px;
       flex-wrap: wrap;
-      margin-bottom: 20px;
+      gap: 10px;
+      margin-bottom: 18px;
     }
 
     .menu button {
       border: none;
-      background: #2161f5;
+      background: #2463ed;
       color: white;
       padding: 10px 16px;
-      border-radius: 5px;
+      border-radius: 4px;
       font-weight: bold;
       cursor: pointer;
     }
 
     .menu button:hover {
-      background: #3975ff;
+      background: #3974f5;
     }
 
     .menu button.active {
-      border-bottom: 3px solid #ffe000;
+      border-bottom: 3px solid #ffd900;
     }
 
-    .box {
-      background: #1b2a4a;
-      padding: 12px;
+    .container {
+      background: #1b2b4b;
       border-radius: 7px;
-      overflow-x: auto;
+      padding: 12px;
+      min-height: 300px;
     }
 
-    .box h2 {
+    .container h2 {
       margin: 0 0 15px;
       font-size: 21px;
     }
@@ -78,98 +78,110 @@
       display: flex;
       gap: 8px;
       margin-bottom: 12px;
-      flex-wrap: wrap;
     }
 
     .toolbar input,
     .toolbar select {
-      background: #0e1628;
+      background: #0e172b;
       color: white;
-      border: 1px solid #40506e;
+      border: 1px solid #536482;
       border-radius: 4px;
-      padding: 10px;
+      padding: 9px;
       outline: none;
     }
 
     .toolbar input {
       flex: 1;
-      min-width: 250px;
-    }
-
-    .toolbar select {
       min-width: 150px;
     }
 
+    .toolbar select {
+      width: 160px;
+    }
+
     .toolbar button {
-      background: #2161f5;
+      background: #2463ed;
       color: white;
       border: none;
       border-radius: 4px;
-      padding: 10px 15px;
-      cursor: pointer;
+      padding: 9px 14px;
       font-weight: bold;
+      cursor: pointer;
     }
 
     .toolbar button:hover {
-      background: #3975ff;
+      background: #3974f5;
     }
 
-    .status {
-      margin: 8px 0 12px;
-      color: #ddd;
+    .student-count {
+      margin: 10px 0;
       font-size: 14px;
     }
 
-    .error {
-      display: none;
-      background: #762d36;
-      border: 1px solid #ff7c89;
-      padding: 12px;
-      border-radius: 5px;
-      margin-bottom: 12px;
-      color: #fff;
-      white-space: pre-wrap;
+    .table-wrapper {
+      width: 100%;
+      overflow-x: auto;
     }
 
     table {
       width: 100%;
       border-collapse: collapse;
-      min-width: 850px;
+      min-width: 750px;
     }
 
     th {
-      background: #2161f5;
-      color: white;
-      padding: 9px;
-      border: 1px solid #34486c;
+      background: #2463ed;
+      padding: 8px;
       text-align: center;
+      font-size: 14px;
     }
 
     td {
       padding: 8px;
-      border: 1px solid #34486c;
       text-align: center;
-      background: #192845;
+      border: 1px solid #304566;
+      background: #1c2d4d;
+      font-size: 14px;
     }
 
     tr:nth-child(even) td {
-      background: #223556;
+      background: #243858;
     }
 
-    .name-button {
+    .student-name {
       color: #ffe000;
       font-weight: bold;
       text-decoration: underline;
       cursor: pointer;
-      border: none;
-      background: transparent;
-      font-size: inherit;
     }
 
-    .name-button:hover {
-      color: #fff;
+    .student-name:hover {
+      color: #ffffff;
     }
 
+    .loading {
+      padding: 25px;
+      text-align: center;
+      color: #ffe000;
+    }
+
+    .error {
+      background: #7c2935;
+      border: 1px solid #e45c6d;
+      color: white;
+      padding: 14px;
+      border-radius: 4px;
+      line-height: 1.7;
+      margin-bottom: 10px;
+    }
+
+    .empty {
+      text-align: center;
+      padding: 25px;
+      color: #ddd;
+    }
+
+    /* Modal */
     .modal-background {
       display: none;
       position: fixed;
@@ -184,92 +196,78 @@
     .modal {
       width: 100%;
       max-width: 900px;
-      max-height: 90vh;
+      max-height: 92vh;
       overflow-y: auto;
-      background: #193574;
-      border: 2px solid #4b8aff;
-      border-radius: 9px;
-      padding: 22px;
+      background: #203f7e;
+      border: 2px solid #4b8cff;
+      border-radius: 8px;
+      padding: 20px;
+      box-shadow: 0 0 25px rgba(0, 0, 0, 0.5);
     }
 
     .modal-title {
       text-align: center;
       color: #ffe000;
-      font-size: 20px;
+      font-size: 21px;
       font-weight: bold;
-      padding-bottom: 14px;
-      border-bottom: 1px solid #34558f;
+      padding-bottom: 15px;
+      border-bottom: 1px solid #3f5b91;
       margin-bottom: 15px;
     }
 
     .detail-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 0 30px;
+      gap: 0 25px;
     }
 
     .detail-item {
-      display: flex;
-      gap: 8px;
-      padding: 9px 0;
-      border-bottom: 1px solid rgba(255,255,255,0.08);
-      line-height: 1.45;
-      word-break: break-word;
+      min-height: 42px;
+      padding: 10px 0;
+      border-bottom: 1px solid #3c5890;
+      line-height: 1.5;
+      overflow-wrap: anywhere;
     }
 
     .detail-label {
-      min-width: 150px;
-      color: #c9d2f5;
+      color: #dce4ff;
       font-weight: bold;
-      text-align: right;
+      margin-right: 5px;
     }
 
     .detail-value {
-      flex: 1;
       color: white;
-      text-align: left;
     }
 
-    .detail-ac {
-      grid-column: 1 / -1;
-      background: #263f72;
-      border: 1px solid #4d78c9;
+    .food-box {
+      margin-top: 15px;
+      padding: 15px;
+      border: 1px solid #6395e9;
       border-radius: 5px;
-      padding: 12px;
-      margin-top: 12px;
+      background: #294a88;
+      line-height: 1.6;
     }
 
-    .detail-ac .detail-label {
+    .food-label {
       color: #ffe000;
-      min-width: 170px;
+      font-weight: bold;
+      margin-right: 8px;
     }
 
-    .close-button {
+    .modal-close {
       width: 100%;
-      margin-top: 18px;
-      border: none;
-      background: #2161f5;
-      color: white;
+      margin-top: 15px;
       padding: 11px;
+      border: none;
       border-radius: 4px;
+      background: #2463ed;
+      color: white;
       font-weight: bold;
       cursor: pointer;
     }
 
-    .close-button:hover {
-      background: #3975ff;
-    }
-
-    .loading {
-      text-align: center;
-      padding: 25px;
-      color: #ffe000;
-    }
-
-    .empty {
-      text-align: center;
-      padding: 25px;
-      color: #ffdfdf;
+    .modal-close:hover {
+      background: #3974f5;
     }
 
     @media (max-width: 700px) {
@@ -278,29 +276,25 @@
       }
 
       .header h1 {
-        font-size: 21px;
+        font-size: 20px;
+      }
+
+      .toolbar {
+        flex-wrap: wrap;
+      }
+
+      .toolbar input,
+      .toolbar select,
+      .toolbar button {
+        width: 100%;
       }
 
       .detail-grid {
         grid-template-columns: 1fr;
       }
 
-      .detail-ac {
-        grid-column: auto;
-      }
-
-      .detail-item {
-        display: block;
-      }
-
-      .detail-label {
-        display: block;
-        text-align: left;
-        margin-bottom: 3px;
-      }
-
-      .detail-value {
-        display: block;
+      .modal {
+        padding: 15px;
       }
     }
   </style>
@@ -314,20 +308,20 @@
   </div>
 
   <div class="menu">
-    <button>Trang chủ</button>
+    <button onclick="location.href='/'">Trang chủ</button>
     <button class="active">Học viên</button>
     <button>HV về quê</button>
     <button>Điểm danh</button>
     <button>Tài liệu</button>
   </div>
 
-  <div class="box">
+  <div class="container">
     <h2>Danh sách học viên</h2>
 
     <div class="toolbar">
       <input
-        id="searchInput"
         type="text"
+        id="searchInput"
         placeholder="Tìm mã học viên hoặc tên..."
       >
 
@@ -339,32 +333,50 @@
         <option value="">Tất cả trạng thái</option>
       </select>
 
-      <button id="reloadButton">🔄 Tải lại</button>
+      <button onclick="taiDuLieu()">↻ Tải lại</button>
     </div>
 
-    <div id="errorBox" class="error"></div>
+    <div id="errorBox"></div>
 
-    <div id="studentCount" class="status">
+    <div class="student-count" id="studentCount">
       Đang tải dữ liệu...
     </div>
 
-    <div id="tableContainer">
-      <div class="loading">Đang tải danh sách học viên...</div>
+    <div class="table-wrapper">
+      <table>
+        <thead>
+          <tr>
+            <th>Mã HV</th>
+            <th>Họ tên</th>
+            <th>Lớp</th>
+            <th>GVCN</th>
+            <th>Trạng thái</th>
+          </tr>
+        </thead>
+
+        <tbody id="studentTableBody">
+          <tr>
+            <td colspan="5" class="loading">
+              Đang tải danh sách học viên...
+            </td>
+          </tr>
+        </tbody>
+      </table>
     </div>
   </div>
 
-  <!-- Hộp chi tiết học viên -->
-  <div id="modalBackground" class="modal-background">
+  <!-- Modal chi tiết học viên -->
+  <div class="modal-background" id="modalBackground">
     <div class="modal">
       <div class="modal-title">
         📋 THÔNG TIN CHI TIẾT HỌC VIÊN
       </div>
 
       <div id="detailContent">
-        Đang tải...
+        Đang tải thông tin học viên...
       </div>
 
-      <button id="closeButton" class="close-button">
+      <button class="modal-close" onclick="dongModal()">
         Đóng
       </button>
     </div>
@@ -372,39 +384,38 @@
 
   <script>
     const API_URL =
-      "https://script.google.com/macros/s/AKfycbya2O0w0pKg8hZ1T7c7dhaHKCrpNAjuej8nuHNZ5z6mlgmob6E5KOhHJcU556a8wAQ2IQ/exec";
+      "https://script.google.com/macros/s/AKfycbwOPlxlzXRBKkFJr06NKBxZNpGXgwTP9IJfM1WV4B97HdBhUyFWm-fIgETE8V-4BIzLRA/exec";
+
+    const SHEET_ID =
+      "1JI8U96SwwQXn5ZLqWNlLtGaxkRzArpljjdW9QdIOr7A";
+
+    const SHEET_GID = "62168460";
 
     let danhSachHocVien = [];
 
     const searchInput = document.getElementById("searchInput");
     const classFilter = document.getElementById("classFilter");
     const statusFilter = document.getElementById("statusFilter");
-    const reloadButton = document.getElementById("reloadButton");
-    const tableContainer = document.getElementById("tableContainer");
+    const studentTableBody = document.getElementById("studentTableBody");
     const studentCount = document.getElementById("studentCount");
     const errorBox = document.getElementById("errorBox");
-
     const modalBackground = document.getElementById("modalBackground");
     const detailContent = document.getElementById("detailContent");
-    const closeButton = document.getElementById("closeButton");
 
     function hienThiLoi(message) {
-      errorBox.textContent = message;
-      errorBox.style.display = "block";
+      errorBox.innerHTML = `
+        <div class="error">${message}</div>
+      `;
     }
 
-    function anLoi() {
-      errorBox.textContent = "";
-      errorBox.style.display = "none";
+    function xoaLoi() {
+      errorBox.innerHTML = "";
     }
 
     function giaTri(obj, ...keys) {
-      if (!obj || typeof obj !== "object") {
-        return "";
-      }
-
       for (const key of keys) {
         if (
+          obj &&
           Object.prototype.hasOwnProperty.call(obj, key) &&
           obj[key] !== null &&
           obj[key] !== undefined &&
@@ -417,501 +428,557 @@
       return "";
     }
 
-    /*
-      HÀM LẤY TÊN HỌC VIÊN
-
-      Ưu tiên hoTen vì API Code.gs đang trả về trường này.
-      Có thêm nhiều tên trường dự phòng để không bị lỗi.
-    */
-    function layTenHocVien(hocVien) {
-      const ten = giaTri(
+    function tenHocVien(hocVien) {
+      return giaTri(
         hocVien,
         "hoTen",
         "HoTen",
+        "họ tên",
+        "Họ tên",
+        "Tên Romaji",
+        "tenRomaji",
+        "TenRomaji",
         "ten",
         "name",
-        "ho_ten",
-        "Tên Romaji",
-        "Tên romaji",
-        "Họ tên",
-        "HỌ TÊN",
-        "romaji",
-        "TenRomaji"
-      );
-
-      if (ten !== "") {
-        return String(ten).trim();
-      }
-
-      /*
-        Nếu API trả dữ liệu dạng mảng data,
-        cột D thường là tên học viên, index = 3.
-      */
-      if (
-        Array.isArray(hocVien.data) &&
-        hocVien.data.length > 3 &&
-        String(hocVien.data[3]).trim() !== ""
-      ) {
-        return String(hocVien.data[3]).trim();
-      }
-
-      return "Chưa có tên";
+        "romaji"
+      ) || "(Chưa có tên)";
     }
 
-    function layMaHV(hocVien) {
+    function maHocVien(hocVien) {
       return String(
         giaTri(
           hocVien,
           "maHV",
           "mshv",
           "Mã số HV",
-          "MÃ SỐ HV",
-          "ma_hv",
-          "id"
+          "MSHV",
+          "Mã HV",
+          "maHv"
         ) || ""
       ).trim();
     }
 
-    function layLop(hocVien) {
-      return String(
-        giaTri(
-          hocVien,
-          "lop",
-          "Lớp",
-          "class",
-          "tenLop"
-        ) || "Chưa có"
-      ).trim();
-    }
-
-    function layGVCN(hocVien) {
-      return String(
-        giaTri(
-          hocVien,
-          "gvcn",
-          "GVCN",
-          "Giáo viên chủ nhiệm",
-          "giaoVienChuNhiem"
-        ) || ""
-      ).trim();
-    }
-
-    function layTrangThai(hocVien) {
-      return String(
-        giaTri(
-          hocVien,
-          "trangThai",
-          "TrangThai",
-          "Trạng thái",
-          "status"
-        ) || "Đang học"
-      ).trim();
-    }
-
-    /*
-      Lấy nội dung cột AC.
-
-      Cột AC là cột thứ 29.
-      Trong mảng JavaScript, vị trí tương ứng là data[28].
-    */
-    function layCotAC(hocVien) {
-      let ac = giaTri(
+    function lopHocVien(hocVien) {
+      return giaTri(
         hocVien,
-        "cotAC",
-        "noiDungCotAC",
-        "Nội dung cột AC",
-        "Cột AC",
-        "AC"
-      );
-
-      if (ac !== "") {
-        return String(ac);
-      }
-
-      if (Array.isArray(hocVien.data) && hocVien.data.length > 28) {
-        return String(hocVien.data[28] ?? "");
-      }
-
-      return "";
+        "lop",
+        "Lớp",
+        "LOP",
+        "lớp"
+      ) || "Chưa có";
     }
 
-    function taoDanhSachLoc() {
-      const lopSet = new Set();
-      const trangThaiSet = new Set();
+    function giaoVienChuNhiem(hocVien) {
+      return giaTri(
+        hocVien,
+        "gvcn",
+        "GVCN",
+        "Giáo viên chủ nhiệm",
+        "giáo viên chủ nhiệm"
+      ) || "";
+    }
 
-      danhSachHocVien.forEach(hocVien => {
-        const lop = layLop(hocVien);
-        const trangThai = layTrangThai(hocVien);
+    function trangThaiHocVien(hocVien) {
+      return giaTri(
+        hocVien,
+        "trangThai",
+        "TrangThai",
+        "Trạng thái",
+        "trạng thái"
+      ) || "Đang học";
+    }
 
-        if (lop) lopSet.add(lop);
-        if (trangThai) trangThaiSet.add(trangThai);
-      });
+    function giaTriCotAC(detail) {
+      /*
+        Cột AC là cột thứ 29 trong Google Sheet.
+        Nếu Apps Script đã trả về cotAC thì dùng cotAC.
+        Nếu trả về __COT_AC__ thì dùng giá trị đó.
+      */
+
+      return giaTri(
+        detail,
+        "cotAC",
+        "COT_AC",
+        "Cột AC",
+        "cột AC",
+        "__COT_AC__",
+        "AC",
+        "Tiền ăn tháng hiện tại"
+      );
+    }
+
+    function taoDanhSachBoLoc() {
+      const cacLop = [
+        ...new Set(
+          danhSachHocVien
+            .map(hv => lopHocVien(hv))
+            .filter(Boolean)
+        )
+      ].sort();
+
+      const cacTrangThai = [
+        ...new Set(
+          danhSachHocVien
+            .map(hv => trangThaiHocVien(hv))
+            .filter(Boolean)
+        )
+      ].sort();
 
       classFilter.innerHTML =
-        '<option value="">Tất cả lớp</option>';
-
-      [...lopSet]
-        .sort()
-        .forEach(lop => {
-          const option = document.createElement("option");
-          option.value = lop;
-          option.textContent = lop;
-          classFilter.appendChild(option);
-        });
+        `<option value="">Tất cả lớp</option>` +
+        cacLop
+          .map(lop => `<option value="${escapeHtml(lop)}">${escapeHtml(lop)}</option>`)
+          .join("");
 
       statusFilter.innerHTML =
-        '<option value="">Tất cả trạng thái</option>';
-
-      [...trangThaiSet]
-        .sort()
-        .forEach(trangThai => {
-          const option = document.createElement("option");
-          option.value = trangThai;
-          option.textContent = trangThai;
-          statusFilter.appendChild(option);
-        });
+        `<option value="">Tất cả trạng thái</option>` +
+        cacTrangThai
+          .map(status => `<option value="${escapeHtml(status)}">${escapeHtml(status)}</option>`)
+          .join("");
     }
 
-    function renderDanhSach() {
+    function escapeHtml(value) {
+      return String(value ?? "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+    }
+
+    function hienThiDanhSach() {
       const tuKhoa = searchInput.value.trim().toLowerCase();
       const lopCanLoc = classFilter.value;
       const trangThaiCanLoc = statusFilter.value;
 
-      const danhSachLoc = danhSachHocVien.filter(hocVien => {
-        const maHV = layMaHV(hocVien).toLowerCase();
-        const ten = layTenHocVien(hocVien).toLowerCase();
-        const lop = layLop(hocVien);
-        const trangThai = layTrangThai(hocVien);
+      const danhSachLoc = danhSachHocVien.filter(hv => {
+        const ma = maHocVien(hv).toLowerCase();
+        const ten = tenHocVien(hv).toLowerCase();
+        const lop = String(lopHocVien(hv));
+        const status = String(trangThaiHocVien(hv));
 
         const dungTuKhoa =
           !tuKhoa ||
-          maHV.includes(tuKhoa) ||
+          ma.includes(tuKhoa) ||
           ten.includes(tuKhoa);
 
         const dungLop =
-          !lopCanLoc || lop === lopCanLoc;
+          !lopCanLoc ||
+          lop === lopCanLoc;
 
         const dungTrangThai =
           !trangThaiCanLoc ||
-          trangThai === trangThaiCanLoc;
+          status === trangThaiCanLoc;
 
         return dungTuKhoa && dungLop && dungTrangThai;
       });
 
       studentCount.textContent =
-        "Tổng " + danhSachLoc.length + " học viên";
+        `Tổng ${danhSachLoc.length} học viên`;
 
       if (danhSachLoc.length === 0) {
-        tableContainer.innerHTML =
-          '<div class="empty">Không tìm thấy học viên.</div>';
+        studentTableBody.innerHTML = `
+          <tr>
+            <td colspan="5" class="empty">
+              Không tìm thấy học viên
+            </td>
+          </tr>
+        `;
         return;
       }
 
-      const table = document.createElement("table");
+      studentTableBody.innerHTML = "";
 
-      table.innerHTML = `
-        <thead>
-          <tr>
-            <th>Mã HV</th>
-            <th>Họ tên</th>
-            <th>Lớp</th>
-            <th>GVCN</th>
-            <th>Trạng thái</th>
-          </tr>
-        </thead>
-        <tbody></tbody>
-      `;
+      danhSachLoc.forEach(hv => {
+        const ma = maHocVien(hv);
+        const ten = tenHocVien(hv);
+        const lop = lopHocVien(hv);
+        const gvcn = giaoVienChuNhiem(hv);
+        const status = trangThaiHocVien(hv);
 
-      const tbody = table.querySelector("tbody");
-
-      danhSachLoc.forEach(hocVien => {
         const tr = document.createElement("tr");
 
-        const tdMa = document.createElement("td");
-        tdMa.textContent = layMaHV(hocVien);
+        tr.innerHTML = `
+          <td>${escapeHtml(ma)}</td>
+          <td>
+            <span class="student-name">${escapeHtml(ten)}</span>
+          </td>
+          <td>${escapeHtml(lop)}</td>
+          <td>${escapeHtml(gvcn)}</td>
+          <td>${escapeHtml(status)}</td>
+        `;
 
-        const tdTen = document.createElement("td");
-        const buttonTen = document.createElement("button");
+        const tenElement = tr.querySelector(".student-name");
 
-        buttonTen.className = "name-button";
-        buttonTen.textContent = layTenHocVien(hocVien);
-
-        buttonTen.addEventListener("click", () => {
-          xemChiTietHocVien(layMaHV(hocVien));
+        tenElement.addEventListener("click", function() {
+          xemChiTietHocVien(ma);
         });
 
-        tdTen.appendChild(buttonTen);
-
-        const tdLop = document.createElement("td");
-        tdLop.textContent = layLop(hocVien);
-
-        const tdGVCN = document.createElement("td");
-        tdGVCN.textContent = layGVCN(hocVien);
-
-        const tdTrangThai = document.createElement("td");
-        tdTrangThai.textContent = layTrangThai(hocVien);
-
-        tr.appendChild(tdMa);
-        tr.appendChild(tdTen);
-        tr.appendChild(tdLop);
-        tr.appendChild(tdGVCN);
-        tr.appendChild(tdTrangThai);
-
-        tbody.appendChild(tr);
+        studentTableBody.appendChild(tr);
       });
-
-      tableContainer.innerHTML = "";
-      tableContainer.appendChild(table);
     }
 
     async function taiDuLieu() {
-      anLoi();
+      xoaLoi();
 
-      tableContainer.innerHTML =
-        '<div class="loading">Đang tải danh sách học viên...</div>';
+      studentTableBody.innerHTML = `
+        <tr>
+          <td colspan="5" class="loading">
+            Đang tải danh sách học viên...
+          </td>
+        </tr>
+      `;
 
       studentCount.textContent = "Đang tải dữ liệu...";
 
       try {
-        const response = await fetch(
-          API_URL + "?action=getAll&time=" + Date.now(),
-          {
-            method: "GET",
-            cache: "no-store"
-          }
-        );
+        const url =
+          API_URL +
+          "?action=getAll&time=" +
+          Date.now();
+
+        const response = await fetch(url, {
+          method: "GET",
+          cache: "no-store"
+        });
 
         if (!response.ok) {
-          throw new Error(
-            "API trả về mã lỗi HTTP " + response.status
-          );
+          throw new Error("API trả về mã lỗi HTTP " + response.status);
         }
 
         const data = await response.json();
 
-        if (!data || data.ok !== true) {
+        if (!data || data.ok === false) {
           throw new Error(
             data && data.error
               ? data.error
-              : "API không trả dữ liệu hợp lệ."
+              : "API không trả về dữ liệu hợp lệ"
           );
         }
 
-        if (!Array.isArray(data.students)) {
-          throw new Error(
-            "API không có mảng students."
-          );
+        const students =
+          data.students ||
+          data.data ||
+          data.danhSachHocVien ||
+          [];
+
+        if (!Array.isArray(students)) {
+          throw new Error("Dữ liệu học viên không phải dạng mảng");
         }
 
-        danhSachHocVien = data.students;
+        danhSachHocVien = students;
 
-        taoDanhSachLoc();
-        renderDanhSach();
+        taoDanhSachBoLoc();
+        hienThiDanhSach();
 
       } catch (error) {
         console.error("Lỗi tải dữ liệu:", error);
 
         studentCount.textContent = "Không tải được dữ liệu";
 
-        tableContainer.innerHTML = "";
+        studentTableBody.innerHTML = `
+          <tr>
+            <td colspan="5" class="empty">
+              Không tải được danh sách học viên
+            </td>
+          </tr>
+        `;
 
         hienThiLoi(
-          "Không thể tải danh sách học viên.\n\n" +
-          "Chi tiết lỗi: " + error.message + "\n\n" +
-          "Hãy kiểm tra lại URL Web App và quyền triển khai Apps Script."
+          "Không thể tải danh sách học viên.<br>" +
+          "Chi tiết lỗi: " +
+          escapeHtml(error.message) +
+          "<br><br>" +
+          "Hãy kiểm tra lại URL Web App Apps Script và quyền triển khai."
         );
       }
     }
 
-   async function xemChiTietHocVien(maHV) {
+    async function xemChiTietHocVien(maHV) {
+      modalBackground.style.display = "flex";
 
-  const modal = document.getElementById("modal-chitiet");
-  const body = document.getElementById("modal-body");
-
-  modal.style.display = "flex";
-
-  body.innerHTML =
-    '<div class="loading-info">⏳ Đang tải thông tin học viên...</div>';
-
-  try {
-
-    const url =
-      API_URL +
-      "?action=getStudentDetail&maHV=" +
-      encodeURIComponent(maHV) +
-      "&v=" +
-      Date.now();
-
-    const response = await fetch(url, {
-      method: "GET",
-      cache: "no-store"
-    });
-
-    const result = await response.json();
-
-    if (!result.ok || !result.detail) {
-      throw new Error(
-        result.message || "Không tìm thấy thông tin học viên"
-      );
-    }
-
-    const detail = result.detail;
-
-    let html = '<div class="modal-grid">';
-
-    Object.entries(detail).forEach(function([key, value]) {
-
-      const title = String(key || "").trim();
-      const text = String(value ?? "").trim();
-
-      // BỎ CÁC DÒNG KỸ THUẬT, KHÔNG HIỆN __COT_AC__
-      const lowerKey = title.toLowerCase();
-
-      if (
-        lowerKey === "__cot_ac__" ||
-        lowerKey === "cotac" ||
-        lowerKey === "cot_ac" ||
-        lowerKey === "noidungcotac" ||
-        lowerKey === "nội dung cột ac"
-      ) {
-        return;
-      }
-
-      // Không hiển thị dòng không có tiêu đề hoặc không có dữ liệu
-      if (!title || !text) {
-        return;
-      }
-
-      html +=
-        '<div class="modal-row">' +
-          '<div class="modal-label">' +
-            esc(title) +
-          ':</div>' +
-          '<div class="modal-value">' +
-            esc(text) +
-          '</div>' +
-        '</div>';
-
-    });
-
-    html += '</div>';
-
-    body.innerHTML = html;
-
-  } catch (error) {
-
-    body.innerHTML =
-      '<div style="color:#ff6b6b;text-align:center;padding:20px">' +
-        '❌ ' + esc(error.message) +
-      '</div>';
-
-  }
-}
-
-    function hienThiChiTiet(detail, apiData) {
-      const boQua = new Set([
-        "_rowNumber",
-        "rowNumber",
-        "data",
-        "cotAC",
-        "noiDungCotAC",
-        "Nội dung cột AC",
-        "Cột AC",
-        "AC"
-      ]);
-
-      const danhSachChiTiet = [];
-
-      Object.keys(detail).forEach(key => {
-        if (boQua.has(key)) return;
-
-        const value = detail[key];
-
-        if (
-          value === null ||
-          value === undefined ||
-          String(value).trim() === ""
-        ) {
-          return;
-        }
-
-        danhSachChiTiet.push({
-          label: key,
-          value: String(value)
-        });
-      });
-
-      const ac = layCotAC(detail);
-
-      let html = '<div class="detail-grid">';
-
-      danhSachChiTiet.forEach(item => {
-        html += `
-          <div class="detail-item">
-            <div class="detail-label">${escapeHtml(item.label)}:</div>
-            <div class="detail-value">${escapeHtml(item.value)}</div>
-          </div>
-        `;
-      });
-
-      /*
-        Luôn hiển thị khu vực CỘT AC,
-        kể cả khi dữ liệu cột AC đang trống.
-      */
-      html += `
-        <div class="detail-ac">
-          <div class="detail-item" style="border-bottom:none;">
-            <div class="detail-label">NỘI DUNG CỘT AC:</div>
-            <div class="detail-value">
-              ${
-                ac.trim() !== ""
-                  ? escapeHtml(ac)
-                  : '<span style="color:#ffb4b4;">Cột AC hiện đang trống</span>'
-              }
-            </div>
-          </div>
+      detailContent.innerHTML = `
+        <div class="loading">
+          Đang tải thông tin học viên...
         </div>
       `;
 
-      html += "</div>";
+      try {
+        const url =
+          API_URL +
+          "?action=getStudentDetail&maHV=" +
+          encodeURIComponent(maHV) +
+          "&time=" +
+          Date.now();
 
-      html += `
-        <button class="close-button" id="closeButtonInside">
-          Đóng
-        </button>
-      `;
+        const response = await fetch(url, {
+          method: "GET",
+          cache: "no-store"
+        });
 
-      detailContent.innerHTML = html;
+        if (!response.ok) {
+          throw new Error("API trả về mã lỗi HTTP " + response.status);
+        }
 
-      document
-        .getElementById("closeButtonInside")
-        .addEventListener("click", dongModal);
+        const data = await response.json();
+
+        if (!data || data.ok === false) {
+          throw new Error(
+            data && data.error
+              ? data.error
+              : "Không tìm thấy thông tin học viên"
+          );
+        }
+
+        const detail =
+          data.detail ||
+          data.student ||
+          data.data ||
+          {};
+
+        hienThiChiTiet(detail);
+
+      } catch (error) {
+        console.error("Lỗi chi tiết học viên:", error);
+
+        /*
+          Nếu API chi tiết lỗi thì vẫn lấy dữ liệu đang có trong danh sách
+          để hiển thị thông tin cơ bản.
+        */
+        const hocVien = danhSachHocVien.find(
+          hv => maHocVien(hv) === String(maHV)
+        );
+
+        if (hocVien) {
+          hienThiChiTiet(hocVien);
+        } else {
+          detailContent.innerHTML = `
+            <div class="error">
+              Không tải được thông tin học viên.<br>
+              ${escapeHtml(error.message)}
+            </div>
+          `;
+        }
+      }
     }
 
-    function escapeHtml(value) {
-      return String(value)
-        .replaceAll("&", "&amp;")
-        .replaceAll("<", "&lt;")
-        .replaceAll(">", "&gt;")
-        .replaceAll('"', "&quot;")
-        .replaceAll("'", "&#039;");
+    function hienThiChiTiet(detail) {
+      const ma = maHocVien(detail);
+      const ten = tenHocVien(detail);
+      const lop = lopHocVien(detail);
+      const gvcn = giaoVienChuNhiem(detail);
+      const status = trangThaiHocVien(detail);
+
+      const tenKatakana = giaTri(
+        detail,
+        "Tên Katakana",
+        "tenKatakana",
+        "TenKatakana",
+        "katakana"
+      );
+
+      const gioiTinh = giaTri(
+        detail,
+        "Giới tính",
+        "gioiTinh",
+        "GioiTinh"
+      );
+
+      const ngaySinh = giaTri(
+        detail,
+        "Ngày sinh",
+        "ngaySinh",
+        "NgaySinh"
+      );
+
+      const nghiepDoan = giaTri(
+        detail,
+        "NGHIỆP ĐOÀN",
+        "Nghiệp đoàn",
+        "nghiepDoan"
+      );
+
+      const congTy = giaTri(
+        detail,
+        "CÔNG TY",
+        "Công ty",
+        "congTy"
+      );
+
+      const nganhNghe = giaTri(
+        detail,
+        "NGÀNH NGHỀ",
+        "Ngành nghề",
+        "nganhNghe"
+      );
+
+      const ngayNhapHoc = giaTri(
+        detail,
+        "Ngày nhập học thực tế",
+        "ngayNhapHoc",
+        "Ngày nhập học"
+      );
+
+      const ngayXuatCanh = giaTri(
+        detail,
+        "Ngày xuất cảnh",
+        "ngayXuatCanh"
+      );
+
+      const cbtd = giaTri(
+        detail,
+        "CBTĐ",
+        "cbtd",
+        "Cán bộ"
+      );
+
+      const diaChiCongTy = giaTri(
+        detail,
+        "Địa chỉ công ty tiếp nhận",
+        "diaChiCongTy"
+      );
+
+      const sdtHocVien = giaTri(
+        detail,
+        "SDT của học viên",
+        "SĐT của học viên",
+        "sdtHocVien"
+      );
+
+      const sdtGiaDinh = giaTri(
+        detail,
+        "SDT gia đình học viên",
+        "SĐT gia đình học viên",
+        "sdtGiaDinh"
+      );
+
+      const phongO = giaTri(
+        detail,
+        "Phòng ở",
+        "phongO"
+      );
+
+      /*
+        Lấy đúng giá trị cột AC.
+        Không hiển thị tên __COT_AC__.
+      */
+      const tienAn = giaTriCotAC(detail);
+
+      detailContent.innerHTML = `
+        <div class="detail-grid">
+
+          <div class="detail-item">
+            <span class="detail-label">Trạng thái:</span>
+            <span class="detail-value">${escapeHtml(status)}</span>
+          </div>
+
+          <div class="detail-item">
+            <span class="detail-label">MÃ SỐ HV:</span>
+            <span class="detail-value">${escapeHtml(ma)}</span>
+          </div>
+
+          <div class="detail-item">
+            <span class="detail-label">Tên Romaji:</span>
+            <span class="detail-value">${escapeHtml(ten)}</span>
+          </div>
+
+          <div class="detail-item">
+            <span class="detail-label">Tên Katakana:</span>
+            <span class="detail-value">${escapeHtml(tenKatakana)}</span>
+          </div>
+
+          <div class="detail-item">
+            <span class="detail-label">Lớp:</span>
+            <span class="detail-value">${escapeHtml(lop)}</span>
+          </div>
+
+          <div class="detail-item">
+            <span class="detail-label">GVCN:</span>
+            <span class="detail-value">${escapeHtml(gvcn)}</span>
+          </div>
+
+          <div class="detail-item">
+            <span class="detail-label">Giới tính:</span>
+            <span class="detail-value">${escapeHtml(gioiTinh)}</span>
+          </div>
+
+          <div class="detail-item">
+            <span class="detail-label">Ngày sinh:</span>
+            <span class="detail-value">${escapeHtml(ngaySinh)}</span>
+          </div>
+
+          <div class="detail-item">
+            <span class="detail-label">NGHIỆP ĐOÀN:</span>
+            <span class="detail-value">${escapeHtml(nghiepDoan)}</span>
+          </div>
+
+          <div class="detail-item">
+            <span class="detail-label">CÔNG TY:</span>
+            <span class="detail-value">${escapeHtml(congTy)}</span>
+          </div>
+
+          <div class="detail-item">
+            <span class="detail-label">NGÀNH NGHỀ:</span>
+            <span class="detail-value">${escapeHtml(nganhNghe)}</span>
+          </div>
+
+          <div class="detail-item">
+            <span class="detail-label">Ngày nhập học thực tế:</span>
+            <span class="detail-value">${escapeHtml(ngayNhapHoc)}</span>
+          </div>
+
+          <div class="detail-item">
+            <span class="detail-label">Ngày xuất cảnh:</span>
+            <span class="detail-value">${escapeHtml(ngayXuatCanh)}</span>
+          </div>
+
+          <div class="detail-item">
+            <span class="detail-label">CBTĐ:</span>
+            <span class="detail-value">${escapeHtml(cbtd)}</span>
+          </div>
+
+          <div class="detail-item">
+            <span class="detail-label">Địa chỉ công ty tiếp nhận:</span>
+            <span class="detail-value">${escapeHtml(diaChiCongTy)}</span>
+          </div>
+
+          <div class="detail-item">
+            <span class="detail-label">SDT của học viên:</span>
+            <span class="detail-value">${escapeHtml(sdtHocVien)}</span>
+          </div>
+
+          <div class="detail-item">
+            <span class="detail-label">SDT gia đình học viên:</span>
+            <span class="detail-value">${escapeHtml(sdtGiaDinh)}</span>
+          </div>
+
+          <div class="detail-item">
+            <span class="detail-label">Phòng ở:</span>
+            <span class="detail-value">${escapeHtml(phongO)}</span>
+          </div>
+
+        </div>
+
+        <div class="food-box">
+          <span class="food-label">Tiền ăn tháng hiện tại:</span>
+          <span>${escapeHtml(tienAn || "Chưa có dữ liệu")}</span>
+        </div>
+      `;
     }
 
     function dongModal() {
       modalBackground.style.display = "none";
     }
 
-    searchInput.addEventListener("input", renderDanhSach);
-    classFilter.addEventListener("change", renderDanhSach);
-    statusFilter.addEventListener("change", renderDanhSach);
-    reloadButton.addEventListener("click", taiDuLieu);
-    closeButton.addEventListener("click", dongModal);
-
-    modalBackground.addEventListener("click", event => {
+    modalBackground.addEventListener("click", function(event) {
       if (event.target === modalBackground) {
         dongModal();
       }
     });
+
+    searchInput.addEventListener("input", hienThiDanhSach);
+    classFilter.addEventListener("change", hienThiDanhSach);
+    statusFilter.addEventListener("change", hienThiDanhSach);
 
     taiDuLieu();
   </script>
