@@ -140,7 +140,7 @@ body{padding:10px}
 <script>
 
 // ================= CẤU HÌNH =================
-const API_URL = "https://script.google.com/macros/s/AKfycbya2O0w0pKg8hZ1T7c7dhaHKCrpNAjuej8nuHNZ5z6mlgmob6E5KOhHJcU556a8wAQ2IQ/exec";
+const API_URL = "https://script.google.com/macros/s/AKfycbwOPlxlzXRBKkFJr06NKBxZNpGXgwTP9IJfM1WV4B97HdBhUyFWm-fIgETE8V-4BIzLRA/exec";
 
 let danhSachHocVien = [];
 
@@ -477,17 +477,14 @@ function capNhatDanhSachVeQue(){
 
 // ================= XEM CHI TIẾT =================
 async function xemChiTietHocVien(ma){
-
   const modal = document.getElementById("modal-chitiet");
   const body = document.getElementById("modal-body");
 
   modal.style.display = "flex";
-
   body.innerHTML =
     '<div class="loading-info">⏳ Đang tải toàn bộ thông tin...</div>';
 
   try{
-
     const res = await fetch(
       API_URL +
       "?action=getStudentDetail&maHV=" +
@@ -499,46 +496,69 @@ async function xemChiTietHocVien(ma){
     const kq = await res.json();
 
     if(!kq.ok){
-      throw new Error(kq.message || "Không tìm thấy học viên");
+      throw new Error(kq.message || kq.error || "Không tìm thấy học viên");
     }
 
     const detail = kq.detail || {};
-
     let html = '<div class="modal-grid">';
+    const daHienThi = new Set();
 
     Object.entries(detail).forEach(([key,value]) => {
+      const tenCot = String(key ?? "").trim();
+      const giaTri = String(value ?? "").trim();
 
-      if(String(value ?? "").trim() !== ""){
-
-        html +=
-          '<div class="modal-row">' +
-          '<div class="modal-label">' +
-          esc(key) +
-          ':</div>' +
-
-          '<div class="modal-value">' +
-          esc(value) +
-          '</div>' +
-
-          '</div>';
-
+      if(
+        tenCot === "_rowNumber" ||
+        tenCot === "rowNumber" ||
+        tenCot === "cotAC" ||
+        tenCot === "noiDungCotAC"
+      ){
+        return;
       }
 
+      if(!tenCot || !giaTri || daHienThi.has(tenCot)){
+        return;
+      }
+
+      daHienThi.add(tenCot);
+
+      html +=
+        '<div class="modal-row">' +
+          '<div class="modal-label">' +
+            esc(tenCot) +
+          ':</div>' +
+          '<div class="modal-value">' +
+            esc(giaTri) +
+          '</div>' +
+        '</div>';
     });
 
-    html += '</div>';
+    const giaTriAC =
+      kq.cotAC ??
+      kq.noiDungCotAC ??
+      detail["Nội dung cột AC"] ??
+      detail["Cột AC"] ??
+      "";
 
+    if(true){
+      html +=
+        '<div class="modal-row">' +
+          '<div class="modal-label">${esc(kq.tenCotAC || 'Nội dung cột AC')}:</div>' +
+          '<div class="modal-value">' +
+            esc(giaTriAC) +
+          '</div>' +
+        '</div>';
+    }
+
+    html += '</div>';
     body.innerHTML = html;
 
   }catch(e){
-
     body.innerHTML =
       '<div style="color:#ff6b6b;text-align:center;padding:20px">' +
       '❌ ' + esc(e.message) +
       '</div>';
-
   }
-
 }
 
 // ================= ĐÓNG MODAL =================
