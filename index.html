@@ -1,602 +1,154 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TDTT THÀNH ĐÔ - QUẢN LÝ HỌC VIÊN</title>
+<style>
+*{box-sizing:border-box;font-family:Arial,sans-serif}
+body{margin:0;background:#1a1a2e;color:#eee;padding:20px;font-size:14px}
+.header{background:#165DFF;padding:15px;text-align:center;border-radius:8px;margin-bottom:15px}
+.header h1{font-size:24px;margin:0 0 5px}.header p{margin:0}
+.nav{text-align:center;margin-bottom:15px}.nav button,button{background:#165DFF;color:#fff;border:0;border-radius:4px;padding:8px 12px;cursor:pointer;font-weight:bold;margin:3px}
+.nav button.active{background:#0e4bdd;border-bottom:2px solid #ffd700}
+.card{background:#16213e;padding:12px;border-radius:8px;margin-bottom:15px}
+.toolbar{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:12px}
+input,select{padding:8px;border:1px solid #444;border-radius:4px;background:#0f1626;color:#fff}
+input[type=text]{flex:1;min-width:180px}
+.table-wrapper{width:100%;overflow-x:auto}
+table{width:100%;border-collapse:collapse;margin-top:8px;min-width:650px}
+th,td{border:1px solid #333;padding:7px 5px;text-align:center;white-space:nowrap}
+th{background:#165DFF}tr:nth-child(even){background:#1f2b48}
+.page{display:none}.page.active{display:block}
+.stats{display:flex;gap:10px;flex-wrap:wrap}.stat-item{background:#1f2b48;padding:10px;border-radius:6px;flex:1;text-align:center;min-width:130px}
+.ten-hv{color:#ffd700;cursor:pointer;font-weight:bold;text-decoration:underline}
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.8);display:none;justify-content:center;align-items:center;z-index:999;padding:10px}
+.modal-content{background:#0f2862;padding:25px;border-radius:10px;width:100%;max-width:1000px;max-height:90vh;overflow-y:auto;border:2px solid #4a80f0}
+.modal-content h3{color:#ffd700;text-align:center;border-bottom:1px solid #336;padding-bottom:12px}
+.modal-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px 20px}
+.modal-row{display:flex;margin:4px 0;align-items:flex-start}.modal-label{width:170px;min-width:170px;color:#b8b8ff;font-weight:bold;text-align:right;padding-right:12px}.modal-value{flex:1;color:#fff;word-break:break-word}
+.modal-close{width:100%;margin-top:20px;padding:12px}
+@media(max-width:767px){body{padding:10px}.modal-grid{grid-template-columns:1fr}.modal-label{width:130px;min-width:130px}}
+</style>
+</head>
+<body>
+<div class="header"><h1>TDTT THÀNH ĐÔ - THANH HÓA</h1><p>Hệ thống quản lý học viên tập trung</p></div>
+<div class="nav">
+<button class="tab-btn active" data-page="trang-chu">Trang chủ</button>
+<button class="tab-btn" data-page="hoc-vien">Học viên</button>
+<button class="tab-btn" data-page="hv-ve-que">HV về quê</button>
+<button class="tab-btn" data-page="diem-danh">Điểm danh</button>
+<button class="tab-btn" data-page="tai-lieu">Tài liệu</button>
+</div>
+
+<div id="trang-chu" class="page active"><div class="card"><h2>Thống kê tổng quan</h2>
+<div class="stats">
+<div class="stat-item">Tổng học viên: <strong id="stat-tong">0</strong></div>
+<div class="stat-item">Đang học: <strong id="stat-danghoc">0</strong></div>
+<div class="stat-item">Vắng: <strong id="stat-vang">0</strong></div>
+<div class="stat-item">Về quê: <strong id="stat-veque">0</strong></div>
+</div></div></div>
+
+<div id="hoc-vien" class="page"><div class="card"><h2>Danh sách học viên</h2>
+<div class="toolbar"><input id="search-ma" type="text" placeholder="Tìm mã hoặc tên...">
+<select id="filter-lop"><option value="">Tất cả lớp</option></select>
+<select id="filter-trangthai"><option value="">Tất cả trạng thái</option><option>Đang học</option><option>Vắng</option><option>Về quê</option></select>
+<button id="btn-tai-lai">🔄 Tải lại</button></div>
+<p id="thong-ke-danhsach">Tổng 0 học viên</p><div id="danhsach-hocvien" class="table-wrapper"></div>
+</div></div>
+
+<div id="hv-ve-que" class="page"><div class="card"><h2>Học viên về quê</h2><div id="danhsach-veque" class="table-wrapper"></div></div></div>
+<div id="diem-danh" class="page"><div class="card"><h2>Điểm danh hàng ngày</h2>
+<div class="toolbar"><select id="chon-lop-diemdanh"></select><label>Từ:</label><input type="date" id="tu-ngay"><label>Đến:</label><input type="date" id="den-ngay"><button id="btn-tao-bang">📋 Tạo</button><button id="btn-luu-bang">💾 Lưu</button></div>
+<div id="bang-diemdanh" class="table-wrapper"></div></div></div>
+<div id="tai-lieu" class="page"><div class="card"><h2>Tài liệu</h2><p>Chức năng đang cập nhật...</p></div></div>
+
+<div id="modal-chitiet" class="modal-overlay">
+<div class="modal-content" onclick="event.stopPropagation()"><h3>📋 THÔNG TIN CHI TIẾT HỌC VIÊN</h3><div id="modal-body">Đang tải...</div><button class="modal-close" onclick="dongModalChiTiet()">Đóng</button></div>
+</div>
+
 <script>
 // ================= CẤU HÌNH =================
 const API_URL = "https://script.google.com/macros/s/AKfycbwOPlxlzXRBKkFJr06NKBxZNpGXgwTP9IJfM1WV4B97HdBhUyFWm-fIgETE8V-4BIzLRA/exec";
 const SHEET_ID = "1JI8U96SwwQXn5ZLqWNlLtGaxkRzArpljjdW9QdIOr7A";
 const SHEET_GID = "62168460";
-
 let danhSachHocVien = [];
 
-// ================= HÀM XỬ LÝ DỮ LIỆU =================
-function esc(v) {
-  return String(v ?? "").replace(/[&<>"']/g, c => ({
-    "&": "&amp;",
-    "<": "&lt;",
-    ">": "&gt;",
-    '"': "&quot;",
-    "'": "&#39;"
-  }[c]));
+function esc(v){return String(v ?? "").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));}
+function norm(v){return String(v ?? "").trim().toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/\s+/g,"");}
+function get(h,...keys){for(const k of keys){if(h[k]!==undefined && h[k]!==null && String(h[k]).trim()!=="")return String(h[k]).trim();}return "";}
+function maHV(h){return get(h,"maHV","MaHV","mshv","Mã HV","Mã học viên","Mã số HV","Mã số");}
+function tenHV(h){return get(h,"hoTen","HoTen","tenRomaji","TenRomaji","romaji","Tên Romaji","Họ tên","Họ và tên","Tên học viên","Tên");}
+function lopHV(h){return get(h,"lop","Lop","Lớp","Lớp học","Khóa") || "Chưa có";}
+function gvcnHV(h){return get(h,"gvcn","GVCN","Giáo viên chủ nhiệm","Chủ nhiệm");}
+function ttHV(h){return get(h,"trangThai","TrangThai","Trạng thái","Tình trạng","Trạng thái học tập") || "Đang học";}
+
+function capNhatThongKe(){
+ let dang=0,vang=0,que=0;
+ danhSachHocVien.forEach(h=>{const t=norm(ttHV(h));if(t.includes("veque")||t.includes("nghiphep"))que++;else if(t.includes("vang")||t.includes("nghi"))vang++;else dang++;});
+ document.getElementById("stat-tong").textContent=danhSachHocVien.length;
+ document.getElementById("stat-danghoc").textContent=dang;
+ document.getElementById("stat-vang").textContent=vang;
+ document.getElementById("stat-veque").textContent=que;
 }
 
-function norm(v) {
-  return String(v ?? "")
-    .trim()
-    .toLowerCase()
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")
-    .replace(/đ/g, "d")
-    .replace(/[^a-z0-9]/g, "");
+async function docBangTinhTrucTiep(){
+ const url=`https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&gid=${SHEET_GID}`;
+ const text=await (await fetch(url,{cache:"no-store"})).text();
+ const m=text.match(/google\.visualization\.Query\.setResponse\((.*)\);?\s*$/s);
+ if(!m)throw new Error("Google Sheet chưa công khai hoặc không đọc được dữ liệu");
+ const obj=JSON.parse(m[1]), cols=obj.table.cols.map(c=>String(c.label||c.id||"").trim());
+ return obj.table.rows.map(r=>{const h={};cols.forEach((c,i)=>h[c]=r.c[i]?.f ?? r.c[i]?.v ?? "");return h;});
 }
 
-// Lấy dữ liệu bất kể tên cột có dấu, viết hoa hay có khoảng trắng
-function get(h, ...keys) {
-  const entries = Object.entries(h || {});
-
-  for (const key of keys) {
-    const nk = norm(key);
-
-    const found = entries.find(([k, v]) =>
-      norm(k) === nk &&
-      v !== undefined &&
-      v !== null &&
-      String(v).trim() !== ""
-    );
-
-    if (found) return String(found[1]).trim();
-  }
-
-  return "";
+async function taiDuLieu(){
+ const loading=document.getElementById("danhsach-hocvien");
+ loading.innerHTML='<div class="loading">⏳ Đang tải dữ liệu học viên...</div>';
+ try{
+   let ds=[];
+   try{
+     const r=await fetch(API_URL+"?action=getAll&v="+Date.now(),{cache:"no-store"});
+     const k=await r.json();
+     if(!k.ok)throw new Error(k.message||"API trả lỗi");
+     ds=k.students||k.data||[];
+   }catch(apiErr){
+     console.warn("API không dùng được, chuyển sang đọc Sheet trực tiếp:",apiErr);
+     ds=await docBangTinhTrucTiep();
+   }
+   danhSachHocVien=ds.filter(h=>maHV(h)||tenHV(h));
+   capNhatThongKe();capNhatDanhSachHocVien();capNhatDanhSachVeQue();capNhatChonLop();taoBangDiemDanh();
+ }catch(e){console.error(e);loading.innerHTML='<div class="loading" style="color:#ff7777">❌ '+esc(e.message)+'<br><small>Hãy kiểm tra quyền chia sẻ Google Sheet: Bất kỳ ai có liên kết - Người xem.</small></div>';}
 }
 
-// Tìm theo tên cột gần đúng
-function getContains(h, words) {
-  const entries = Object.entries(h || {});
-
-  for (const [k, v] of entries) {
-    const nk = norm(k);
-
-    if (
-      words.some(w => nk.includes(norm(w))) &&
-      v !== undefined &&
-      v !== null &&
-      String(v).trim() !== ""
-    ) {
-      return String(v).trim();
-    }
-  }
-
-  return "";
+function ganClickTen(){document.querySelectorAll(".ten-hv").forEach(x=>x.onclick=()=>xemChiTietHocVien(x.dataset.ma));}
+function capNhatDanhSachHocVien(){
+ const q=norm(document.getElementById("search-ma").value),lop=document.getElementById("filter-lop").value,tt=document.getElementById("filter-trangthai").value;
+ const ds=danhSachHocVien.filter(h=>(!lop||lopHV(h)===lop)&&(!tt||ttHV(h)===tt)&&(!q||norm(maHV(h)).includes(q)||norm(tenHV(h)).includes(q)));
+ document.getElementById("thong-ke-danhsach").textContent="Tổng "+ds.length+" học viên";
+ document.getElementById("danhsach-hocvien").innerHTML='<table><tr><th>Mã HV</th><th>Họ tên</th><th>Lớp</th><th>GVCN</th><th>Trạng thái</th></tr>'+ds.map(h=>`<tr><td>${esc(maHV(h))}</td><td class="ten-hv" data-ma="${esc(maHV(h))}">${esc(tenHV(h)||"(Chưa có tên)")}</td><td>${esc(lopHV(h))}</td><td>${esc(gvcnHV(h))}</td><td>${esc(ttHV(h))}</td></tr>`).join("")+'</table>';
+ ganClickTen();
 }
-
-function maHV(h) {
-  return get(
-    h,
-    "maHV",
-    "MaHV",
-    "mshv",
-    "Mã HV",
-    "Mã học viên",
-    "Mã số HV",
-    "Mã số",
-    "MSHV"
-  ) || getContains(h, ["ma hv", "ma hoc vien", "ma so"]);
+function capNhatDanhSachVeQue(){
+ const ds=danhSachHocVien.filter(h=>{const t=norm(ttHV(h));return t.includes("veque")||t.includes("nghiphep")||t.includes("que");});
+ document.getElementById("danhsach-veque").innerHTML='<p>Tổng '+ds.length+' học viên về quê</p><table><tr><th>Mã HV</th><th>Họ tên</th><th>Lớp</th><th>Trạng thái</th></tr>'+ds.map(h=>`<tr><td>${esc(maHV(h))}</td><td class="ten-hv" data-ma="${esc(maHV(h))}">${esc(tenHV(h)||"(Chưa có tên)")}</td><td>${esc(lopHV(h))}</td><td>${esc(ttHV(h))}</td></tr>`).join("")+'</table>';ganClickTen();
 }
-
-function tenHV(h) {
-  return get(
-    h,
-    "hoTen",
-    "HoTen",
-    "tenRomaji",
-    "TenRomaji",
-    "romaji",
-    "Tên Romaji",
-    "Họ tên",
-    "Họ và tên",
-    "Tên học viên",
-    "Tên"
-  ) || getContains(h, ["ho ten", "ten romaji", "ten hoc vien"]);
+async function xemChiTietHocVien(ma){
+ const modal=document.getElementById("modal-chitiet"),body=document.getElementById("modal-body");modal.style.display="flex";body.innerHTML='<div class="loading-info">⏳ Đang tải toàn bộ thông tin...</div>';
+ try{
+   let detail;
+   try{const r=await fetch(API_URL+"?action=getStudentDetail&maHV="+encodeURIComponent(ma)+"&v="+Date.now(),{cache:"no-store"});const k=await r.json();if(!k.ok)throw new Error(k.message||"Không tìm thấy");detail=k.detail||{};}
+   catch(e){const h=danhSachHocVien.find(x=>maHV(x)===ma);if(!h)throw e;detail=h;}
+   let html='<div class="modal-grid">';Object.entries(detail).forEach(([k,v])=>{if(String(v??"").trim()!=="")html+=`<div class="modal-row"><div class="modal-label">${esc(k)}:</div><div class="modal-value">${esc(v)}</div></div>`;});body.innerHTML=html+'</div>';
+ }catch(e){body.innerHTML='<div style="color:#ff6b6b;text-align:center;padding:20px">❌ '+esc(e.message)+'</div>';}
 }
-
-function lopHV(h) {
-  return get(
-    h,
-    "lop",
-    "Lop",
-    "Lớp",
-    "Lớp học",
-    "Khóa"
-  ) || getContains(h, ["lop", "khoa"]) || "Chưa có";
-}
-
-function gvcnHV(h) {
-  return get(
-    h,
-    "gvcn",
-    "GVCN",
-    "Giáo viên chủ nhiệm",
-    "Chủ nhiệm"
-  ) || getContains(h, ["gvcn", "giao vien chu nhiem"]);
-}
-
-function ttHV(h) {
-  return get(
-    h,
-    "trangThai",
-    "TrangThai",
-    "Trạng thái",
-    "Tình trạng",
-    "Trạng thái học tập"
-  ) || getContains(h, ["trang thai", "tinh trang"]) || "Đang học";
-}
-
-// ================= LẤY CỘT AC =================
-// Ưu tiên tên cột AC, nếu không có thì lấy cột thứ 29
-function cotAC(h) {
-  const entries = Object.entries(h || {});
-
-  // Trường hợp tiêu đề cột là AC
-  for (const [k, v] of entries) {
-    const nk = norm(k);
-
-    if (
-      nk === "ac" ||
-      nk === "cotac" ||
-      nk === "noidungac" ||
-      nk === "dulieucotac"
-    ) {
-      return String(v ?? "").trim();
-    }
-  }
-
-  // Trường hợp dữ liệu có tên cột khác nhưng chứa AC
-  for (const [k, v] of entries) {
-    const nk = norm(k);
-
-    if (
-      nk.includes("ac") &&
-      !nk.includes("mac") &&
-      !nk.includes("ma")
-    ) {
-      if (v !== undefined && v !== null && String(v).trim() !== "") {
-        return String(v).trim();
-      }
-    }
-  }
-
-  // Nếu dữ liệu API đánh số cột
-  const keys = Object.keys(h);
-  if (keys.length >= 29) {
-    return String(h[keys[28]] ?? "").trim();
-  }
-
-  return "";
-}
-
-// ================= THỐNG KÊ =================
-function capNhatThongKe() {
-  let dang = 0, vang = 0, que = 0;
-
-  danhSachHocVien.forEach(h => {
-    const t = norm(ttHV(h));
-
-    if (t.includes("veque") || t.includes("nghiphep")) {
-      que++;
-    } else if (t.includes("vang") || t.includes("nghi")) {
-      vang++;
-    } else {
-      dang++;
-    }
-  });
-
-  document.getElementById("stat-tong").textContent = danhSachHocVien.length;
-  document.getElementById("stat-danghoc").textContent = dang;
-  document.getElementById("stat-vang").textContent = vang;
-  document.getElementById("stat-veque").textContent = que;
-}
-
-// ================= ĐỌC GOOGLE SHEET TRỰC TIẾP =================
-async function docBangTinhTrucTiep() {
-  const url =
-    `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&gid=${SHEET_GID}`;
-
-  const response = await fetch(url, { cache: "no-store" });
-  const text = await response.text();
-
-  const m = text.match(
-    /google\.visualization\.Query\.setResponse\((.*)\);?\s*$/s
-  );
-
-  if (!m) {
-    throw new Error(
-      "Google Sheet chưa công khai hoặc không đọc được dữ liệu"
-    );
-  }
-
-  const obj = JSON.parse(m[1]);
-
-  const cols = obj.table.cols.map((c, i) =>
-    String(c.label || c.id || `Cột ${i + 1}`).trim()
-  );
-
-  return obj.table.rows.map(r => {
-    const h = {};
-
-    cols.forEach((c, i) => {
-      h[c] = r.c[i]?.f ?? r.c[i]?.v ?? "";
-    });
-
-    return h;
-  });
-}
-
-// ================= TẢI DỮ LIỆU =================
-async function taiDuLieu() {
-  const loading = document.getElementById("danhsach-hocvien");
-
-  loading.innerHTML =
-    '<div class="loading">⏳ Đang tải dữ liệu học viên...</div>';
-
-  try {
-    let ds = [];
-
-    // Thử API trước
-    try {
-      const r = await fetch(
-        API_URL + "?action=getAll&v=" + Date.now(),
-        { cache: "no-store" }
-      );
-
-      const k = await r.json();
-
-      if (!k.ok) {
-        throw new Error(k.message || "API trả lỗi");
-      }
-
-      ds = k.students || k.data || [];
-
-      console.log("Dữ liệu API:", ds);
-
-    } catch (apiErr) {
-      console.warn(
-        "API không dùng được, chuyển sang đọc Sheet trực tiếp:",
-        apiErr
-      );
-
-      ds = await docBangTinhTrucTiep();
-    }
-
-    danhSachHocVien = ds.filter(h => maHV(h) || tenHV(h));
-
-    console.log("Danh sách sau khi xử lý:", danhSachHocVien);
-
-    capNhatThongKe();
-    capNhatDanhSachHocVien();
-    capNhatDanhSachVeQue();
-    capNhatChonLop();
-    taoBangDiemDanh();
-
-  } catch (e) {
-    console.error(e);
-
-    loading.innerHTML =
-      '<div class="loading" style="color:#ff7777">' +
-      '❌ ' + esc(e.message) +
-      '<br><small>Hãy kiểm tra quyền chia sẻ Google Sheet: Bất kỳ ai có liên kết - Người xem.</small>' +
-      '</div>';
-  }
-}
-
-// ================= CLICK TÊN HỌC VIÊN =================
-function ganClickTen() {
-  document.querySelectorAll(".ten-hv").forEach(x => {
-    x.onclick = () => xemChiTietHocVien(x.dataset.ma);
-  });
-}
-
-// ================= DANH SÁCH HỌC VIÊN =================
-function capNhatDanhSachHocVien() {
-  const q = norm(document.getElementById("search-ma").value);
-  const lop = document.getElementById("filter-lop").value;
-  const tt = document.getElementById("filter-trangthai").value;
-
-  const ds = danhSachHocVien.filter(h =>
-    (!lop || lopHV(h) === lop) &&
-    (!tt || ttHV(h) === tt) &&
-    (
-      !q ||
-      norm(maHV(h)).includes(q) ||
-      norm(tenHV(h)).includes(q)
-    )
-  );
-
-  document.getElementById("thong-ke-danhsach").textContent =
-    "Tổng " + ds.length + " học viên";
-
-  document.getElementById("danhsach-hocvien").innerHTML =
-    '<table>' +
-    '<tr>' +
-    '<th>Mã HV</th>' +
-    '<th>Họ tên</th>' +
-    '<th>Lớp</th>' +
-    '<th>GVCN</th>' +
-    '<th>Trạng thái</th>' +
-    '</tr>' +
-
-    ds.map(h =>
-      '<tr>' +
-      '<td>' + esc(maHV(h)) + '</td>' +
-      '<td class="ten-hv" data-ma="' + esc(maHV(h)) + '">' +
-      esc(tenHV(h) || "(Chưa có tên)") +
-      '</td>' +
-      '<td>' + esc(lopHV(h)) + '</td>' +
-      '<td>' + esc(gvcnHV(h)) + '</td>' +
-      '<td>' + esc(ttHV(h)) + '</td>' +
-      '</tr>'
-    ).join("") +
-
-    '</table>';
-
-  ganClickTen();
-}
-
-// ================= HỌC VIÊN VỀ QUÊ =================
-function capNhatDanhSachVeQue() {
-  const ds = danhSachHocVien.filter(h => {
-    const t = norm(ttHV(h));
-    return (
-      t.includes("veque") ||
-      t.includes("nghiphep") ||
-      t.includes("que")
-    );
-  });
-
-  document.getElementById("danhsach-veque").innerHTML =
-    '<p>Tổng ' + ds.length + ' học viên về quê</p>' +
-    '<table>' +
-    '<tr>' +
-    '<th>Mã HV</th>' +
-    '<th>Họ tên</th>' +
-    '<th>Lớp</th>' +
-    '<th>Trạng thái</th>' +
-    '</tr>' +
-
-    ds.map(h =>
-      '<tr>' +
-      '<td>' + esc(maHV(h)) + '</td>' +
-      '<td class="ten-hv" data-ma="' + esc(maHV(h)) + '">' +
-      esc(tenHV(h) || "(Chưa có tên)") +
-      '</td>' +
-      '<td>' + esc(lopHV(h)) + '</td>' +
-      '<td>' + esc(ttHV(h)) + '</td>' +
-      '</tr>'
-    ).join("") +
-
-    '</table>';
-
-  ganClickTen();
-}
-
-// ================= CHI TIẾT HỌC VIÊN =================
-async function xemChiTietHocVien(ma) {
-  const modal = document.getElementById("modal-chitiet");
-  const body = document.getElementById("modal-body");
-
-  modal.style.display = "flex";
-
-  body.innerHTML =
-    '<div class="loading-info">⏳ Đang tải toàn bộ thông tin...</div>';
-
-  try {
-    let detail = {};
-    let localStudent = danhSachHocVien.find(
-      x => maHV(x) === ma
-    );
-
-    // Lấy chi tiết từ API
-    try {
-      const r = await fetch(
-        API_URL +
-        "?action=getStudentDetail&maHV=" +
-        encodeURIComponent(ma) +
-        "&v=" + Date.now(),
-        { cache: "no-store" }
-      );
-
-      const k = await r.json();
-
-      if (!k.ok) {
-        throw new Error(k.message || "Không tìm thấy");
-      }
-
-      detail = k.detail || {};
-
-    } catch (e) {
-      console.warn("Không lấy được chi tiết API:", e);
-    }
-
-    // Gộp dữ liệu API + dữ liệu Sheet đã tải
-    // Dữ liệu Sheet bổ sung các cột API còn thiếu, đặc biệt là AC
-    detail = {
-      ...(localStudent || {}),
-      ...detail
-    };
-
-    // Nếu API có tên nhưng dữ liệu tên rỗng thì lấy lại từ Sheet
-    if (!tenHV(detail) && localStudent) {
-      detail["Họ tên"] = tenHV(localStudent);
-    }
-
-    if (!maHV(detail) && localStudent) {
-      detail["Mã HV"] = maHV(localStudent);
-    }
-
-    // Bổ sung riêng cột AC
-    const ac = cotAC(localStudent || detail);
-
-    if (ac) {
-      detail["CỘT AC"] = ac;
-    }
-
-    // Hiển thị toàn bộ thông tin
-    let html = '<div class="modal-grid">';
-
-    Object.entries(detail).forEach(([k, v]) => {
-      if (
-        String(v ?? "").trim() !== "" &&
-        norm(k) !== "mahv" &&
-        norm(k) !== "hoten"
-      ) {
-        html +=
-          '<div class="modal-row">' +
-          '<div class="modal-label">' + esc(k) + ':</div>' +
-          '<div class="modal-value">' + esc(v) + '</div>' +
-          '</div>';
-      }
-    });
-
-    // Đưa mã HV và tên lên đầu
-    html =
-      '<div class="modal-row">' +
-      '<div class="modal-label">Mã số HV:</div>' +
-      '<div class="modal-value">' + esc(maHV(detail)) + '</div>' +
-      '</div>' +
-
-      '<div class="modal-row">' +
-      '<div class="modal-label">Họ tên:</div>' +
-      '<div class="modal-value">' + esc(tenHV(detail)) + '</div>' +
-      '</div>' +
-
-      html;
-
-    body.innerHTML = html + '</div>';
-
-  } catch (e) {
-    body.innerHTML =
-      '<div style="color:#ff6b6b;text-align:center;padding:20px">' +
-      '❌ ' + esc(e.message) +
-      '</div>';
-  }
-}
-
-function dongModalChiTiet() {
-  document.getElementById("modal-chitiet").style.display = "none";
-}
-
-// ================= DANH SÁCH LỚP =================
-function capNhatChonLop() {
-  const ds = [
-    ...new Set(
-      danhSachHocVien
-        .map(lopHV)
-        .filter(Boolean)
-    )
-  ].sort();
-
-  const h = ds.map(x =>
-    `<option value="${esc(x)}">${esc(x)}</option>`
-  ).join("");
-
-  document.getElementById("filter-lop").innerHTML =
-    '<option value="">Tất cả lớp</option>' + h;
-
-  document.getElementById("chon-lop-diemdanh").innerHTML = h;
-}
-
-// ================= ĐIỂM DANH =================
-function taoBangDiemDanh() {
-  const lop = document.getElementById("chon-lop-diemdanh").value;
-  const from = new Date(document.getElementById("tu-ngay").value);
-  const to = new Date(document.getElementById("den-ngay").value);
-
-  if (isNaN(from) || isNaN(to)) return;
-
-  const ds = lop
-    ? danhSachHocVien.filter(h => lopHV(h) === lop)
-    : danhSachHocVien;
-
-  const days = Math.floor((to - from) / 86400000) + 1;
-  const heads = [];
-
-  for (let i = 0; i < days; i++) {
-    const d = new Date(from);
-    d.setDate(d.getDate() + i);
-    heads.push(d.getDate() + "/" + (d.getMonth() + 1));
-  }
-
-  document.getElementById("bang-diemdanh").innerHTML =
-    '<table>' +
-    '<tr>' +
-    '<th>Mã HV</th>' +
-    '<th>Họ tên</th>' +
-    heads.map(x => '<th>' + x + '</th>').join("") +
-    '</tr>' +
-
-    ds.map(h =>
-      '<tr>' +
-      '<td>' + esc(maHV(h)) + '</td>' +
-      '<td>' + esc(tenHV(h)) + '</td>' +
-      heads.map(() =>
-        "<td><input type='checkbox' checked></td>"
-      ).join("") +
-      '</tr>'
-    ).join("") +
-
-    '</table>';
-}
-
-async function luuBangDiemDanh() {
-  alert(
-    "Đã tạo bảng điểm danh. Chức năng lưu sẽ dùng API sau khi triển khai đúng Web App."
-  );
-}
-
-// ================= SỰ KIỆN =================
-document.querySelectorAll(".tab-btn").forEach(b => {
-  b.onclick = () => {
-    document.querySelectorAll(".tab-btn")
-      .forEach(x => x.classList.remove("active"));
-
-    document.querySelectorAll(".page")
-      .forEach(x => x.classList.remove("active"));
-
-    b.classList.add("active");
-
-    document.getElementById(b.dataset.page)
-      .classList.add("active");
-  };
-});
-
-document.getElementById("search-ma").oninput =
-  capNhatDanhSachHocVien;
-
-document.getElementById("filter-lop").onchange =
-  capNhatDanhSachHocVien;
-
-document.getElementById("filter-trangthai").onchange =
-  capNhatDanhSachHocVien;
-
-document.getElementById("btn-tai-lai").onclick =
-  taiDuLieu;
-
-document.getElementById("btn-tao-bang").onclick =
-  taoBangDiemDanh;
-
-document.getElementById("modal-chitiet").onclick = e => {
-  if (e.target.id === "modal-chitiet") {
-    dongModalChiTiet();
-  }
-};
-
-// ================= KHỞI ĐỘNG =================
-const now = new Date();
-const first = new Date(
-  now.getFullYear(),
-  now.getMonth(),
-  1
-);
-
-document.getElementById("tu-ngay").valueAsDate = first;
-document.getElementById("den-ngay").valueAsDate = now;
-
-taiDuLieu();
+function dongModalChiTiet(){document.getElementById("modal-chitiet").style.display="none";}
+function capNhatChonLop(){const ds=[...new Set(danhSachHocVien.map(lopHV).filter(Boolean))].sort();const h=ds.map(x=>`<option value="${esc(x)}">${esc(x)}</option>`).join("");document.getElementById("filter-lop").innerHTML='<option value="">Tất cả lớp</option>'+h;document.getElementById("chon-lop-diemdanh").innerHTML=h;}
+function taoBangDiemDanh(){const lop=document.getElementById("chon-lop-diemdanh").value,from=new Date(document.getElementById("tu-ngay").value),to=new Date(document.getElementById("den-ngay").value);if(isNaN(from)||isNaN(to))return;const ds=lop?danhSachHocVien.filter(h=>lopHV(h)===lop):danhSachHocVien,days=Math.floor((to-from)/86400000)+1,heads=[];for(let i=0;i<days;i++){const d=new Date(from);d.setDate(d.getDate()+i);heads.push(d.getDate()+"/"+(d.getMonth()+1));}document.getElementById("bang-diemdanh").innerHTML='<table><tr><th>Mã HV</th><th>Họ tên</th>'+heads.map(x=>'<th>'+x+'</th>').join("")+'</tr>'+ds.map(h=>'<tr><td>'+esc(maHV(h))+'</td><td>'+esc(tenHV(h))+'</td>'+heads.map(()=>"<td><input type='checkbox' checked></td>").join("")+'</tr>').join("")+'</table>';}
+async function luuBangDiemDanh(){alert("Đã tạo bảng điểm danh. Chức năng lưu sẽ dùng API sau khi triển khai đúng Web App.");}
+
+document.querySelectorAll(".tab-btn").forEach(b=>b.onclick=()=>{document.querySelectorAll(".tab-btn").forEach(x=>x.classList.remove("active"));document.querySelectorAll(".page").forEach(x=>x.classList.remove("active"));b.classList.add("active");document.getElementById(b.dataset.page).classList.add("active");});
+document.getElementById("search-ma").oninput=capNhatDanhSachHocVien;document.getElementById("filter-lop").onchange=capNhatDanhSachHocVien;document.getElementById("filter-trangthai").onchange=capNhatDanhSachHocVien;document.getElementById("btn-tai-lai").onclick=taiDuLieu;document.getElementById("btn-tao-bang").onclick=taoBangDiemDanh;document.getElementById("modal-chitiet").onclick=e=>{if(e.target.id==="modal-chitiet")dongModalChiTiet();};
+const now=new Date(),first=new Date(now.getFullYear(),now.getMonth(),1);document.getElementById("tu-ngay").valueAsDate=first;document.getElementById("den-ngay").valueAsDate=now;taiDuLieu();
 </script>
+</body>
+</html>
