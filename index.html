@@ -117,6 +117,7 @@
     <button class="tab-btn" data-page="hv-ve-que">HV về quê</button>
     <button class="tab-btn" data-page="diem-danh">Điểm danh</button>
     <button class="tab-btn" data-page="tai-lieu">Tài liệu</button>
+    <button class="tab-btn" data-page="gop-y">💬 Góp ý</button>
   </div>
 
   <div id="trang-chu" class="page active">
@@ -172,6 +173,19 @@
     <div class="card">
       <h2>Tài liệu</h2>
       <p>Chức năng đang cập nhật...</p>
+    </div>
+  </div>
+
+  <div id="gop-y" class="page">
+    <div class="card">
+      <h2>💬 Góp ý</h2>
+      <p style="margin-bottom:12px;">Vui lòng gửi góp ý để hệ thống ngày càng hoàn thiện hơn.</p>
+      <div class="toolbar" style="display:block;">
+        <input type="text" id="gop-y-ho-ten" placeholder="Họ và tên..." style="width:100%; margin-bottom:8px;">
+        <input type="text" id="gop-y-noi-dung" placeholder="Nhập nội dung góp ý..." style="width:100%; margin-bottom:8px;">
+        <button class="btn-primary" id="btn-gui-gop-y">📨 Gửi góp ý</button>
+      </div>
+      <p id="thong-bao-gop-y" style="margin-top:10px; color:#ffd700;"></p>
     </div>
   </div>
 
@@ -402,6 +416,34 @@ document.getElementById("search-ma").addEventListener("input", capNhatDanhSachHo
 document.getElementById("filter-lop").addEventListener("change", capNhatDanhSachHocVien);
 document.getElementById("filter-trangthai").addEventListener("change", capNhatDanhSachHocVien);
 document.getElementById("btn-tai-lai").addEventListener("click", taiDuLieu);
+
+document.getElementById("btn-gui-gop-y").addEventListener("click", function() {
+  const hoTen = document.getElementById("gop-y-ho-ten").value.trim();
+  const noiDung = document.getElementById("gop-y-noi-dung").value.trim();
+  const thongBao = document.getElementById("thong-bao-gop-y");
+
+  if (!noiDung) {
+    thongBao.style.color = "#ff6b6b";
+    thongBao.textContent = "⚠️ Vui lòng nhập nội dung góp ý.";
+    return;
+  }
+
+  const noiDungGui = hoTen ? `Góp ý từ ${hoTen}: ${noiDung}` : noiDung;
+  const url = `${API_URL}?action=sendFeedback&content=${encodeURIComponent(noiDungGui)}`;
+
+  fetch(url, { method: "GET" })
+    .then(res => res.text())
+    .then(() => {
+      thongBao.style.color = "#00ff88";
+      thongBao.textContent = "✅ Đã gửi góp ý. Cảm ơn bạn!";
+      document.getElementById("gop-y-ho-ten").value = "";
+      document.getElementById("gop-y-noi-dung").value = "";
+    })
+    .catch(() => {
+      thongBao.style.color = "#ff6b6b";
+      thongBao.textContent = "❌ Không gửi được góp ý. Vui lòng thử lại.";
+    });
+});
 
 // === CHỌN NGÀY ===
 function ganSuKienDiemDanh() {
