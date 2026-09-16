@@ -723,63 +723,90 @@
       }
     }
 
-    async function xemChiTietHocVien(maHV) {
-      modalBackground.style.display = "flex";
+   async function xemChiTietHocVien(maHV) {
 
-      detailContent.innerHTML =
-        '<div class="loading">Đang tải thông tin học viên...</div>';
+  const modal = document.getElementById("modal-chitiet");
+  const body = document.getElementById("modal-body");
 
-      try {
-        const response = await fetch(
-          API_URL +
-          "?action=getStudentDetail&maHV=" +
-          encodeURIComponent(maHV) +
-          "&time=" +
-          Date.now(),
-          {
-            method: "GET",
-            cache: "no-store"
-          }
-        );
+  modal.style.display = "flex";
 
-        if (!response.ok) {
-          throw new Error(
-            "API trả về mã lỗi HTTP " + response.status
-          );
-        }
+  body.innerHTML =
+    '<div class="loading-info">⏳ Đang tải thông tin học viên...</div>';
 
-        const data = await response.json();
+  try {
 
-        if (!data || data.ok !== true) {
-          throw new Error(
-            data && data.error
-              ? data.error
-              : "Không tìm thấy học viên."
-          );
-        }
+    const url =
+      API_URL +
+      "?action=getStudentDetail&maHV=" +
+      encodeURIComponent(maHV) +
+      "&v=" +
+      Date.now();
 
-        const detail = data.detail || data.student || {};
+    const response = await fetch(url, {
+      method: "GET",
+      cache: "no-store"
+    });
 
-        hienThiChiTiet(detail, data);
+    const result = await response.json();
 
-      } catch (error) {
-        console.error("Lỗi chi tiết:", error);
-
-        /*
-          Nếu API chi tiết lỗi, vẫn lấy dữ liệu đã có trong danh sách.
-        */
-        const hocVienCu = danhSachHocVien.find(
-          hocVien => layMaHV(hocVien) === String(maHV)
-        );
-
-        if (hocVienCu) {
-          hienThiChiTiet(hocVienCu, {});
-        } else {
-          detailContent.innerHTML =
-            '<div class="empty">Không lấy được thông tin chi tiết.</div>';
-        }
-      }
+    if (!result.ok || !result.detail) {
+      throw new Error(
+        result.message || "Không tìm thấy thông tin học viên"
+      );
     }
+
+    const detail = result.detail;
+
+    let html = '<div class="modal-grid">';
+
+    Object.entries(detail).forEach(function([key, value]) {
+
+      const title = String(key || "").trim();
+      const text = String(value ?? "").trim();
+
+      // BỎ CÁC DÒNG KỸ THUẬT, KHÔNG HIỆN __COT_AC__
+      const lowerKey = title.toLowerCase();
+
+      if (
+        lowerKey === "__cot_ac__" ||
+        lowerKey === "cotac" ||
+        lowerKey === "cot_ac" ||
+        lowerKey === "noidungcotac" ||
+        lowerKey === "nội dung cột ac"
+      ) {
+        return;
+      }
+
+      // Không hiển thị dòng không có tiêu đề hoặc không có dữ liệu
+      if (!title || !text) {
+        return;
+      }
+
+      html +=
+        '<div class="modal-row">' +
+          '<div class="modal-label">' +
+            esc(title) +
+          ':</div>' +
+          '<div class="modal-value">' +
+            esc(text) +
+          '</div>' +
+        '</div>';
+
+    });
+
+    html += '</div>';
+
+    body.innerHTML = html;
+
+  } catch (error) {
+
+    body.innerHTML =
+      '<div style="color:#ff6b6b;text-align:center;padding:20px">' +
+        '❌ ' + esc(error.message) +
+      '</div>';
+
+  }
+}
 
     function hienThiChiTiet(detail, apiData) {
       const boQua = new Set([
