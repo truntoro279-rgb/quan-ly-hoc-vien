@@ -1,220 +1,893 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>TDTT Thành Đô - Thanh Hóa</title>
-<style>
-*{box-sizing:border-box}
-body{margin:0;background:#17182b;color:#f4f6ff;font-family:Arial,sans-serif}
-.header{margin:18px;background:#2161f5;border-radius:8px;text-align:center;padding:18px}
-.header h1{margin:0;font-size:25px}.header p{margin:6px 0 0}
-nav{text-align:center;margin:12px}
-nav button{background:#2161f5;color:#fff;border:0;border-radius:4px;padding:10px 16px;margin:3px;cursor:pointer;font-weight:bold}
-nav button.active{border-bottom:3px solid #ffd900}
-.container{margin:18px;background:#182542;border-radius:8px;padding:12px}
-h2{margin:8px 0 18px}
-.controls{display:flex;gap:8px;flex-wrap:wrap}
-input,select{background:#0e172b;color:#fff;border:1px solid #40506d;border-radius:4px;padding:10px;min-width:180px}
-input{flex:1}
-.action{background:#2161f5;color:#fff;border:0;border-radius:4px;padding:10px 14px;cursor:pointer}
-.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:12px 0}
-.stat{background:#213252;border-radius:6px;text-align:center;padding:12px}
-.table-wrap{overflow:auto;margin-top:12px}
-table{width:100%;border-collapse:collapse;min-width:750px}
-th{background:#1760f5;padding:9px}
-td{padding:8px;text-align:center;border:1px solid #33415d}
-tr:nth-child(even){background:#213252}
-.name{color:#ffe000;text-decoration:underline;cursor:pointer;font-weight:bold}
-.status{color:#fff}
-.message{text-align:center;padding:35px;color:#ff6565;font-weight:bold}
-.hidden{display:none}
-.modal{position:fixed;inset:0;background:rgba(0,0,0,.78);display:none;align-items:center;justify-content:center;padding:18px;z-index:10}
-.modal.show{display:flex}
-.modal-box{background:#173474;border:2px solid #4b91ff;border-radius:9px;width:min(950px,100%);max-height:90vh;overflow:auto;padding:22px}
-.modal-title{text-align:center;color:#ffe000;font-size:18px;font-weight:bold;border-bottom:1px solid #36558c;padding-bottom:14px}
-.detail-grid{display:grid;grid-template-columns:1fr 1fr;gap:0 30px;margin-top:12px}
-.detail{padding:9px 0;border-bottom:1px solid rgba(255,255,255,.08);word-break:break-word}
-.detail b{color:#bfcaff;margin-right:8px}
-.detail.ac{grid-column:1/-1;background:#102957;border:2px solid #ffd900;border-radius:6px;padding:14px;margin-top:14px}
-.detail.ac b{color:#ffe000}
-.close{display:block;width:100%;margin-top:18px;background:#2161f5;color:#fff;border:0;padding:11px;border-radius:4px;font-weight:bold;cursor:pointer}
-@media(max-width:700px){.stats{grid-template-columns:repeat(2,1fr)}.detail-grid{grid-template-columns:1fr}.detail.ac{grid-column:auto}}
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TDTT Thành Đô - Thanh Hóa</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      padding: 16px;
+      background: #17182b;
+      color: #fff;
+      font-family: Arial, Helvetica, sans-serif;
+    }
+
+    .header {
+      background: #2161f5;
+      padding: 22px 15px;
+      text-align: center;
+      border-radius: 7px;
+      margin-bottom: 18px;
+    }
+
+    .header h1 {
+      margin: 0;
+      font-size: 26px;
+    }
+
+    .header p {
+      margin: 8px 0 0;
+      font-size: 14px;
+    }
+
+    .menu {
+      display: flex;
+      justify-content: center;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 20px;
+    }
+
+    .menu button {
+      border: none;
+      background: #2161f5;
+      color: white;
+      padding: 10px 16px;
+      border-radius: 5px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .menu button:hover {
+      background: #3975ff;
+    }
+
+    .menu button.active {
+      border-bottom: 3px solid #ffe000;
+    }
+
+    .box {
+      background: #1b2a4a;
+      padding: 12px;
+      border-radius: 7px;
+      overflow-x: auto;
+    }
+
+    .box h2 {
+      margin: 0 0 15px;
+      font-size: 21px;
+    }
+
+    .toolbar {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 12px;
+      flex-wrap: wrap;
+    }
+
+    .toolbar input,
+    .toolbar select {
+      background: #0e1628;
+      color: white;
+      border: 1px solid #40506e;
+      border-radius: 4px;
+      padding: 10px;
+      outline: none;
+    }
+
+    .toolbar input {
+      flex: 1;
+      min-width: 250px;
+    }
+
+    .toolbar select {
+      min-width: 150px;
+    }
+
+    .toolbar button {
+      background: #2161f5;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      padding: 10px 15px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    .toolbar button:hover {
+      background: #3975ff;
+    }
+
+    .status {
+      margin: 8px 0 12px;
+      color: #ddd;
+      font-size: 14px;
+    }
+
+    .error {
+      display: none;
+      background: #762d36;
+      border: 1px solid #ff7c89;
+      padding: 12px;
+      border-radius: 5px;
+      margin-bottom: 12px;
+      color: #fff;
+      white-space: pre-wrap;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 850px;
+    }
+
+    th {
+      background: #2161f5;
+      color: white;
+      padding: 9px;
+      border: 1px solid #34486c;
+      text-align: center;
+    }
+
+    td {
+      padding: 8px;
+      border: 1px solid #34486c;
+      text-align: center;
+      background: #192845;
+    }
+
+    tr:nth-child(even) td {
+      background: #223556;
+    }
+
+    .name-button {
+      color: #ffe000;
+      font-weight: bold;
+      text-decoration: underline;
+      cursor: pointer;
+      border: none;
+      background: transparent;
+      font-size: inherit;
+    }
+
+    .name-button:hover {
+      color: #fff;
+    }
+
+    .modal-background {
+      display: none;
+      position: fixed;
+      z-index: 1000;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.82);
+      align-items: center;
+      justify-content: center;
+      padding: 15px;
+    }
+
+    .modal {
+      width: 100%;
+      max-width: 900px;
+      max-height: 90vh;
+      overflow-y: auto;
+      background: #193574;
+      border: 2px solid #4b8aff;
+      border-radius: 9px;
+      padding: 22px;
+    }
+
+    .modal-title {
+      text-align: center;
+      color: #ffe000;
+      font-size: 20px;
+      font-weight: bold;
+      padding-bottom: 14px;
+      border-bottom: 1px solid #34558f;
+      margin-bottom: 15px;
+    }
+
+    .detail-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0 30px;
+    }
+
+    .detail-item {
+      display: flex;
+      gap: 8px;
+      padding: 9px 0;
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+      line-height: 1.45;
+      word-break: break-word;
+    }
+
+    .detail-label {
+      min-width: 150px;
+      color: #c9d2f5;
+      font-weight: bold;
+      text-align: right;
+    }
+
+    .detail-value {
+      flex: 1;
+      color: white;
+      text-align: left;
+    }
+
+    .detail-ac {
+      grid-column: 1 / -1;
+      background: #263f72;
+      border: 1px solid #4d78c9;
+      border-radius: 5px;
+      padding: 12px;
+      margin-top: 12px;
+    }
+
+    .detail-ac .detail-label {
+      color: #ffe000;
+      min-width: 170px;
+    }
+
+    .close-button {
+      width: 100%;
+      margin-top: 18px;
+      border: none;
+      background: #2161f5;
+      color: white;
+      padding: 11px;
+      border-radius: 4px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .close-button:hover {
+      background: #3975ff;
+    }
+
+    .loading {
+      text-align: center;
+      padding: 25px;
+      color: #ffe000;
+    }
+
+    .empty {
+      text-align: center;
+      padding: 25px;
+      color: #ffdfdf;
+    }
+
+    @media (max-width: 700px) {
+      body {
+        padding: 8px;
+      }
+
+      .header h1 {
+        font-size: 21px;
+      }
+
+      .detail-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .detail-ac {
+        grid-column: auto;
+      }
+
+      .detail-item {
+        display: block;
+      }
+
+      .detail-label {
+        display: block;
+        text-align: left;
+        margin-bottom: 3px;
+      }
+
+      .detail-value {
+        display: block;
+      }
+    }
+  </style>
 </head>
+
 <body>
-<div class="header">
-<h1>TDTT THÀNH ĐÔ - THANH HÓA</h1>
-<p>Hệ thống quản lý học viên tập trung</p>
-</div>
 
-<nav>
-<button data-page="home" class="active">Trang chủ</button>
-<button data-page="students">Học viên</button>
-<button data-page="homecoming">HV về quê</button>
-<button data-page="attendance">Điểm danh</button>
-<button data-page="documents">Tài liệu</button>
-</nav>
+  <div class="header">
+    <h1>TDTT THÀNH ĐÔ - THANH HÓA</h1>
+    <p>Hệ thống quản lý học viên tập trung</p>
+  </div>
 
-<section id="home" class="container page">
-<h2>Thống kê tổng quan</h2>
-<div class="stats">
-<div class="stat">Tổng học viên <b id="total">0</b></div>
-<div class="stat">Đang học <b id="studying">0</b></div>
-<div class="stat">Vắng <b id="absent">0</b></div>
-<div class="stat">Về quê <b id="homeCount">0</b></div>
-</div>
-</section>
+  <div class="menu">
+    <button>Trang chủ</button>
+    <button class="active">Học viên</button>
+    <button>HV về quê</button>
+    <button>Điểm danh</button>
+    <button>Tài liệu</button>
+  </div>
 
-<section id="students" class="container page hidden">
-<h2>Danh sách học viên</h2>
-<div class="controls">
-<input id="search" placeholder="Tìm mã hoặc tên...">
-<select id="classFilter"><option value="">Tất cả lớp</option></select>
-<select id="statusFilter"><option value="">Tất cả trạng thái</option></select>
-<button class="action" id="reload">🔄 Tải lại</button>
-</div>
-<p id="count">Tổng 0 học viên</p>
-<div id="tableMessage" class="message">Đang tải dữ liệu...</div>
-<div class="table-wrap">
-<table id="studentTable" class="hidden">
-<thead><tr><th>Mã HV</th><th>Họ tên</th><th>Lớp</th><th>GVCN</th><th>Trạng thái</th></tr></thead>
-<tbody></tbody>
-</table>
-</div>
-</section>
+  <div class="box">
+    <h2>Danh sách học viên</h2>
 
-<section id="homecoming" class="container page hidden">
-<h2>Học viên về quê</h2>
-<div id="homecomingList">Đang tải dữ liệu...</div>
-</section>
+    <div class="toolbar">
+      <input
+        id="searchInput"
+        type="text"
+        placeholder="Tìm mã học viên hoặc tên..."
+      >
 
-<section id="attendance" class="container page hidden">
-<h2>Điểm danh</h2>
-<p>Chức năng điểm danh được giữ nguyên trong hệ thống.</p>
-</section>
+      <select id="classFilter">
+        <option value="">Tất cả lớp</option>
+      </select>
 
-<section id="documents" class="container page hidden">
-<h2>Tài liệu</h2>
-<p>Chức năng tài liệu được giữ nguyên trong hệ thống.</p>
-</section>
+      <select id="statusFilter">
+        <option value="">Tất cả trạng thái</option>
+      </select>
 
-<div id="modal" class="modal">
-<div class="modal-box">
-<div class="modal-title">📋 THÔNG TIN CHI TIẾT HỌC VIÊN</div>
-<div id="details" class="detail-grid"></div>
-<button class="close" id="closeModal">Đóng</button>
-</div>
-</div>
+      <button id="reloadButton">🔄 Tải lại</button>
+    </div>
 
-<script>
-const API_URL="https://script.google.com/macros/s/AKfycbzMNLl6y8ATa3cqdZZ5zeW70ATqOi70gzXAtMIX1DkWTL-8vzEX8aR4-SCD87nI2d62dA/exec";
-let students=[];
-let headers=[];
+    <div id="errorBox" class="error"></div>
 
-const $=id=>document.getElementById(id);
-const clean=v=>v===null||v===undefined?"":String(v).trim();
+    <div id="studentCount" class="status">
+      Đang tải dữ liệu...
+    </div>
 
-function nameOf(s){
- return clean(s.hoTen||s.HoTen||s.tenRomaji||s.TenRomaji||s.romaji||s["Tên Romaji"]||s["Họ tên"]||s.ten||s.name);
-}
-function codeOf(s){return clean(s.maHV||s.mshv||s["Mã số HV"]||s["Mã HV"]||s.code)}
-function classOf(s){return clean(s.lop||s.Lop||s["Lớp"])}
-function teacherOf(s){return clean(s.gvcn||s.GVCN||s["GVCN"])}
-function statusOf(s){return clean(s.trangThai||s.TrangThai||s["Trạng thái"])}
+    <div id="tableContainer">
+      <div class="loading">Đang tải danh sách học viên...</div>
+    </div>
+  </div>
 
-async function api(action, extra=""){
- const url=API_URL+"?action="+encodeURIComponent(action)+(extra?"&"+extra:"");
- const res=await fetch(url,{cache:"no-store"});
- if(!res.ok) throw new Error("HTTP "+res.status);
- const text=await res.text();
- let data;
- try{data=JSON.parse(text)}catch(e){throw new Error("Web App không trả JSON. Hãy triển khai lại Code.gs.");}
- return data;
-}
+  <!-- Hộp chi tiết học viên -->
+  <div id="modalBackground" class="modal-background">
+    <div class="modal">
+      <div class="modal-title">
+        📋 THÔNG TIN CHI TIẾT HỌC VIÊN
+      </div>
 
-async function loadStudents(){
- $("tableMessage").classList.remove("hidden");
- $("studentTable").classList.add("hidden");
- $("tableMessage").textContent="Đang tải dữ liệu...";
- try{
-   const result=await api("getAll");
-   if(!result.ok) throw new Error(result.error||"API trả lỗi");
-   students=Array.isArray(result.students)?result.students:(Array.isArray(result.data)?result.data:[]);
-   headers=result.headers||[];
-   fillFilters();
-   render();
-   updateStats();
-   $("tableMessage").classList.add("hidden");
-   $("studentTable").classList.remove("hidden");
- }catch(err){
-   $("tableMessage").innerHTML="❌ Không tải được dữ liệu.<br><small>"+escapeHtml(err.message)+"</small><br><br>Kiểm tra URL Web App và quyền truy cập Google Sheet.";
-   console.error(err);
- }
-}
-function fillFilters(){
- const classes=[...new Set(students.map(classOf).filter(Boolean))].sort();
- const statuses=[...new Set(students.map(statusOf).filter(Boolean))].sort();
- $("classFilter").innerHTML='<option value="">Tất cả lớp</option>'+classes.map(x=>`<option>${escapeHtml(x)}</option>`).join("");
- $("statusFilter").innerHTML='<option value="">Tất cả trạng thái</option>'+statuses.map(x=>`<option>${escapeHtml(x)}</option>`).join("");
-}
-function render(){
- const q=clean($("search").value).toLowerCase();
- const cl=$("classFilter").value, st=$("statusFilter").value;
- const list=students.filter(s=>
-   (!q||(codeOf(s)+" "+nameOf(s)).toLowerCase().includes(q)) &&
-   (!cl||classOf(s)===cl)&&(!st||statusOf(s)===st)
- );
- $("count").textContent="Tổng "+list.length+" học viên";
- $("studentTable").querySelector("tbody").innerHTML=list.map(s=>`
- <tr>
-  <td>${escapeHtml(codeOf(s))}</td>
-  <td><span class="name" data-code="${escapeHtml(codeOf(s))}">${escapeHtml(nameOf(s)||"(Chưa có tên)")}</span></td>
-  <td>${escapeHtml(classOf(s)||"Chưa có")}</td>
-  <td>${escapeHtml(teacherOf(s))}</td>
-  <td>${escapeHtml(statusOf(s))}</td>
- </tr>`).join("");
- document.querySelectorAll(".name").forEach(el=>el.addEventListener("click",()=>showDetail(el.dataset.code)));
-}
-function updateStats(){
- $("total").textContent=students.length;
- $("studying").textContent=students.filter(s=>/đang học/i.test(statusOf(s))).length;
- $("absent").textContent=students.filter(s=>/vắng/i.test(statusOf(s))).length;
- $("homeCount").textContent=students.filter(s=>/về quê/i.test(statusOf(s))).length;
- $("homecomingList").innerHTML=students.filter(s=>/về quê/i.test(statusOf(s))).map(s=>`<p>${escapeHtml(codeOf(s))} - ${escapeHtml(nameOf(s))}</p>`).join("")||"Không có học viên về quê.";
-}
-async function showDetail(code){
- $("modal").classList.add("show");
- $("details").innerHTML="<div>Đang tải thông tin...</div>";
- try{
-   const result=await api("getStudentDetail","maHV="+encodeURIComponent(code)+"&mshv="+encodeURIComponent(code));
-   const d=result.detail||result.student||result.data||result;
-   let entries=Object.entries(d).filter(([k,v])=>k!=="_rowNumber"&&k!=="cotAC"&&k!=="columnAC");
-   let ac=d.cotAC;
-   if(ac===undefined) ac=d.columnAC;
-   if(ac===undefined) ac=d["Nội dung cột AC"];
-   if(ac===undefined && Array.isArray(result.row)) ac=result.row[28];
-   if(ac===undefined) ac="";
-   $("details").innerHTML=entries.map(([k,v])=>`<div class="detail"><b>${escapeHtml(k)}:</b> ${escapeHtml(clean(v))}</div>`).join("")
-    +`<div class="detail ac"><b>NỘI DUNG CỘT AC:</b> ${escapeHtml(clean(ac)||"(Cột AC đang trống hoặc Code.gs chưa trả dữ liệu)")}</div>`;
- }catch(err){
-   $("details").innerHTML=`<div class="detail ac"><b>Lỗi:</b> ${escapeHtml(err.message)}</div>`;
- }
-}
-function escapeHtml(v){
- return clean(v).replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]));
-}
-document.querySelectorAll("nav button").forEach(btn=>btn.addEventListener("click",()=>{
- document.querySelectorAll("nav button").forEach(x=>x.classList.remove("active"));
- btn.classList.add("active");
- document.querySelectorAll(".page").forEach(x=>x.classList.add("hidden"));
- $(btn.dataset.page).classList.remove("hidden");
-}));
-["search","classFilter","statusFilter"].forEach(id=>$(id).addEventListener("input",render));
-$("reload").addEventListener("click",loadStudents);
-$("closeModal").addEventListener("click",()=>$("modal").classList.remove("show"));
-$("modal").addEventListener("click",e=>{if(e.target.id==="modal")$("modal").classList.remove("show")});
-loadStudents();
-</script>
+      <div id="detailContent">
+        Đang tải...
+      </div>
+
+      <button id="closeButton" class="close-button">
+        Đóng
+      </button>
+    </div>
+  </div>
+
+  <script>
+    const API_URL =
+      "https://script.google.com/macros/s/AKfycbwOPlxlzXRBKkFJr06NKBxZNpGXgwTP9IJfM1WV4B97HdBhUyFWm-fIgETE8V-4BIzLRA/exec";
+
+    let danhSachHocVien = [];
+
+    const searchInput = document.getElementById("searchInput");
+    const classFilter = document.getElementById("classFilter");
+    const statusFilter = document.getElementById("statusFilter");
+    const reloadButton = document.getElementById("reloadButton");
+    const tableContainer = document.getElementById("tableContainer");
+    const studentCount = document.getElementById("studentCount");
+    const errorBox = document.getElementById("errorBox");
+
+    const modalBackground = document.getElementById("modalBackground");
+    const detailContent = document.getElementById("detailContent");
+    const closeButton = document.getElementById("closeButton");
+
+    function hienThiLoi(message) {
+      errorBox.textContent = message;
+      errorBox.style.display = "block";
+    }
+
+    function anLoi() {
+      errorBox.textContent = "";
+      errorBox.style.display = "none";
+    }
+
+    function giaTri(obj, ...keys) {
+      if (!obj || typeof obj !== "object") {
+        return "";
+      }
+
+      for (const key of keys) {
+        if (
+          Object.prototype.hasOwnProperty.call(obj, key) &&
+          obj[key] !== null &&
+          obj[key] !== undefined &&
+          String(obj[key]).trim() !== ""
+        ) {
+          return obj[key];
+        }
+      }
+
+      return "";
+    }
+
+    /*
+      HÀM LẤY TÊN HỌC VIÊN
+
+      Ưu tiên hoTen vì API Code.gs đang trả về trường này.
+      Có thêm nhiều tên trường dự phòng để không bị lỗi.
+    */
+    function layTenHocVien(hocVien) {
+      const ten = giaTri(
+        hocVien,
+        "hoTen",
+        "HoTen",
+        "ten",
+        "name",
+        "ho_ten",
+        "Tên Romaji",
+        "Tên romaji",
+        "Họ tên",
+        "HỌ TÊN",
+        "romaji",
+        "TenRomaji"
+      );
+
+      if (ten !== "") {
+        return String(ten).trim();
+      }
+
+      /*
+        Nếu API trả dữ liệu dạng mảng data,
+        cột D thường là tên học viên, index = 3.
+      */
+      if (
+        Array.isArray(hocVien.data) &&
+        hocVien.data.length > 3 &&
+        String(hocVien.data[3]).trim() !== ""
+      ) {
+        return String(hocVien.data[3]).trim();
+      }
+
+      return "Chưa có tên";
+    }
+
+    function layMaHV(hocVien) {
+      return String(
+        giaTri(
+          hocVien,
+          "maHV",
+          "mshv",
+          "Mã số HV",
+          "MÃ SỐ HV",
+          "ma_hv",
+          "id"
+        ) || ""
+      ).trim();
+    }
+
+    function layLop(hocVien) {
+      return String(
+        giaTri(
+          hocVien,
+          "lop",
+          "Lớp",
+          "class",
+          "tenLop"
+        ) || "Chưa có"
+      ).trim();
+    }
+
+    function layGVCN(hocVien) {
+      return String(
+        giaTri(
+          hocVien,
+          "gvcn",
+          "GVCN",
+          "Giáo viên chủ nhiệm",
+          "giaoVienChuNhiem"
+        ) || ""
+      ).trim();
+    }
+
+    function layTrangThai(hocVien) {
+      return String(
+        giaTri(
+          hocVien,
+          "trangThai",
+          "TrangThai",
+          "Trạng thái",
+          "status"
+        ) || "Đang học"
+      ).trim();
+    }
+
+    /*
+      Lấy nội dung cột AC.
+
+      Cột AC là cột thứ 29.
+      Trong mảng JavaScript, vị trí tương ứng là data[28].
+    */
+    function layCotAC(hocVien) {
+      let ac = giaTri(
+        hocVien,
+        "cotAC",
+        "noiDungCotAC",
+        "Nội dung cột AC",
+        "Cột AC",
+        "AC"
+      );
+
+      if (ac !== "") {
+        return String(ac);
+      }
+
+      if (Array.isArray(hocVien.data) && hocVien.data.length > 28) {
+        return String(hocVien.data[28] ?? "");
+      }
+
+      return "";
+    }
+
+    function taoDanhSachLoc() {
+      const lopSet = new Set();
+      const trangThaiSet = new Set();
+
+      danhSachHocVien.forEach(hocVien => {
+        const lop = layLop(hocVien);
+        const trangThai = layTrangThai(hocVien);
+
+        if (lop) lopSet.add(lop);
+        if (trangThai) trangThaiSet.add(trangThai);
+      });
+
+      classFilter.innerHTML =
+        '<option value="">Tất cả lớp</option>';
+
+      [...lopSet]
+        .sort()
+        .forEach(lop => {
+          const option = document.createElement("option");
+          option.value = lop;
+          option.textContent = lop;
+          classFilter.appendChild(option);
+        });
+
+      statusFilter.innerHTML =
+        '<option value="">Tất cả trạng thái</option>';
+
+      [...trangThaiSet]
+        .sort()
+        .forEach(trangThai => {
+          const option = document.createElement("option");
+          option.value = trangThai;
+          option.textContent = trangThai;
+          statusFilter.appendChild(option);
+        });
+    }
+
+    function renderDanhSach() {
+      const tuKhoa = searchInput.value.trim().toLowerCase();
+      const lopCanLoc = classFilter.value;
+      const trangThaiCanLoc = statusFilter.value;
+
+      const danhSachLoc = danhSachHocVien.filter(hocVien => {
+        const maHV = layMaHV(hocVien).toLowerCase();
+        const ten = layTenHocVien(hocVien).toLowerCase();
+        const lop = layLop(hocVien);
+        const trangThai = layTrangThai(hocVien);
+
+        const dungTuKhoa =
+          !tuKhoa ||
+          maHV.includes(tuKhoa) ||
+          ten.includes(tuKhoa);
+
+        const dungLop =
+          !lopCanLoc || lop === lopCanLoc;
+
+        const dungTrangThai =
+          !trangThaiCanLoc ||
+          trangThai === trangThaiCanLoc;
+
+        return dungTuKhoa && dungLop && dungTrangThai;
+      });
+
+      studentCount.textContent =
+        "Tổng " + danhSachLoc.length + " học viên";
+
+      if (danhSachLoc.length === 0) {
+        tableContainer.innerHTML =
+          '<div class="empty">Không tìm thấy học viên.</div>';
+        return;
+      }
+
+      const table = document.createElement("table");
+
+      table.innerHTML = `
+        <thead>
+          <tr>
+            <th>Mã HV</th>
+            <th>Họ tên</th>
+            <th>Lớp</th>
+            <th>GVCN</th>
+            <th>Trạng thái</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      `;
+
+      const tbody = table.querySelector("tbody");
+
+      danhSachLoc.forEach(hocVien => {
+        const tr = document.createElement("tr");
+
+        const tdMa = document.createElement("td");
+        tdMa.textContent = layMaHV(hocVien);
+
+        const tdTen = document.createElement("td");
+        const buttonTen = document.createElement("button");
+
+        buttonTen.className = "name-button";
+        buttonTen.textContent = layTenHocVien(hocVien);
+
+        buttonTen.addEventListener("click", () => {
+          xemChiTietHocVien(layMaHV(hocVien));
+        });
+
+        tdTen.appendChild(buttonTen);
+
+        const tdLop = document.createElement("td");
+        tdLop.textContent = layLop(hocVien);
+
+        const tdGVCN = document.createElement("td");
+        tdGVCN.textContent = layGVCN(hocVien);
+
+        const tdTrangThai = document.createElement("td");
+        tdTrangThai.textContent = layTrangThai(hocVien);
+
+        tr.appendChild(tdMa);
+        tr.appendChild(tdTen);
+        tr.appendChild(tdLop);
+        tr.appendChild(tdGVCN);
+        tr.appendChild(tdTrangThai);
+
+        tbody.appendChild(tr);
+      });
+
+      tableContainer.innerHTML = "";
+      tableContainer.appendChild(table);
+    }
+
+    async function taiDuLieu() {
+      anLoi();
+
+      tableContainer.innerHTML =
+        '<div class="loading">Đang tải danh sách học viên...</div>';
+
+      studentCount.textContent = "Đang tải dữ liệu...";
+
+      try {
+        const response = await fetch(
+          API_URL + "?action=getAll&time=" + Date.now(),
+          {
+            method: "GET",
+            cache: "no-store"
+          }
+        );
+
+        if (!response.ok) {
+          throw new Error(
+            "API trả về mã lỗi HTTP " + response.status
+          );
+        }
+
+        const data = await response.json();
+
+        if (!data || data.ok !== true) {
+          throw new Error(
+            data && data.error
+              ? data.error
+              : "API không trả dữ liệu hợp lệ."
+          );
+        }
+
+        if (!Array.isArray(data.students)) {
+          throw new Error(
+            "API không có mảng students."
+          );
+        }
+
+        danhSachHocVien = data.students;
+
+        taoDanhSachLoc();
+        renderDanhSach();
+
+      } catch (error) {
+        console.error("Lỗi tải dữ liệu:", error);
+
+        studentCount.textContent = "Không tải được dữ liệu";
+
+        tableContainer.innerHTML = "";
+
+        hienThiLoi(
+          "Không thể tải danh sách học viên.\n\n" +
+          "Chi tiết lỗi: " + error.message + "\n\n" +
+          "Hãy kiểm tra lại URL Web App và quyền triển khai Apps Script."
+        );
+      }
+    }
+
+    async function xemChiTietHocVien(maHV) {
+      modalBackground.style.display = "flex";
+
+      detailContent.innerHTML =
+        '<div class="loading">Đang tải thông tin học viên...</div>';
+
+      try {
+        const response = await fetch(
+          API_URL +
+          "?action=getStudentDetail&maHV=" +
+          encodeURIComponent(maHV) +
+          "&time=" +
+          Date.now(),
+          {
+            method: "GET",
+            cache: "no-store"
+          }
+        );
+
+        if (!response.ok) {
+          throw new Error(
+            "API trả về mã lỗi HTTP " + response.status
+          );
+        }
+
+        const data = await response.json();
+
+        if (!data || data.ok !== true) {
+          throw new Error(
+            data && data.error
+              ? data.error
+              : "Không tìm thấy học viên."
+          );
+        }
+
+        const detail = data.detail || data.student || {};
+
+        hienThiChiTiet(detail, data);
+
+      } catch (error) {
+        console.error("Lỗi chi tiết:", error);
+
+        /*
+          Nếu API chi tiết lỗi, vẫn lấy dữ liệu đã có trong danh sách.
+        */
+        const hocVienCu = danhSachHocVien.find(
+          hocVien => layMaHV(hocVien) === String(maHV)
+        );
+
+        if (hocVienCu) {
+          hienThiChiTiet(hocVienCu, {});
+        } else {
+          detailContent.innerHTML =
+            '<div class="empty">Không lấy được thông tin chi tiết.</div>';
+        }
+      }
+    }
+
+    function hienThiChiTiet(detail, apiData) {
+      const boQua = new Set([
+        "_rowNumber",
+        "rowNumber",
+        "data",
+        "cotAC",
+        "noiDungCotAC",
+        "Nội dung cột AC",
+        "Cột AC",
+        "AC"
+      ]);
+
+      const danhSachChiTiet = [];
+
+      Object.keys(detail).forEach(key => {
+        if (boQua.has(key)) return;
+
+        const value = detail[key];
+
+        if (
+          value === null ||
+          value === undefined ||
+          String(value).trim() === ""
+        ) {
+          return;
+        }
+
+        danhSachChiTiet.push({
+          label: key,
+          value: String(value)
+        });
+      });
+
+      const ac = layCotAC(detail);
+
+      let html = '<div class="detail-grid">';
+
+      danhSachChiTiet.forEach(item => {
+        html += `
+          <div class="detail-item">
+            <div class="detail-label">${escapeHtml(item.label)}:</div>
+            <div class="detail-value">${escapeHtml(item.value)}</div>
+          </div>
+        `;
+      });
+
+      /*
+        Luôn hiển thị khu vực CỘT AC,
+        kể cả khi dữ liệu cột AC đang trống.
+      */
+      html += `
+        <div class="detail-ac">
+          <div class="detail-item" style="border-bottom:none;">
+            <div class="detail-label">NỘI DUNG CỘT AC:</div>
+            <div class="detail-value">
+              ${
+                ac.trim() !== ""
+                  ? escapeHtml(ac)
+                  : '<span style="color:#ffb4b4;">Cột AC hiện đang trống</span>'
+              }
+            </div>
+          </div>
+        </div>
+      `;
+
+      html += "</div>";
+
+      html += `
+        <button class="close-button" id="closeButtonInside">
+          Đóng
+        </button>
+      `;
+
+      detailContent.innerHTML = html;
+
+      document
+        .getElementById("closeButtonInside")
+        .addEventListener("click", dongModal);
+    }
+
+    function escapeHtml(value) {
+      return String(value)
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+    }
+
+    function dongModal() {
+      modalBackground.style.display = "none";
+    }
+
+    searchInput.addEventListener("input", renderDanhSach);
+    classFilter.addEventListener("change", renderDanhSach);
+    statusFilter.addEventListener("change", renderDanhSach);
+    reloadButton.addEventListener("click", taiDuLieu);
+    closeButton.addEventListener("click", dongModal);
+
+    modalBackground.addEventListener("click", event => {
+      if (event.target === modalBackground) {
+        dongModal();
+      }
+    });
+
+    taiDuLieu();
+  </script>
+
 </body>
 </html>
